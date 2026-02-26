@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: portfolio-website
+    env: python
+    region: ohio
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "./start.sh"
+    healthCheckPath: /
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: WEB_CONCURRENCY
+        value: "3"
+    branch: main
+    autoDeploy: true
+    numInstances: 1
+  - type: postgres
+    name: portfolio-db
+    plan: free
+    ipAllowList: []
+    databaseName: portfolio_db
+    user: portfolio_user
+    postgresMajorVersion: "15"
