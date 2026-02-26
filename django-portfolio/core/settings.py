@@ -132,7 +132,7 @@ if not DEBUG:
     if CUSTOM_DOMAIN:
         CSRF_TRUSTED_ORIGINS.append(f'https://{CUSTOM_DOMAIN}')
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 LOGGING = {
     'version': 1,
@@ -170,4 +170,5 @@ else:
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
             'LOCATION': 'unique-snowflake',
         }
+
     }
