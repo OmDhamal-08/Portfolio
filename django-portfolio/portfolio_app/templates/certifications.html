@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+{% block title %}Certifications - Om Dhamal{% endblock %}
+
+{% block content %}
+<!-- Certifications Hero Section -->
+<section class="pt-32 pb-16 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
+    <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+    <div class="max-w-6xl mx-auto px-4 text-center relative z-10">
+        <div class="inline-block mb-6" data-aos="fade-down">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <span class="text-3xl">🎓</span>
+            </div>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6" data-aos="fade-up">
+            My <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Certifications</span>
+        </h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+            Continuous learning through recognized certifications and professional development courses.
+        </p>
+    </div>
+</section>
+
+<!-- Certifications Filter -->
+<section class="py-6 bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="flex flex-col md:flex-row gap-4 justify-between items-center">
+            <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                </svg>
+                Filter By
+            </h3>
+            <div class="flex flex-wrap gap-3">
+                <select id="typeFilter" class="bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition font-medium text-gray-700">
+                    <option value="">All Types</option>
+                    {% for type_value, type_label in cert_types %}
+                    <option value="{{ type_value }}" {% if current_type == type_value %}selected{% endif %}>
+                        {{ type_label }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <select id="levelFilter" class="bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition font-medium text-gray-700">
+                    <option value="">All Levels</option>
+                    {% for level_value, level_label in level_choices %}
+                    <option value="{{ level_value }}" {% if current_level == level_value %}selected{% endif %}>
+                        {{ level_label }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <button id="clearFilters" class="text-gray-600 hover:text-indigo-600 font-semibold transition text-sm px-4 py-2 hover:bg-gray-50 rounded-lg">
+                    Clear
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Certifications -->
+{% if featured_certifications %}
+<section class="py-16 bg-white">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="flex items-center justify-center gap-3 mb-12" data-aos="fade-up">
+            <div class="h-px w-12 bg-gradient-to-r from-transparent to-indigo-600"></div>
+            <h2 class="text-3xl font-bold text-gray-900">Featured</h2>
+            <div class="h-px w-12 bg-gradient-to-l from-transparent to-indigo-600"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for cert in featured_certifications %}
+            <div class="group bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-700 rounded-xl text-white overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition duration-300" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <div class="p-7 h-72 flex flex-col justify-between relative">
+                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-5 transition"></div>
+                    <div class="relative z-10">
+                        <div class="flex gap-2 mb-4">
+                            <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-bold">
+                                {{ cert.get_certification_type_display }}
+                            </span>
+                            <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-bold">
+                                {{ cert.get_skill_level_display }}
+                            </span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 line-clamp-2">{{ cert.title }}</h3>
+                        <p class="text-blue-100 font-semibold mb-3 text-sm">{{ cert.issuing_organization }}</p>
+                        <p class="text-blue-100 text-sm leading-relaxed line-clamp-3">{{ cert.description|truncatewords:15 }}</p>
+                    </div>
+                    <div class="flex justify-between items-center relative z-10">
+                        <span class="text-blue-100 text-xs font-medium">
+                            {{ cert.issue_date|date:"M Y" }}
+                        </span>
+                        {% if cert.credential_url %}
+                        <a href="{{ cert.credential_url }}" target="_blank" class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 transition text-sm">
+                            Verify
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- All Certifications -->
+<section class="py-16 bg-gray-50">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="flex items-center justify-center gap-3 mb-12" data-aos="fade-up">
+            <div class="h-px w-12 bg-gradient-to-r from-transparent to-gray-400"></div>
+            <h2 class="text-3xl font-bold text-gray-900">All Certifications</h2>
+            <div class="h-px w-12 bg-gradient-to-l from-transparent to-gray-400"></div>
+        </div>
+        
+        <div class="space-y-5">
+            {% for cert in certifications %}
+            <div class="group bg-white rounded-xl shadow-sm p-6 border border-gray-200 hover:border-indigo-300 hover:shadow-md transition duration-300" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:50 }}">
+                <div class="flex flex-col lg:flex-row gap-6">
+                    <!-- Certification Info -->
+                    <div class="flex-1">
+                        <div class="flex flex-wrap gap-3 items-start justify-between mb-3">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-1 group-hover:text-indigo-600 transition">{{ cert.title }}</h3>
+                                <p class="text-base text-indigo-600 font-semibold">{{ cert.issuing_organization }}</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-lg border border-blue-200">
+                                    {{ cert.get_certification_type_display }}
+                                </span>
+                                <span class="bg-green-50 text-green-700 text-xs font-bold px-3 py-1 rounded-lg border border-green-200">
+                                    {{ cert.get_skill_level_display }}
+                                </span>
+                                {% if cert.featured %}
+                                <span class="bg-purple-50 text-purple-700 text-xs font-bold px-3 py-1 rounded-lg border border-purple-200">
+                                    Featured
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-600 text-sm mb-4 leading-relaxed">{{ cert.description }}</p>
+                        
+                        <!-- Skills Covered -->
+                        {% if cert.get_skills_list %}
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-gray-900 mb-2 text-xs uppercase tracking-wide">Skills Covered</h4>
+                            <div class="flex flex-wrap gap-2">
+                                {% for skill in cert.get_skills_list %}
+                                <span class="bg-gray-50 text-gray-700 text-xs font-medium px-2.5 py-1 rounded-md border border-gray-200">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Dates and Credentials -->
+                        <div class="flex flex-wrap gap-5 text-xs text-gray-600">
+                            <div class="flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span class="font-medium">Issued {{ cert.issue_date|date:"M Y" }}</span>
+                            </div>
+                            {% if cert.expiration_date %}
+                            <div class="flex items-center gap-1.5 {% if cert.is_expiring_soon %}text-orange-600{% elif cert.is_expired %}text-red-600{% endif %}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="font-medium">Expires {{ cert.expiration_date|date:"M Y" }}</span>
+                            </div>
+                            {% endif %}
+                            {% if cert.credential_id %}
+                            <div class="flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+                                </svg>
+                                <span class="font-medium">ID: {{ cert.credential_id }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="flex flex-row lg:flex-col gap-2.5 lg:min-w-[140px]">
+                        {% if cert.credential_url %}
+                        <a href="{{ cert.credential_url }}" target="_blank" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition text-center text-sm whitespace-nowrap">
+                            Verify
+                        </a>
+                        {% endif %}
+                        {% if cert.certificate_image %}
+                        <a href="{{ cert.certificate_image.url }}" target="_blank" class="bg-white border border-gray-300 text-gray-700 px-5 py-2.5 rounded-lg font-semibold hover:border-indigo-400 hover:bg-gray-50 transition text-center text-sm whitespace-nowrap">
+                            View
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-16">
+                <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <span class="text-4xl">📜</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-700 mb-2">No certifications found</h3>
+                <p class="text-gray-500 mb-6 text-sm">Try adjusting your filters to see more certifications.</p>
+                <button id="clearFiltersEmpty" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition">
+                    Clear Filters
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+    <div class="max-w-4xl mx-auto text-center px-4 relative z-10">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4" data-aos="fade-up">View My Achievements</h2>
+        <p class="text-lg md:text-xl mb-8 opacity-90" data-aos="fade-up" data-aos-delay="100">
+            Check out my hackathon wins, competitions, and professional accomplishments.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center" data-aos="fade-up" data-aos-delay="200">
+            <a href="{% url 'achievements' %}" class="bg-white text-indigo-600 px-8 py-3.5 rounded-xl font-semibold hover:bg-gray-50 hover:shadow-xl transform hover:-translate-y-1 transition">
+                View Achievements
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+.bg-grid-pattern {
+    background-image: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Certifications page JavaScript loaded");
+    
+    const typeFilter = document.getElementById('typeFilter');
+    const levelFilter = document.getElementById('levelFilter');
+    const clearFilters = document.getElementById('clearFilters');
+    const clearFiltersEmpty = document.getElementById('clearFiltersEmpty');
+
+    function updateFilters() {
+        console.log("Update filters called");
+        console.log("Type:", typeFilter ? typeFilter.value : "N/A");
+        console.log("Level:", levelFilter ? levelFilter.value : "N/A");
+        
+        const params = new URLSearchParams();
+        
+        if (typeFilter && typeFilter.value) {
+            params.set('type', typeFilter.value);
+        }
+        
+        if (levelFilter && levelFilter.value) {
+            params.set('level', levelFilter.value);
+        }
+        
+        const queryString = params.toString();
+        console.log("Query string:", queryString);
+        
+        const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+        console.log("Redirecting to:", newUrl);
+        window.location.href = newUrl;
+    }
+
+    if (typeFilter) {
+        console.log("Type filter found, adding event listener");
+        typeFilter.addEventListener('change', updateFilters);
+    }
+    
+    if (levelFilter) {
+        console.log("Level filter found, adding event listener");
+        levelFilter.addEventListener('change', updateFilters);
+    }
+
+    if (clearFilters) {
+        clearFilters.addEventListener('click', function() {
+            console.log("Clear filters clicked");
+            window.location.href = window.location.pathname;
+        });
+    }
+
+    if (clearFiltersEmpty) {
+        clearFiltersEmpty.addEventListener('click', function() {
+            console.log("Clear filters empty clicked");
+            window.location.href = window.location.pathname;
+        });
+    }
+});
+</script>
+{% endblock %}
