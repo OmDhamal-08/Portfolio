@@ -37,7 +37,7 @@ The website uses Django's MVT (Model-View-Template) architecture with PostgreSQL
                 'status': 'completed',
                 'tech_stack': 'Django, Python, PostgreSQL, Tailwind CSS, Alpine.js, JavaScript',
                 'github_link': 'https://github.com/OmDhamal-08/Portfolio',
-                'documentation_link': 'https://portfolio-five-nu-11.vercel.app/',
+                'live_demo': 'https://portfolio-five-nu-11.vercel.app/',
                 'start_date': datetime(2024, 1, 10),
                 'end_date': datetime(2024, 2, 20),
                 'featured': True,
@@ -76,7 +76,7 @@ This system can help healthcare providers and individuals prepare for heat-relat
                 'status': 'completed',
                 'tech_stack': 'Python, Scikit-learn, TensorFlow, Django REST Framework, React.js',
                 'github_link': 'https://github.com/OmDhamal-08/heart-disease-app',
-                'documentation_link': 'https://heart-disease-app-00sv.onrender.com/',
+                'live_demo': 'https://heart-disease-app-00sv.onrender.com/',
                 'start_date': datetime(2023, 11, 5),
                 'end_date': datetime(2024, 1, 15),
                 'featured': True,
@@ -152,7 +152,7 @@ This system can help healthcare providers and individuals prepare for heat-relat
                 'status': 'completed',
                 'tech_stack': 'Django, Django REST Framework, React.js, Chart.js, PostgreSQL',
                 'github_link': 'https://github.com/OmDhamal-08/expense-tracker',
-                'documentation_link': 'https://github.com/OmDhamal-08/expense-tracker/wiki',
+                'live_demo': 'https://github.com/OmDhamal-08/expense-tracker/wiki',
                 'start_date': datetime(2023, 8, 10),
                 'end_date': datetime(2023, 10, 5),
                 'featured': True,
@@ -212,4 +212,5 @@ This system can help healthcare providers and individuals prepare for heat-relat
         
 
         self.stdout.write(self.style.SUCCESS(f'Successfully created {len(complete_projects)} projects with complete information'))
+
 
