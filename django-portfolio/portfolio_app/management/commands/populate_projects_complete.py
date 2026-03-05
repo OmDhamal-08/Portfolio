@@ -152,7 +152,7 @@ This system can help healthcare providers and individuals prepare for heat-relat
                 'status': 'completed',
                 'tech_stack': 'Django, Django REST Framework, React.js, Chart.js, PostgreSQL',
                 'github_link': 'https://github.com/OmDhamal-08/expense-tracker',
-                # 'documentation_link': 'https://github.com/OmDhamal-08/expense-tracker/wiki',
+                'documentation_link': 'https://github.com/OmDhamal-08/expense-tracker/wiki',
                 'start_date': datetime(2023, 8, 10),
                 'end_date': datetime(2023, 10, 5),
                 'featured': True,
@@ -212,3 +212,4 @@ This system can help healthcare providers and individuals prepare for heat-relat
         
 
         self.stdout.write(self.style.SUCCESS(f'Successfully created {len(complete_projects)} projects with complete information'))
+
