@@ -37,6 +37,7 @@ The website uses Django's MVT (Model-View-Template) architecture with PostgreSQL
                 'status': 'completed',
                 'tech_stack': 'Django, Python, PostgreSQL, Tailwind CSS, Alpine.js, JavaScript',
                 'github_link': 'https://github.com/OmDhamal-08/Portfolio',
+                'documentation_link': 'https://portfolio-five-nu-11.vercel.app/',
                 'start_date': datetime(2024, 1, 10),
                 'end_date': datetime(2024, 2, 20),
                 'featured': True,
@@ -209,4 +210,5 @@ This system can help healthcare providers and individuals prepare for heat-relat
                     self.style.ERROR(f'Error creating {project_data["title"]}: {str(e)}')
                 )
         
+
         self.stdout.write(self.style.SUCCESS(f'Successfully created {len(complete_projects)} projects with complete information'))
