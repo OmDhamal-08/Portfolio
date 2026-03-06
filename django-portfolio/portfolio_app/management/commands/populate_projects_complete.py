@@ -213,4 +213,3 @@ This system can help healthcare providers and individuals prepare for heat-relat
 
         self.stdout.write(self.style.SUCCESS(f'Successfully created {len(complete_projects)} projects with complete information'))
 
-
