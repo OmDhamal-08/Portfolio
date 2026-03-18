@@ -17,7 +17,7 @@
   <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-pink-600 rounded-full blur-lg opacity-50 group-hover:opacity-75 transition duration-500"></div>
   <div class="relative w-36 h-36 bg-gradient-to-br from-purple-600 via-blue-600 to-pink-600 rounded-full p-1 group-hover:scale-110 transition duration-500">
     <div class="w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden">
-        <img src="https://raw.githubusercontent.com/OmDhamal-08/Portfolio/main/assets/profile.jpeg" 
+      <img src="{% static 'images/profile.svg' %}" 
            alt="{{ name }}"
            class="w-full h-full rounded-full profile-headshot"
            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -459,7 +459,4 @@
   }
 </style>
 
-
 {% endblock %}
-
-

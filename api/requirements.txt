@@ -1,2 +1,2 @@
--r django-portfolio/requirements.txt
+-r ../django-portfolio/requirements.txt
 
