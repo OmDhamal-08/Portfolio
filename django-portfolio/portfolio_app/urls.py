@@ -9,7 +9,7 @@ urlpatterns = [
     path('projects/<slug:slug>/', views.project_detail, name='project_detail'),
     path('certifications/', views.certifications, name='certifications'),
     path('achievements/', views.achievements, name='achievements'),
-    path('education/', views.education, name='education'),  # Add this line
+    path('education/', views.education, name='education'),
     path('contact/', views.contact, name='contact'),
     path('download-resume/', views.download_resume, name='download_resume'),
 ]

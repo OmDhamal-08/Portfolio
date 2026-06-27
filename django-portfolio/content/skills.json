@@ -1,0 +1,182 @@
+[
+  {
+    "name": "Python",
+    "category": "programming",
+    "proficiency": 90,
+    "description": "Primary language for Django, automation, data processing, and machine learning projects.",
+    "icon": "\ud83d\udc0d",
+    "display_order": 1,
+    "is_active": true
+  },
+  {
+    "name": "C++",
+    "category": "programming",
+    "proficiency": 85,
+    "description": "Used for data structures, algorithms, and core programming practice.",
+    "icon": "\u2699\ufe0f",
+    "display_order": 2,
+    "is_active": true
+  },
+  {
+    "name": "JavaScript",
+    "category": "programming",
+    "proficiency": 30,
+    "description": "Used for small frontend interactions, filters, and UI behavior.",
+    "icon": "\ud83d\udcdc",
+    "display_order": 3,
+    "is_active": true
+  },
+  {
+    "name": "HTML",
+    "category": "programming",
+    "proficiency": 50,
+    "description": "Used for semantic page structure in Django templates.",
+    "icon": "\ud83c\udf10",
+    "display_order": 4,
+    "is_active": true
+  },
+  {
+    "name": "CSS",
+    "category": "programming",
+    "proficiency": 60,
+    "description": "Used with Tailwind and custom styling for responsive layouts.",
+    "icon": "\ud83c\udfa8",
+    "display_order": 5,
+    "is_active": true
+  },
+  {
+    "name": "Django",
+    "category": "framework",
+    "proficiency": 76,
+    "description": "Main backend framework for server-rendered pages, forms, admin, and deployment-ready web apps.",
+    "icon": "\ud83c\udfaf",
+    "display_order": 6,
+    "is_active": true
+  },
+  {
+    "name": "Tailwind CSS",
+    "category": "framework",
+    "proficiency": 50,
+    "description": "Utility-first CSS framework used to build responsive and polished UI quickly.",
+    "icon": "\ud83c\udfa8",
+    "display_order": 7,
+    "is_active": true
+  },
+  {
+    "name": "Bootstrap",
+    "category": "framework",
+    "proficiency": 30,
+    "description": "Used in earlier web projects for quick layout and component styling.",
+    "icon": "\ud83e\udde9",
+    "display_order": 8,
+    "is_active": true
+  },
+  {
+    "name": "React",
+    "category": "framework",
+    "proficiency": 35,
+    "description": "Basic understanding for component-based frontend development.",
+    "icon": "\u269b\ufe0f",
+    "display_order": 9,
+    "is_active": true
+  },
+  {
+    "name": "Pandas",
+    "category": "ml",
+    "proficiency": 90,
+    "description": "Used for tabular data cleaning, analysis, and ML preprocessing.",
+    "icon": "\ud83d\udc3c",
+    "display_order": 10,
+    "is_active": true
+  },
+  {
+    "name": "NumPy",
+    "category": "ml",
+    "proficiency": 90,
+    "description": "Used for numeric operations, arrays, and ML data preparation.",
+    "icon": "\ud83d\udd22",
+    "display_order": 11,
+    "is_active": true
+  },
+  {
+    "name": "Scikit-learn",
+    "category": "ml",
+    "proficiency": 80,
+    "description": "Used for supervised learning, model training, and evaluation workflows.",
+    "icon": "\ud83e\udd16",
+    "display_order": 12,
+    "is_active": true
+  },
+  {
+    "name": "TensorFlow",
+    "category": "ml",
+    "proficiency": 40,
+    "description": "Learning foundation for neural networks and deep learning experiments.",
+    "icon": "\ud83e\udde0",
+    "display_order": 13,
+    "is_active": true
+  },
+  {
+    "name": "Matplotlib",
+    "category": "ml",
+    "proficiency": 80,
+    "description": "Used to visualize data distributions, model results, and metrics.",
+    "icon": "\ud83d\udcca",
+    "display_order": 14,
+    "is_active": true
+  },
+  {
+    "name": "SQL",
+    "category": "database",
+    "proficiency": 50,
+    "description": "Used for understanding relational data, CRUD operations, and backend persistence.",
+    "icon": "\ud83d\uddc3\ufe0f",
+    "display_order": 15,
+    "is_active": true
+  },
+  {
+    "name": "SQLite",
+    "category": "database",
+    "proficiency": 45,
+    "description": "Used for local Django development and lightweight project databases.",
+    "icon": "\ud83d\uddc4\ufe0f",
+    "display_order": 16,
+    "is_active": true
+  },
+  {
+    "name": "Git",
+    "category": "tool",
+    "proficiency": 72,
+    "description": "Used for version control, source history, and deployment workflows.",
+    "icon": "\ud83d\udcda",
+    "display_order": 19,
+    "is_active": true
+  },
+  {
+    "name": "Vercel",
+    "category": "cloud",
+    "proficiency": 62,
+    "description": "Used to deploy the Django portfolio through a Python WSGI runtime.",
+    "icon": "\u25b2",
+    "display_order": 20,
+    "is_active": true
+  },
+  {
+    "name": "Render",
+    "category": "cloud",
+    "proficiency": 55,
+    "description": "Used for deploying Python and machine learning web applications.",
+    "icon": "\u2601\ufe0f",
+    "display_order": 21,
+    "is_active": true
+  },
+  {
+    "name": "AWS",
+    "category": "cloud",
+    "proficiency": 35,
+    "description": "Foundational cloud knowledge from workshops and learning projects.",
+    "icon": "\u2601\ufe0f",
+    "display_order": 22,
+    "is_active": true
+  }
+]

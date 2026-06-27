@@ -90,7 +90,7 @@
                             {{ cert.issue_date|date:"M Y" }}
                         </span>
                         {% if cert.credential_url %}
-                        <a href="{{ cert.credential_url }}" target="_blank" class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 transition text-sm">
+                        <a href="{{ cert.credential_url }}" target="_blank" rel="noopener noreferrer" class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 transition text-sm">
                             Verify
                         </a>
                         {% endif %}
@@ -182,12 +182,12 @@
                     <!-- Actions -->
                     <div class="flex flex-row lg:flex-col gap-2.5 lg:min-w-[140px]">
                         {% if cert.credential_url %}
-                        <a href="{{ cert.credential_url }}" target="_blank" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition text-center text-sm whitespace-nowrap">
+                        <a href="{{ cert.credential_url }}" target="_blank" rel="noopener noreferrer" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition text-center text-sm whitespace-nowrap">
                             Verify
                         </a>
                         {% endif %}
                         {% if cert.certificate_image %}
-                        <a href="{{ cert.certificate_image.url }}" target="_blank" class="bg-white border border-gray-300 text-gray-700 px-5 py-2.5 rounded-lg font-semibold hover:border-indigo-400 hover:bg-gray-50 transition text-center text-sm whitespace-nowrap">
+                        <a href="{{ cert.certificate_image.url }}" target="_blank" rel="noopener noreferrer" class="bg-white border border-gray-300 text-gray-700 px-5 py-2.5 rounded-lg font-semibold hover:border-indigo-400 hover:bg-gray-50 transition text-center text-sm whitespace-nowrap">
                             View
                         </a>
                         {% endif %}

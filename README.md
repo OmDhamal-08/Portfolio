@@ -1,40 +1,125 @@
-## Django Portfolio – Vercel Deployment
+# Django Portfolio
 
-This is a Django portfolio web application configured to run on Vercel using the Python (WSGI) runtime.
+Personal portfolio web application built with Django and deployed through
+Vercel's Python WSGI runtime.
 
-### Project structure
+## Architecture
 
-- **Root**: `vercel.json`, `api/wsgi.py`, deployment docs (`README.md`), legacy Render scripts (`render.yaml`, `build.sh`, `start.sh`, `runtime.txt`)
-- **Django project**: `django-portfolio/`
-  - Django settings and URLs in `core/`
-  - Application code in `portfolio_app/`
+This project uses a hybrid content architecture:
 
-### Local development
+- Portfolio content is loaded directly from JSON files in `django-portfolio/content/`.
+- The database is kept only for Django admin authentication/session tables, contact messages, and resume uploads.
+- Django views convert file-backed content into template-friendly objects.
+- Templates render responsive server-side pages using Tailwind utility classes.
+- WhiteNoise serves static files from the Django app.
 
-1. Create and activate a virtual environment (Python 3.11 or newer).
+## Project Structure
+
+- `vercel.json` routes requests to the Django WSGI entrypoint.
+- `api/wsgi.py` exposes the Django app to Vercel.
+- `django-portfolio/core/` contains Django settings and project URLs.
+- `django-portfolio/content/` contains file-backed portfolio data.
+- `django-portfolio/portfolio_app/content_loader.py` loads and validates JSON content.
+- `django-portfolio/portfolio_app/models.py` contains only database-backed operational models.
+- `django-portfolio/portfolio_app/views.py` renders pages using file content plus database-backed contact/resume flows.
+- `django-portfolio/static/` contains local static assets such as the profile image and resume fallback.
+
+## Local Development
+
+1. Create and activate a virtual environment.
 2. Install dependencies:
-   - `cd django-portfolio`
-   - `pip install -r requirements.txt`
-3. Create a `.env` file next to `manage.py` (inside `django-portfolio`) with at least:
-   - `SECRET_KEY=your-secret-key`
-   - `DEBUG=True`
-   - Optionally: `DATABASE_URL`, `CUSTOM_DOMAIN`, `EMAIL_*`, `DEFAULT_FROM_EMAIL`, `REDIS_URL`
-4. Apply migrations and run the server:
-   - `python manage.py migrate`
-   - `python manage.py runserver`
 
-### Deploying to Vercel
+   ```bash
+   cd django-portfolio
+   pip install -r requirements.txt
+   ```
 
-1. Push this project to a Git repository (GitHub, GitLab, etc.).
-2. In the Vercel dashboard, import the repository as a new project.
-3. In **Project Settings → Environment Variables**, configure at least:
-   - `SECRET_KEY`
-   - `DEBUG` set to `False`
-   - Optional: `DATABASE_URL`, `CUSTOM_DOMAIN`, `EMAIL_*`, `DEFAULT_FROM_EMAIL`, `REDIS_URL`
-4. Ensure the root directory is the repository root (where `vercel.json` and `api/` live).
-5. Trigger a deployment. Vercel will:
-   - Install Python dependencies from `django-portfolio/requirements.txt`
-   - Use `api/wsgi.py` as the WSGI entrypoint (see `vercel.json`)
+3. Create `django-portfolio/.env`:
 
-All incoming requests are routed to the Django application, which serves both dynamic content and static files via WhiteNoise.
+   ```env
+   DEBUG=True
+   SECRET_KEY=local-dev-secret
+   ```
 
+4. Apply migrations:
+
+   ```bash
+   python manage.py migrate
+   ```
+
+5. Validate file-backed content:
+
+   ```bash
+   python manage.py validate_content
+   ```
+
+6. Run the app:
+
+   ```bash
+   python manage.py runserver
+   ```
+
+## Editing Portfolio Content
+
+Edit these files directly:
+
+- `django-portfolio/content/projects.json`
+- `django-portfolio/content/certifications.json`
+- `django-portfolio/content/achievements.json`
+- `django-portfolio/content/education.json`
+- `django-portfolio/content/skills.json`
+
+For images or PDFs, put assets in `django-portfolio/static/` and reference them
+with paths relative to that folder, for example:
+
+```json
+"featured_image": "images/projects/example.png"
+```
+
+## Database Usage
+
+The database is intentionally limited to operational data:
+
+- Django admin users, permissions, and sessions
+- `ContactMessage`
+- `Resume`
+
+Projects, certifications, achievements, education, and skills do not use
+database tables anymore.
+
+## Vercel Environment Variables
+
+Set these in Vercel Project Settings:
+
+- `SECRET_KEY`
+- `DEBUG=False`
+- `DATABASE_URL`
+- `CUSTOM_DOMAIN` if using a custom domain
+- `EMAIL_HOST`
+- `EMAIL_PORT`
+- `EMAIL_USE_TLS`
+- `EMAIL_HOST_USER`
+- `EMAIL_HOST_PASSWORD`
+- `DEFAULT_FROM_EMAIL`
+- `CONTACT_EMAIL`
+
+`DATABASE_URL` is still required in production because Django admin, contact
+messages, and resume uploads use the database.
+
+After creating the production database, run migrations once with `DATABASE_URL`
+pointed at that database:
+
+```bash
+cd django-portfolio
+python manage.py migrate
+```
+
+## Backend Summary
+
+The app uses Django's model-view-template pattern:
+
+- Views load portfolio content from JSON files.
+- The content loader gives templates model-like objects with display helpers.
+- Contact messages are stored in the database and reviewed from Django admin.
+- Resume PDFs can be uploaded from Django admin, with one active version served by the download endpoint.
+- Templates render responsive pages with loops, filters, conditionals, and reusable layout blocks.

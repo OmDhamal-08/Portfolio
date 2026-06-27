@@ -17,7 +17,7 @@
   <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-pink-600 rounded-full blur-lg opacity-50 group-hover:opacity-75 transition duration-500"></div>
   <div class="relative w-36 h-36 bg-gradient-to-br from-purple-600 via-blue-600 to-pink-600 rounded-full p-1 group-hover:scale-110 transition duration-500">
     <div class="w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden">
-      <img src="https://raw.githubusercontent.com/OmDhamal-08/Portfolio/main/django-portfolio/static/images/profile.jpg" 
+      <img src="{% static 'images/profile.jpg' %}"
            alt="{{ name }}"
            class="w-full h-full rounded-full profile-headshot"
            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -73,7 +73,7 @@
 <!-- Quick Stats Section -->
 <section class="py-20 bg-white">
   <div class="max-w-6xl mx-auto px-4">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
       {% for stat in quick_stats %}
       <div class="group text-center p-8 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 hover:shadow-2xl hover:from-purple-50 hover:to-blue-50 transition-all duration-300 hover:scale-110" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
         <div class="text-5xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition duration-300">
@@ -96,10 +96,10 @@
         </h2>
         <div class="w-20 h-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full mb-6"></div>
         <p class="text-lg text-gray-600 mb-6 leading-relaxed">
-          I'm a passionate AI/ML Engineer and Django Developer with expertise in building scalable web applications and intelligent machine learning solutions. I love turning complex problems into simple, beautiful designs.
+          I'm a Computer Science student building practical Django and machine learning projects. I enjoy turning learning into real applications with clean backend logic and simple user experiences.
         </p>
         <p class="text-lg text-gray-600 mb-8 leading-relaxed">
-          With experience in both frontend and backend development, I create seamless user experiences powered by robust, efficient code. My goal is to build technology that makes a difference.
+          This portfolio is also one of my backend projects: portfolio pages load from external JSON content files, while the database is kept for contact messages, admin login, and resume uploads.
         </p>
         <div class="flex flex-col sm:flex-row gap-4">
           <a href="{% url 'about' %}" class="group bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300 text-center">
@@ -249,7 +249,7 @@
           <div class="flex justify-between items-center">
             <span class="text-purple-100 text-sm">{{ cert.issue_date|date:"M Y" }}</span>
             {% if cert.credential_url %}
-            <a href="{{ cert.credential_url }}" target="_blank" class="bg-white text-purple-600 px-3 py-1 rounded-lg text-sm font-semibold hover:bg-purple-50 hover:scale-110 transition-all duration-300">
+            <a href="{{ cert.credential_url }}" target="_blank" rel="noopener noreferrer" class="bg-white text-purple-600 px-3 py-1 rounded-lg text-sm font-semibold hover:bg-purple-50 hover:scale-110 transition-all duration-300">
               Verify
             </a>
             {% endif %}
