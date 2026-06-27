@@ -133,7 +133,8 @@ Example:
 
 For local development, use `DEBUG=True` and SQLite.
 
-For Vercel or any production environment, set:
+For Vercel or any production environment, add these in
+`Project Settings -> Environment Variables`:
 
 ```env
 DEBUG=False
@@ -142,6 +143,15 @@ DATABASE_URL=your-production-database-url
 CONTACT_EMAIL=your-email@example.com
 DEFAULT_FROM_EMAIL=your-email@example.com
 ```
+
+You can generate a Django secret key locally with:
+
+```powershell
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+If you connect Vercel Postgres, Vercel may provide `POSTGRES_URL`
+automatically. The app accepts either `DATABASE_URL` or `POSTGRES_URL`.
 
 Optional email settings:
 

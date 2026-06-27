@@ -14,6 +14,14 @@ def env_bool(name, default=False):
     return os.environ.get(name, str(default)).strip().lower() in {'1', 'true', 'yes', 'on'}
 
 
+def first_env(*names):
+    for name in names:
+        value = os.environ.get(name)
+        if value:
+            return value
+    return None
+
+
 DEBUG = env_bool('DEBUG', False)
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -21,7 +29,9 @@ if not SECRET_KEY:
     if DEBUG:
         SECRET_KEY = 'django-insecure-local-development-only-change-me'
     else:
-        raise ImproperlyConfigured('SECRET_KEY must be set when DEBUG=False.')
+        raise ImproperlyConfigured(
+            'SECRET_KEY must be set when DEBUG=False. Add SECRET_KEY in Vercel Environment Variables.'
+        )
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -78,7 +88,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = first_env('DATABASE_URL', 'POSTGRES_URL', 'POSTGRES_URL_NON_POOLING')
 if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(
@@ -95,7 +105,10 @@ elif DEBUG:
         }
     }
 else:
-    raise ImproperlyConfigured('DATABASE_URL must be set when DEBUG=False.')
+    raise ImproperlyConfigured(
+        'DATABASE_URL or POSTGRES_URL must be set when DEBUG=False. '
+        'Connect a managed Postgres database in Vercel or add the connection string manually.'
+    )
 
 AUTH_PASSWORD_VALIDATORS = [
     {
