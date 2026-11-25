@@ -42,7 +42,10 @@
         <div class="mt-auto pt-5">
           <div class="flex items-center justify-between gap-3 border-t border-line pt-4">
             {% if cert.credential_id %}<span class="truncate font-mono text-xs text-muted" title="Credential ID">ID: {{ cert.credential_id }}</span>{% else %}<span></span>{% endif %}
-            {% if cert.credential_url %}<a href="{{ cert.credential_url }}" target="_blank" rel="noopener noreferrer" class="link-accent shrink-0 text-sm">Verify <span class="arrow" aria-hidden="true">&rarr;</span></a>{% endif %}
+            <span class="flex shrink-0 items-center gap-4">
+              {% if cert.certificate_file %}<a href="{{ cert.certificate_file.url }}" target="_blank" rel="noopener" class="link-accent text-sm">Certificate</a>{% endif %}
+              {% if cert.credential_url %}<a href="{{ cert.credential_url }}" target="_blank" rel="noopener noreferrer" class="link-accent text-sm">Verify <span class="arrow" aria-hidden="true">&rarr;</span></a>{% endif %}
+            </span>
           </div>
         </div>
       </article>

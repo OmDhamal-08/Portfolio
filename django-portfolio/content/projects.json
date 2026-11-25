@@ -1,5 +1,289 @@
 [
   {
+    "title": "ShopMind AI - Agentic Commerce Assistant",
+    "slug": "shopmind-ai",
+    "short_description": "A shopping assistant agent built at the Razorpay hackathon. It looks up real products through tool calls instead of guessing, asks the shopper before touching the cart or payment, and records every step so the store owner can see why it acted.",
+    "description": "ShopMind AI is an agentic e-commerce assistant built for the Razorpay hackathon (AI growth and agentic commerce track). Instead of a prompt-only chatbot, it runs a bounded agent loop: the model has no product knowledge of its own and must call tools to search, compare and check stock in a live PostgreSQL catalog.\n\nKey features:\n- Agent loop with tool calling (search_products, compare_products, get_stock), capped at 10 tool calls per turn.\n- Human-in-the-loop: add_to_cart and initiate_checkout pause and wait for the shopper to confirm.\n- Full AI audit trail: every tool input, output and approval is stored in PostgreSQL.\n- Razorpay checkout with server-side pricing, row-level stock locking and signed webhooks.\n- Merchant dashboard with an AI Decision Trace, revenue and upsell metrics.\n- Campaign agent that looks at abandoned carts and drafts recovery nudges.\n- Machine-readable /api/agent-catalog endpoint so other AI agents can discover and buy products.\n- Gemini key pool with round-robin rotation and automatic failover on 429 quota errors.",
+    "role": "Hackathon team project - agent loop, tools and backend",
+    "problem": "Shopping chatbots often make up products, prices or stock, and letting an AI move money without asking is risky. Merchants also cannot see why the AI recommended something.",
+    "solution": "An agent that can only answer from verified tool results, must ask the shopper before cart or checkout actions, and records every step so the merchant can review the AI's decisions on a dashboard.",
+    "architecture": [
+      "Shopper chat UI, merchant dashboard and external AI agents call a FastAPI backend (Vercel serverless)",
+      "/api/chat runs the agent loop: Gemini decides which tool to call, the backend runs it and returns the result",
+      "Money-moving tools pause the loop until the shopper confirms through /api/chat/confirm",
+      "Conversation state, products, orders and the ai_actions audit log live in PostgreSQL (Supabase)",
+      "Checkout creates a Razorpay order with server-side prices, verifies the HMAC signature and locks stock rows with FOR UPDATE"
+    ],
+    "challenges": [
+      {
+        "challenge": "The LLM could invent products or prices.",
+        "fix": "Gave it no built-in catalog knowledge, so every product fact has to come from a tool call against the database."
+      },
+      {
+        "challenge": "Free-tier Gemini keys hit 429 quota errors during demos.",
+        "fix": "Built a thread-safe key pool with round-robin rotation and cooldowns. History is stored in Postgres, so switching keys loses no context."
+      },
+      {
+        "challenge": "Two shoppers buying the last item at the same time could oversell stock.",
+        "fix": "Stock is decremented inside a transaction with SELECT ... FOR UPDATE row locking."
+      },
+      {
+        "challenge": "Raw API errors and tracebacks were leaking into the chat.",
+        "fix": "Added an error sanitizer that shows friendly messages to users and keeps full tracebacks in server logs."
+      }
+    ],
+    "results": [
+      "Working agent that searches, compares, adds to cart and checks out through Razorpay test mode",
+      "Merchant dashboard showing an AI Decision Trace for every recommendation",
+      "Deployed live on Vercel"
+    ],
+    "learnings": [
+      "Designing tool schemas and a bounded agent loop",
+      "Human-in-the-loop confirmation for risky actions",
+      "Payment verification, webhooks and transactional stock updates",
+      "Handling LLM rate limits in production"
+    ],
+    "next_steps": [
+      "Add evaluation tests for agent tool choices",
+      "Support more product categories and personalised recommendations"
+    ],
+    "project_type": "ai",
+    "status": "completed",
+    "technologies": [
+      "Python",
+      "FastAPI",
+      "Gemini API",
+      "PostgreSQL",
+      "Razorpay",
+      "Agentic AI",
+      "Tool Calling",
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "Vercel"
+    ],
+    "github_link": "https://github.com/OmDhamal-08/Agent",
+    "live_demo": "https://shopymind.vercel.app/",
+    "documentation_link": "",
+    "featured_image": "",
+    "additional_images": [],
+    "start_date": null,
+    "end_date": null,
+    "featured": true,
+    "is_active": true,
+    "display_order": 1
+  },
+  {
+    "title": "Linkdine AI - LinkedIn Content Generation Platform",
+    "slug": "linkdine-ai",
+    "short_description": "Turns a short note about your project or internship into a LinkedIn post. It first pulls proven writing patterns from a knowledge base (RAG), then checks and scores what the model writes.",
+    "description": "Linkdine AI helps students and professionals write better LinkedIn posts. You either describe something you did (a project, an internship, a certification) and it writes the post, or you paste a draft and it explains what is weak and rewrites it.\n\nUnder the hood it is a RAG pipeline: before calling the LLM, it retrieves writing patterns (hook styles, structures, keywords, CTAs) from a knowledge base and uses them to guide generation.\n\nKey features:\n- Generate a post from a form: what you did, tools used, tone, audience and length.\n- Enhance a draft: hook, readability, keyword and structure analysis, suggestions and a rewrite.\n- Quality score for every post (hook, keywords, readability, structure).\n- Post history with edit, copy and delete.\n- Free and Premium plans with daily usage limits.\n- Admin panel to upload CSV/JSON datasets into the knowledge base.\n- Pluggable providers: mock, OpenAI or Anthropic, with an optional fallback provider.",
+    "role": "Solo developer - backend, RAG pipeline, frontend",
+    "problem": "Students know what they built but struggle to write LinkedIn posts that are clear and engaging. Plain LLM prompts give generic posts that all sound the same.",
+    "solution": "A full-stack app that grounds generation in real writing patterns retrieved from a knowledge base, validates the output, and scores it, with auth, plans and an admin panel around it.",
+    "architecture": [
+      "Next.js frontend calls a FastAPI REST API (/api/v1) with JWT auth",
+      "The request is analysed for topic, category and keywords, then embedded",
+      "Hybrid retrieval: pgvector similarity re-ranked with keyword overlap and metadata matches, top K kept",
+      "Top results become \"content intelligence\" (common hooks, structure, CTA style) inside a structured prompt",
+      "The LLM output is validated (length, spam, repetition, made-up numbers, prompt leakage), retried once if bad, then scored and saved"
+    ],
+    "challenges": [
+      {
+        "challenge": "Pure vector search on a small dataset returned noisy matches.",
+        "fix": "Added hybrid re-ranking that combines vector score, keyword overlap and metadata with configurable weights."
+      },
+      {
+        "challenge": "Storing other people's posts raises privacy concerns.",
+        "fix": "The ingestion pipeline cleans text, redacts PII, removes duplicates and keeps only embeddings and derived metadata."
+      },
+      {
+        "challenge": "User input and retrieved text could be used for prompt injection.",
+        "fix": "Both are treated as untrusted and kept in separate prompt sections, and the output is checked for prompt leakage."
+      },
+      {
+        "challenge": "Development and tests should not need paid API keys.",
+        "fix": "Put every provider behind an interface, with a mock LLM and local hashing embeddings, so the full app runs offline."
+      }
+    ],
+    "results": [
+      "118 automated tests (95 backend with Pytest, 23 frontend with Vitest)",
+      "Precision@5 of about 0.87 on the synthetic RAG evaluation set",
+      "OpenAI and Anthropic support with automatic fallback"
+    ],
+    "learnings": [
+      "How retrieval, prompt design and output validation fit together",
+      "Hybrid search with pgvector",
+      "Privacy-aware data ingestion",
+      "Testing a full-stack AI app end to end"
+    ],
+    "next_steps": [
+      "Curate a larger, real and licensed dataset",
+      "Add a cross-encoder reranker and better semantic embeddings",
+      "Move tokens to httpOnly cookies and add real payments"
+    ],
+    "project_type": "ai",
+    "status": "completed",
+    "technologies": [
+      "Python",
+      "FastAPI",
+      "Next.js",
+      "TypeScript",
+      "PostgreSQL",
+      "pgvector",
+      "RAG",
+      "LLM",
+      "Claude API",
+      "OpenAI API",
+      "Pytest",
+      "Docker"
+    ],
+    "github_link": "https://github.com/OmDhamal-08/Linked_AI",
+    "live_demo": "",
+    "documentation_link": "",
+    "featured_image": "",
+    "additional_images": [],
+    "start_date": null,
+    "end_date": null,
+    "featured": true,
+    "is_active": true,
+    "display_order": 2
+  },
+  {
+    "title": "ZonePredict AI - PUBG Safe-Zone Prediction",
+    "slug": "zonepredict-ai",
+    "short_description": "Uses 438 real PUBG matches to test whether machine learning can guess where the next safe zone will be. Seven models are compared against a simple baseline, and the results can be explored on a clickable map.",
+    "description": "Can machine learning predict where the next safe zone will appear in PUBG: BATTLEGROUNDS? This project answers that with 438 real PC matches from the official PUBG Developer API, 7 ML and deep learning models and an interactive dashboard.\n\nKey features:\n- Data pipeline from raw match telemetry to 3,737 validated zone circles and 2,861 leakage-free training rows, split by match.\n- 7 models compared: Linear Regression, Random Forest, Extra Trees, Gradient Boosting, XGBoost, LSTM and GRU.\n- Evaluation on 65 unseen matches against a simple baseline.\n- Streamlit + Plotly dashboard where users click on the map to mark zones; it detects the zone number from the fixed zone sizes and blocks predictions when a zone is missing.\n- 18 unit tests and 12 notebooks from data collection to final comparison.\n\nResult in short:\n- The next zone radius is predicted almost exactly (0.05 m error) because PUBG uses a fixed shrink schedule.\n- For the zone centre, no model beats the baseline. Every model reaches R2 = 0.99, but so does the baseline, so the project measures real skill against the baseline instead of trusting R2.",
+    "role": "Solo developer - data collection, ML, dashboard",
+    "problem": "Players guess where the next safe zone will appear. I wanted to test, with real data, whether ML can actually predict it.",
+    "solution": "Collected real match telemetry, built a leakage-free dataset, trained and compared 7 models against a baseline, and shipped the results in an interactive dashboard.",
+    "architecture": [
+      "PUBG Developer API: 438 matches downloaded with an API client",
+      "Zone extractor reads LogGameStatePeriodic telemetry into 3,737 validated zone circles",
+      "Feature engineering builds 2,861 rows, split by match so no match appears in both train and test",
+      "Baselines, Linear Regression, Random Forest, Extra Trees, Gradient Boosting and XGBoost, plus LSTM and GRU in TensorFlow/Keras",
+      "Evaluation on 65 unseen matches, shown in a Streamlit + Plotly dashboard"
+    ],
+    "challenges": [
+      {
+        "challenge": "Rows from the same match in both train and test sets would leak information.",
+        "fix": "Split the data by match, not by row."
+      },
+      {
+        "challenge": "R2 = 0.99 looked like a great result.",
+        "fix": "Compared every model with a simple baseline and showed the baseline scores the same, so R2 hid that there was no real skill for zone position."
+      },
+      {
+        "challenge": "Users could mark zones out of order or skip one in the dashboard.",
+        "fix": "The dashboard detects each zone number from the game's fixed zone sizes and blocks predictions when a zone is missing."
+      }
+    ],
+    "results": [
+      "The next zone's size is predicted almost perfectly (about 0.05 m off), because the game shrinks zones on a fixed schedule",
+      "Showed that the next zone centre behaves like a random point inside the allowed area, so no model beats the baseline",
+      "Interactive dashboard and 18 unit tests"
+    ],
+    "learnings": [
+      "Building datasets from raw telemetry",
+      "Avoiding data leakage",
+      "Why baselines matter more than a high R2",
+      "Comparing classic ML with sequence models (LSTM, GRU)"
+    ],
+    "next_steps": [
+      "Add more maps and matches",
+      "Try map-aware features such as terrain and player density"
+    ],
+    "project_type": "ml",
+    "status": "completed",
+    "technologies": [
+      "Python",
+      "Pandas",
+      "Scikit-learn",
+      "XGBoost",
+      "TensorFlow",
+      "Keras",
+      "Streamlit",
+      "Plotly"
+    ],
+    "github_link": "https://github.com/OmDhamal-08/zone_ai",
+    "live_demo": "",
+    "documentation_link": "",
+    "featured_image": "",
+    "additional_images": [],
+    "start_date": null,
+    "end_date": null,
+    "featured": true,
+    "is_active": true,
+    "display_order": 3
+  },
+  {
+    "title": "Expense Tracker Web Application",
+    "slug": "expense-tracker",
+    "short_description": "A Django app for logging income and expenses, setting budgets and goals, and getting AI tips on spending. Made at the BVC Hackathon and hosted on Render.",
+    "description": "A full-stack Django personal finance application for tracking income, expenses, budgets and goals, built for the BVC Hackathon. It includes a server-rendered dashboard, secure authentication, REST APIs, export tools and AI-powered financial insights.\n\nKey features:\n- Dashboard with monthly income, expenses, balance, recent transactions and charts.\n- Expense and income tracking with categories, payment methods, tags, receipts and recurring entries.\n- Budgets with progress tracking and alert thresholds.\n- Financial goals with progress and milestone notifications.\n- Reports with category breakdowns and exports to CSV, JSON and PDF.\n- AI insights powered by Google Gemini.\n- Email login, Google OAuth, password reset and TOTP two-factor authentication.\n- REST API with JWT authentication and Swagger documentation.",
+    "role": "Full-stack developer (BVC Hackathon project)",
+    "problem": "Tracking daily spending in notes or spreadsheets is tedious, and it is hard to see where the money goes or whether you are on budget.",
+    "solution": "A Django app that records income and expenses, tracks budgets and goals, produces reports and gives AI-generated insights, with secure login and a REST API for other clients.",
+    "architecture": [
+      "accounts app: authentication, profile, sessions, 2FA and exports",
+      "core app: expenses, income, budgets, goals, reports and notifications",
+      "api app: Django REST Framework serializers and views with SimpleJWT",
+      "Django templates with Chart.js for the dashboard; django-apscheduler for recurring entries",
+      "Deployed on Render with Gunicorn and WhiteNoise; SQLite in development, PostgreSQL in production"
+    ],
+    "challenges": [
+      {
+        "challenge": "Each user's financial data must stay private.",
+        "fix": "Used session-based access control and scoped every query to the logged-in user."
+      },
+      {
+        "challenge": "Recurring expenses had to be added automatically.",
+        "fix": "Added a scheduled job with django-apscheduler and a process_recurring management command."
+      },
+      {
+        "challenge": "Summaries needed totals per category and per month.",
+        "fix": "Used database aggregation queries instead of summing in Python."
+      }
+    ],
+    "results": [
+      "Live on Render, with each user's data kept private behind login",
+      "REST API documented with Swagger/OpenAPI",
+      "Exports to CSV, JSON and PDF"
+    ],
+    "learnings": [
+      "Structuring a larger Django project into apps",
+      "Authentication, OAuth and 2FA",
+      "Building and documenting REST APIs",
+      "Deploying Django to production"
+    ],
+    "next_steps": [
+      "Add bank statement import",
+      "Add a mobile-friendly PWA"
+    ],
+    "project_type": "web",
+    "status": "completed",
+    "technologies": [
+      "Django",
+      "Python",
+      "Django REST Framework",
+      "SQLite",
+      "PostgreSQL",
+      "Gemini API",
+      "Chart.js",
+      "Render"
+    ],
+    "github_link": "https://github.com/OmDhamal-08/Expense_Tracker_App",
+    "live_demo": "https://expense-tracker-app-vskz.onrender.com/",
+    "documentation_link": "",
+    "featured_image": "",
+    "additional_images": [],
+    "start_date": "2023-08-10",
+    "end_date": "2023-10-05",
+    "featured": true,
+    "display_order": 4,
+    "is_active": true
+  },
+  {
     "title": "Portfolio Website",
     "slug": "portfolio-website",
     "short_description": "A responsive Django portfolio with file-based content, contact inbox, resume uploads, and production deployment.",
@@ -61,7 +345,7 @@
     "start_date": "2024-01-10",
     "end_date": "2024-02-20",
     "featured": true,
-    "display_order": 1,
+    "display_order": 5,
     "is_active": true
   },
   {
@@ -119,7 +403,7 @@
     "start_date": "2023-11-05",
     "end_date": "2024-01-15",
     "featured": true,
-    "display_order": 2,
+    "display_order": 6,
     "is_active": true
   },
   {
@@ -172,64 +456,7 @@
     "start_date": "2023-09-01",
     "end_date": "2023-10-20",
     "featured": false,
-    "display_order": 3,
-    "is_active": true
-  },
-  {
-    "title": "Expense Tracker",
-    "slug": "expense-tracker",
-    "short_description": "A personal finance web app for recording expenses and reviewing spending categories.",
-    "description": "A web application for tracking personal expenses and organizing spending by category. It is useful for explaining CRUD operations, database-backed records, form validation, and dashboard-style summaries.\n\nCore features:\n- Add, update, and delete expense records.\n- Categorize transactions for easier review.\n- Show basic summaries that help users understand spending patterns.\n- Keep the interface simple enough for repeated daily use.\n\nInterview angle:\nThis project is a clean way to discuss backend CRUD design, validation, database tables, and how user-facing dashboards are powered by aggregated data.",
-    "role": "Full-stack developer",
-    "problem": "Tracking daily spending in notes or spreadsheets is tedious, and it is hard to see where the money goes each month.",
-    "solution": "A Django web app with full CRUD for expenses, categories for each transaction, and summary views that aggregate spending.",
-    "architecture": [
-      "Django models for expenses and categories",
-      "Django forms with validation for adding and editing records",
-      "Views that aggregate spending per category",
-      "Bootstrap templates for a simple responsive UI",
-      "Deployed on Render"
-    ],
-    "challenges": [
-      {
-        "challenge": "Invalid amounts and dates could break the summaries.",
-        "fix": "Added server-side form validation before anything is saved."
-      },
-      {
-        "challenge": "Summaries needed totals per category.",
-        "fix": "Used database aggregation queries instead of summing in Python."
-      }
-    ],
-    "results": [
-      "Deployed and usable for daily expense tracking"
-    ],
-    "learnings": [
-      "Designing CRUD flows in Django",
-      "Database aggregation",
-      "Form validation"
-    ],
-    "next_steps": [
-      "Add charts for monthly trends",
-      "Add user accounts so each person has private data"
-    ],
-    "project_type": "web",
-    "status": "completed",
-    "technologies": [
-      "Django",
-      "Python",
-      "Bootstrap",
-      "SQLite",
-      "JavaScript"
-    ],
-    "github_link": "https://github.com/OmDhamal-08/Expense_Tracker_App",
-    "live_demo": "https://expense-tracker-app-vskz.onrender.com/",
-    "documentation_link": "",
-    "featured_image": "",
-    "additional_images": [],
-    "start_date": "2023-08-10",
-    "end_date": "2023-10-05",
-    "featured": true,
-    "display_order": 4,
+    "display_order": 7,
     "is_active": true
   },
   {
@@ -276,7 +503,7 @@
     "start_date": "2024-02-01",
     "end_date": null,
     "featured": false,
-    "display_order": 5,
+    "display_order": 8,
     "is_active": true
   },
   {
@@ -324,7 +551,7 @@
     "start_date": "2026-01-01",
     "end_date": "2026-01-15",
     "featured": true,
-    "display_order": 6,
+    "display_order": 9,
     "is_active": true
   },
   {
@@ -381,7 +608,7 @@
     "start_date": "2026-02-01",
     "end_date": "2026-03-10",
     "featured": true,
-    "display_order": 7,
+    "display_order": 10,
     "is_active": true
   },
   {
@@ -439,7 +666,7 @@
     "start_date": "2026-01-10",
     "end_date": "2026-02-20",
     "featured": true,
-    "display_order": 8,
+    "display_order": 11,
     "is_active": true
   },
   {
@@ -490,7 +717,7 @@
     "start_date": "2025-12-01",
     "end_date": "2025-12-20",
     "featured": false,
-    "display_order": 9,
+    "display_order": 12,
     "is_active": true
   }
 ]

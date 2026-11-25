@@ -32,7 +32,7 @@ class PortfolioPageTests(TestCase):
         response = self.client.get(reverse('home'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Portfolio Website')
+        self.assertContains(response, 'ShopMind AI')
 
     def test_projects_page_renders_and_filters(self):
         response = self.client.get(reverse('projects'), {'type': 'ml', 'status': 'completed'})
@@ -50,7 +50,11 @@ class PortfolioPageTests(TestCase):
         response = self.client.get(reverse('certifications'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'OCI AI Foundations')
+        self.assertContains(response, 'AWS Certified Cloud Practitioner')
+        self.assertNotContains(response, 'Oracle')
+        # Filter chips only list types that are actually used
+        self.assertContains(response, 'Foundational Certification')
+        self.assertNotContains(response, 'Professional Certification')
 
     def test_achievements_page_renders(self):
         response = self.client.get(reverse('achievements'))
@@ -62,7 +66,7 @@ class PortfolioPageTests(TestCase):
         response = self.client.get(reverse('education'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Bachelor of Technology in Computer Science')
+        self.assertContains(response, 'B.Tech in Computer Engineering')
 
     def test_skills_page_renders(self):
         response = self.client.get(reverse('skills'))

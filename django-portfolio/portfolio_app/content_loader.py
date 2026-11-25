@@ -55,10 +55,17 @@ ACHIEVEMENT_CATEGORY_CHOICES = [
 SKILL_CATEGORY_CHOICES = [
     ('programming', 'Programming Languages'),
     ('framework', 'Frameworks & Libraries'),
-    ('tool', 'Tools & Technologies'),
-    ('ml', 'AI/ML Tools'),
+    ('ml', 'Machine Learning'),
+    ('agentic', 'Agentic AI & LLMs'),
     ('database', 'Databases'),
+    ('tool', 'Tools & Technologies'),
     ('cloud', 'Cloud & DevOps'),
+]
+
+NOW_LEVEL_CHOICES = [
+    ('beginner', 'Beginner'),
+    ('intermediate', 'Intermediate'),
+    ('advanced', 'Advanced'),
 ]
 
 EDUCATION_DEGREE_CHOICES = [
@@ -260,6 +267,16 @@ def list_certifications(cert_type='', level=''):
     return certifications
 
 
+def list_used_certification_types():
+    used = {cert.certification_type for cert in _active(load_certifications())}
+    return [choice for choice in CERTIFICATION_TYPE_CHOICES if choice[0] in used]
+
+
+def list_used_certification_levels():
+    used = {cert.skill_level for cert in _active(load_certifications())}
+    return [choice for choice in CERTIFICATION_LEVEL_CHOICES if choice[0] in used]
+
+
 def list_achievements(category=''):
     achievements = _active(load_achievements())
     if category:
@@ -336,6 +353,7 @@ def load_certifications():
             credential_id=raw.get('credential_id') or '',
             credential_url=raw.get('credential_url') or '',
             certificate_image=_asset(raw.get('certificate_image')),
+            certificate_file=_asset(raw.get('certificate_file')),
             certification_type=raw.get('certification_type', 'technical'),
             skill_level=raw.get('skill_level', 'intermediate'),
             description=raw.get('description', ''),
@@ -418,19 +436,32 @@ def load_now():
         progress = int(item.get('progress', 0))
         if not 0 <= progress <= 100:
             raise ContentValidationError(f'now.json: progress for "{item.get("name")}" must be 0-100')
+        level = item.get('level', '')
+        if level and level not in dict(NOW_LEVEL_CHOICES):
+            raise ContentValidationError(f'now.json: unknown level "{level}" for "{item.get("name")}"')
         learning.append(ContentItem(
             name=_required(item, 'name', 'now.json'),
+            level=level,
+            level_label=_choice_label(NOW_LEVEL_CHOICES, level) if level else '',
             progress=progress,
             note=item.get('note', ''),
             resource=item.get('resource', ''),
         ))
+    goals = []
+    for item in raw.get('goals', []):
+        # A goal is a plain string or {"title": ..., "note": ...}
+        if isinstance(item, str):
+            goals.append(ContentItem(title=item, note=''))
+        elif isinstance(item, dict) and item.get('title'):
+            goals.append(ContentItem(title=item['title'], note=item.get('note', '')))
+        else:
+            raise ContentValidationError('now.json: each goal needs a "title"')
     return ContentItem(
         updated=_date(raw.get('updated')),
         headline=raw.get('headline', ''),
         focus=raw.get('focus', ''),
         learning=learning,
-        building=_list_value(raw.get('building', [])),
-        goals=_list_value(raw.get('goals', [])),
+        goals=goals,
     )
 
 

@@ -19,7 +19,7 @@ studies, my learning journey, and what I'm working on right now.
 **For visitors**
 - **Project case studies.** Each project explains the problem, the solution, the architecture flow, the challenges and how I fixed them, the results, and what I learned.
 - **Live project search.** Search and filter by keyword, type, status or technology; results update as you type, without reloading the page.
-- **Now page** (`/now/`). What I'm currently learning, building and aiming for, with progress bars.
+- **Now page** (`/now/`). What I'm currently learning (with a Beginner / Intermediate level and progress bar) and my goals: internship, job and my own startup.
 - **Journey pages.** Timelines for education and achievements, plus a certifications page with verify links.
 - **Contact form** with validation, spam protection and email notifications.
 - **Clean light design.** White and light-gray sections with a single navy accent; flat colors, no gradients or glow effects.
@@ -256,7 +256,8 @@ Image paths are relative to `django-portfolio/static/`.
 ### Updating the Now page
 
 Edit `content/now.json`: change `updated`, `focus`, the `learning` items (each
-with a `progress` value from 0 to 100), `building` and `goals`.
+with a `level` of beginner, intermediate or advanced and a `progress` value from 0 to 100) and `goals`
+(plain strings or `{"title": ..., "note": ...}`).
 
 See [`django-portfolio/content/README.md`](django-portfolio/content/README.md) for the full field reference.
 
@@ -341,7 +342,7 @@ Talking points:
 
 ## Contact
 
-- **Email:** dhamalom@gmail.com
+- **Email:** dhamalomm@gmail.com
 - **LinkedIn:** [om-dhamal](https://www.linkedin.com/in/om-dhamal-411545295/)
 - **GitHub:** [OmDhamal-08](https://github.com/OmDhamal-08)
 - **LeetCode:** [omdhamal77](https://leetcode.com/u/omdhamal77/)

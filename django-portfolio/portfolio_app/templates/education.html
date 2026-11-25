@@ -38,7 +38,7 @@
               <svg class="h-4 w-4 transition-transform duration-200" :class="open && 'rotate-180'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div x-show="open" x-transition.opacity.duration.200ms x-cloak class="pt-4">
-              {% if edu.get_courses_list %}<div class="flex flex-wrap gap-1.5">{% for course in edu.get_courses_list %}<span class="tag">{{ course }}</span>{% endfor %}</div>{% endif %}
+              {% if edu.get_courses_list %}<p class="mb-2 text-[13px] font-medium text-muted">{% if edu.degree == 'bachelor' %}Curriculum subjects{% else %}Subjects{% endif %}</p><div class="flex flex-wrap gap-1.5">{% for course in edu.get_courses_list %}<span class="tag">{{ course }}</span>{% endfor %}</div>{% endif %}
               {% if edu.get_achievements_list %}
               <ul class="mt-4 space-y-2">{% for item in edu.get_achievements_list %}<li class="flex gap-2.5 text-sm text-muted"><span class="mt-0.5 text-accent">{% include "partials/icon.html" with name="check" %}</span>{{ item }}</li>{% endfor %}</ul>
               {% endif %}

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Om Dhamal | Django Developer & ML Learner{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}Om Dhamal - Computer Science student building Django backends, machine learning projects and AI automations.{% endblock %}" />
+    <meta name="description" content="{% block meta_description %}Om Dhamal - Computer Engineering student building Django and FastAPI backends, machine learning projects and AI agents.{% endblock %}" />
     <meta property="og:title" content="{% block og_title %}Om Dhamal | Portfolio{% endblock %}" />
     <meta property="og:description" content="Projects, case studies and the learning journey of Om Dhamal." />
     <meta property="og:type" content="website" />
@@ -156,7 +156,7 @@
         <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <a href="{% url 'home' %}" class="text-lg font-semibold text-ink">Om Dhamal</a>
-            <p class="measure mt-2 text-sm text-muted">Computer Science student building Django backends, machine learning models and AI automations.</p>
+            <p class="measure mt-2 text-sm text-muted">Computer Engineering student building Django and FastAPI backends, machine learning models and AI agents.</p>
             <div class="mt-5 flex gap-2">
               {% for s in social_links %}{% if s.name == 'github' or s.name == 'linkedin' %}
               <a href="{{ s.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ s.label }}" class="icon-btn">{% include "partials/icon.html" with name=s.name cls="w-[18px] h-[18px]" %}</a>

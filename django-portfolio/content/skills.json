@@ -4,7 +4,7 @@
     "category": "programming",
     "proficiency": 90,
     "description": "Primary language for Django, automation, data processing, and machine learning projects.",
-    "icon": "\ud83d\udc0d",
+    "icon": "🐍",
     "display_order": 1,
     "is_active": true
   },
@@ -13,7 +13,7 @@
     "category": "programming",
     "proficiency": 85,
     "description": "Used for data structures, algorithms, and core programming practice.",
-    "icon": "\u2699\ufe0f",
+    "icon": "⚙️",
     "display_order": 2,
     "is_active": true
   },
@@ -22,7 +22,7 @@
     "category": "programming",
     "proficiency": 30,
     "description": "Used for small frontend interactions, filters, and UI behavior.",
-    "icon": "\ud83d\udcdc",
+    "icon": "📜",
     "display_order": 3,
     "is_active": true
   },
@@ -31,7 +31,7 @@
     "category": "programming",
     "proficiency": 50,
     "description": "Used for semantic page structure in Django templates.",
-    "icon": "\ud83c\udf10",
+    "icon": "🌐",
     "display_order": 4,
     "is_active": true
   },
@@ -40,7 +40,7 @@
     "category": "programming",
     "proficiency": 60,
     "description": "Used with Tailwind and custom styling for responsive layouts.",
-    "icon": "\ud83c\udfa8",
+    "icon": "🎨",
     "display_order": 5,
     "is_active": true
   },
@@ -49,7 +49,7 @@
     "category": "framework",
     "proficiency": 76,
     "description": "Main backend framework for server-rendered pages, forms, admin, and deployment-ready web apps.",
-    "icon": "\ud83c\udfaf",
+    "icon": "🎯",
     "display_order": 6,
     "is_active": true
   },
@@ -58,7 +58,7 @@
     "category": "framework",
     "proficiency": 50,
     "description": "Utility-first CSS framework used to build responsive and polished UI quickly.",
-    "icon": "\ud83c\udfa8",
+    "icon": "🎨",
     "display_order": 7,
     "is_active": true
   },
@@ -67,7 +67,7 @@
     "category": "framework",
     "proficiency": 30,
     "description": "Used in earlier web projects for quick layout and component styling.",
-    "icon": "\ud83e\udde9",
+    "icon": "🧩",
     "display_order": 8,
     "is_active": true
   },
@@ -76,8 +76,26 @@
     "category": "framework",
     "proficiency": 35,
     "description": "Basic understanding for component-based frontend development.",
-    "icon": "\u269b\ufe0f",
+    "icon": "⚛️",
     "display_order": 9,
+    "is_active": true
+  },
+  {
+    "name": "FastAPI",
+    "category": "framework",
+    "proficiency": 40,
+    "description": "Building REST APIs for AI apps (Linkdine AI, ShopMind AI).",
+    "icon": "",
+    "display_order": 10,
+    "is_active": true
+  },
+  {
+    "name": "Django REST Framework",
+    "category": "framework",
+    "proficiency": 40,
+    "description": "Building JWT-secured REST APIs with Swagger docs (Expense Tracker).",
+    "icon": "",
+    "display_order": 11,
     "is_active": true
   },
   {
@@ -85,8 +103,8 @@
     "category": "ml",
     "proficiency": 90,
     "description": "Used for tabular data cleaning, analysis, and ML preprocessing.",
-    "icon": "\ud83d\udc3c",
-    "display_order": 10,
+    "icon": "🐼",
+    "display_order": 12,
     "is_active": true
   },
   {
@@ -94,8 +112,8 @@
     "category": "ml",
     "proficiency": 90,
     "description": "Used for numeric operations, arrays, and ML data preparation.",
-    "icon": "\ud83d\udd22",
-    "display_order": 11,
+    "icon": "🔢",
+    "display_order": 13,
     "is_active": true
   },
   {
@@ -103,8 +121,8 @@
     "category": "ml",
     "proficiency": 80,
     "description": "Used for supervised learning, model training, and evaluation workflows.",
-    "icon": "\ud83e\udd16",
-    "display_order": 12,
+    "icon": "🤖",
+    "display_order": 14,
     "is_active": true
   },
   {
@@ -112,8 +130,17 @@
     "category": "ml",
     "proficiency": 40,
     "description": "Learning foundation for neural networks and deep learning experiments.",
-    "icon": "\ud83e\udde0",
-    "display_order": 13,
+    "icon": "🧠",
+    "display_order": 15,
+    "is_active": true
+  },
+  {
+    "name": "Keras",
+    "category": "ml",
+    "proficiency": 40,
+    "description": "High-level API on TensorFlow for building neural networks (LSTM and GRU in ZonePredict AI).",
+    "icon": "",
+    "display_order": 16,
     "is_active": true
   },
   {
@@ -121,8 +148,89 @@
     "category": "ml",
     "proficiency": 80,
     "description": "Used to visualize data distributions, model results, and metrics.",
-    "icon": "\ud83d\udcca",
-    "display_order": 14,
+    "icon": "📊",
+    "display_order": 17,
+    "is_active": true
+  },
+  {
+    "name": "LLMs",
+    "category": "agentic",
+    "proficiency": 40,
+    "description": "Using large language models through APIs: prompting, structured output and output validation.",
+    "icon": "",
+    "display_order": 18,
+    "is_active": true
+  },
+  {
+    "name": "Prompt Engineering",
+    "category": "agentic",
+    "proficiency": 40,
+    "description": "Writing structured prompts with clear rules, context and task sections; used in Linkdine AI and ShopMind AI.",
+    "icon": "",
+    "display_order": 19,
+    "is_active": true
+  },
+  {
+    "name": "RAG (Retrieval-Augmented Generation)",
+    "category": "agentic",
+    "proficiency": 35,
+    "description": "Grounding LLM answers in retrieved data: embeddings, hybrid retrieval and re-ranking (Linkdine AI).",
+    "icon": "",
+    "display_order": 20,
+    "is_active": true
+  },
+  {
+    "name": "Vector Databases (pgvector)",
+    "category": "agentic",
+    "proficiency": 30,
+    "description": "Storing embeddings in PostgreSQL with pgvector for similarity search.",
+    "icon": "",
+    "display_order": 21,
+    "is_active": true
+  },
+  {
+    "name": "AI Agents & Tool Calling",
+    "category": "agentic",
+    "proficiency": 35,
+    "description": "Building agent loops where the model calls tools, with confirmation gates and audit logs (ShopMind AI).",
+    "icon": "",
+    "display_order": 22,
+    "is_active": true
+  },
+  {
+    "name": "Claude API",
+    "category": "agentic",
+    "proficiency": 35,
+    "description": "Using the Anthropic Claude API for generation, with provider fallback in Linkdine AI.",
+    "icon": "",
+    "display_order": 23,
+    "is_active": true
+  },
+  {
+    "name": "MCP (Model Context Protocol)",
+    "category": "agentic",
+    "proficiency": 30,
+    "description": "Learning to connect AI assistants to tools and data through MCP servers.",
+    "icon": "",
+    "display_order": 24,
+    "is_active": true
+  },
+  {
+    "name": "n8n Automation",
+    "category": "agentic",
+    "proficiency": 35,
+    "description": "Building AI automation workflows and chatbots with n8n.",
+    "icon": "",
+    "display_order": 25,
+    "is_active": true
+  },
+  {
+    "name": "AI Coding Tools",
+    "category": "agentic",
+    "proficiency": 40,
+    "description": "Using Claude Code, Codex and Antigravity to plan, build and review code faster.",
+    "icon": "",
+    "display_order": 26,
     "is_active": true
   },
   {
@@ -130,8 +238,8 @@
     "category": "database",
     "proficiency": 50,
     "description": "Used for understanding relational data, CRUD operations, and backend persistence.",
-    "icon": "\ud83d\uddc3\ufe0f",
-    "display_order": 15,
+    "icon": "🗃️",
+    "display_order": 27,
     "is_active": true
   },
   {
@@ -139,8 +247,26 @@
     "category": "database",
     "proficiency": 45,
     "description": "Used for local Django development and lightweight project databases.",
-    "icon": "\ud83d\uddc4\ufe0f",
-    "display_order": 16,
+    "icon": "🗄️",
+    "display_order": 28,
+    "is_active": true
+  },
+  {
+    "name": "PostgreSQL",
+    "category": "database",
+    "proficiency": 40,
+    "description": "Used with Supabase and pgvector in AI projects.",
+    "icon": "",
+    "display_order": 29,
+    "is_active": true
+  },
+  {
+    "name": "MySQL",
+    "category": "database",
+    "proficiency": 40,
+    "description": "Relational database practice: queries, joins and schema design.",
+    "icon": "",
+    "display_order": 30,
     "is_active": true
   },
   {
@@ -148,8 +274,26 @@
     "category": "tool",
     "proficiency": 72,
     "description": "Used for version control, source history, and deployment workflows.",
-    "icon": "\ud83d\udcda",
-    "display_order": 19,
+    "icon": "📚",
+    "display_order": 31,
+    "is_active": true
+  },
+  {
+    "name": "GitHub",
+    "category": "tool",
+    "proficiency": 70,
+    "description": "Hosting code, collaboration and project documentation.",
+    "icon": "",
+    "display_order": 32,
+    "is_active": true
+  },
+  {
+    "name": "Docker",
+    "category": "tool",
+    "proficiency": 30,
+    "description": "Running PostgreSQL and backend services in containers.",
+    "icon": "",
+    "display_order": 33,
     "is_active": true
   },
   {
@@ -157,8 +301,8 @@
     "category": "cloud",
     "proficiency": 62,
     "description": "Used to deploy the Django portfolio through a Python WSGI runtime.",
-    "icon": "\u25b2",
-    "display_order": 20,
+    "icon": "▲",
+    "display_order": 34,
     "is_active": true
   },
   {
@@ -166,8 +310,8 @@
     "category": "cloud",
     "proficiency": 55,
     "description": "Used for deploying Python and machine learning web applications.",
-    "icon": "\u2601\ufe0f",
-    "display_order": 21,
+    "icon": "☁️",
+    "display_order": 35,
     "is_active": true
   },
   {
@@ -175,8 +319,8 @@
     "category": "cloud",
     "proficiency": 35,
     "description": "Foundational cloud knowledge from workshops and learning projects.",
-    "icon": "\u2601\ufe0f",
-    "display_order": 22,
+    "icon": "☁️",
+    "display_order": 36,
     "is_active": true
   }
 ]

@@ -18,7 +18,7 @@
       </h1>
 
       <p class="mt-5 text-[17px] font-medium text-ink" data-hero-item>
-        <span data-typewriter='["Django backend developer", "Machine learning learner", "AI automation builder", "Computer Science student"]'>Django backend developer</span>
+        <span data-typewriter='["Django backend developer", "Machine learning learner", "AI automation builder", "Computer Engineering student"]'>Django backend developer</span>
       </p>
       <p class="lead mt-3" data-hero-item>{{ tagline }}</p>
 
@@ -80,11 +80,11 @@
     </div>
 
     <div class="mt-10 grid gap-4 sm:grid-cols-2" data-stagger>
-      {% for item in now.learning %}
+      {% for item in now.learning|slice:":4" %}
       <div class="card p-6">
         <div class="flex items-baseline justify-between gap-3">
           <h3 class="font-semibold">{{ item.name }}</h3>
-          <span class="text-sm text-muted">{{ item.progress }}%</span>
+          {% if item.level_label %}<span class="badge {% if item.level == 'intermediate' %}badge-accent{% endif %} shrink-0 !py-1 !text-xs">{{ item.level_label }}</span>{% endif %}
         </div>
         <div class="bar mt-3" role="progressbar" aria-valuenow="{{ item.progress }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ item.name }} progress">
           <span data-bar style="width: {{ item.progress }}%"></span>
@@ -94,12 +94,6 @@
       {% endfor %}
     </div>
 
-    {% if now.building %}
-    <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted" data-reveal>
-      <span class="font-semibold text-ink">Building:</span>
-      {% for item in now.building %}<span class="inline-flex items-center gap-2"><span class="dot"></span>{{ item }}</span>{% endfor %}
-    </div>
-    {% endif %}
   </div>
 </section>
 {% endif %}

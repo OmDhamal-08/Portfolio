@@ -151,8 +151,9 @@ def certifications(request):
     context = {
         'certifications': certifications_list,
         'featured_certifications': featured_certifications,
-        'cert_types': content.CERTIFICATION_TYPE_CHOICES,
-        'level_choices': content.CERTIFICATION_LEVEL_CHOICES,
+        # Only offer filters for types and levels that at least one certificate has
+        'cert_types': content.list_used_certification_types(),
+        'level_choices': content.list_used_certification_levels(),
         'current_type': cert_type,
         'current_level': level,
     }
@@ -226,7 +227,7 @@ def home(request):
 
     context = {
         'name': 'Om',
-        'title': 'Computer Science Student | Django Developer | ML Learner',
+        'title': 'Computer Engineering Student | Django & FastAPI Developer | AI/ML Builder',
         'tagline': 'Building practical web and machine learning projects while learning strong backend fundamentals.',
         'featured_projects': featured_projects,
         'featured_certifications': featured_certifications,
@@ -276,47 +277,41 @@ def about(request):
     context = {
         'personal_info': {
             'name': 'Om Dhamal',
-            'title': 'Computer Science Student | Django Developer | ML Learner',
+            'title': 'Computer Engineering Student | Django & FastAPI Developer | AI/ML Builder',
             'location': 'Pune, India',
-            'email': 'dhamalom@gmail.com',
-            'bio': 'I am a Computer Science student focused on Django, backend development, and practical machine learning projects.',
+            'email': 'dhamalomm@gmail.com',
+            'bio': 'I build backends, AI agents and machine learning projects, and I like making them work reliably, not just in a demo.',
             'detailed_bio': [
-
-               'I am an enthusiastic and motivated Computer Science student currently pursuing my B.Tech in CSE. I\'m actively learning Machine Learning, Data Structures & Algorithms, and full-stack development, with a strong interest in building intelligent and efficient software solutions.',
-
-                'I enjoy understanding how things work, breaking down complex ideas, and turning them into simple, practical implementations. My learning journey includes hands-on projects in Python, Django, and foundational machine learning, which help me continuously grow as a developer.',
-
-                'Although I\'m early in my professional journey, I am passionate, consistent, and eager to take on real-world challenges. I love exploring new technologies, improving my problem-solving skills, and building projects that enhance my understanding.',
-
-                'When I\'m not studying or coding, I enjoy experimenting with new tech tools, working on personal projects, and learning by building.'
+                'I study Computer Engineering at JSPM\'s RSCOE in Pune, but most of what I know comes from building things and breaking them outside the classroom.',
+                'My work sits where backend development meets AI. I write APIs with Django and FastAPI, design the databases behind them, and lately spend most of my time on LLM apps: RAG pipelines, agents that call tools, and the checks that keep their answers honest.',
+                'Machine learning is where it started. My EduSkills internship and projects like ZonePredict AI taught me that clean data and a fair baseline matter more than an impressive-looking score.',
+                'I keep my problem solving sharp with C++ on LeetCode and Codeforces. Next, I want to join a team as an intern or engineer and ship real products, and one day build a startup of my own.',
             ]
         },
         'education': [
             {
-                'degree': 'Bachelor of Technology in Computer Science',
-                'institution': 'Rajashree Shahu College of Engineering (JSPM Tathawade)',
+                'degree': 'B.Tech in Computer Engineering',
+                'institution': "JSPM's Rajarshi Shahu College of Engineering, Pune",
                 'year': '2023-Present',
-                'description': 'Pursuing B.Tech in Computer Science. Learning core CS subjects, machine learning, and software development. Actively involved in AI/ML projects and continuous self-learning. CGPA: 9.43 (ongoing).',
+                'description': 'Regular B.Tech curriculum with subjects such as DSA, DBMS, Operating Systems and Computer Networks. CGPA: 9.15/10 (till 6th semester).',
                 'icon': '🎓'
             },
             {
-                'degree': 'Machine Learning Specialization',
-                'institution': 'Coursera - Andrew Ng',
-                'year': '2024-Present',
-                'description': 'Comprehensive specialization covering supervised learning, unsupervised learning, neural networks, TensorFlow, and model evaluation. Currently studying.',
-                'icon': '🤖'
-            }
-
+                'degree': 'HSC and SSC',
+                'institution': "Chaitannya's International School, Baramati",
+                'year': '2023',
+                'description': 'HSC: 76.17% | SSC: 92.20%',
+                'icon': '🏫'
+            },
         ],
         'experience': [
             {
-            'position': 'Academic and Personal Projects',
-            'company': 'B.Tech Computer Science',
-            'year': '2023-Present',
-            'description': 'Building Django and machine learning projects to strengthen backend development, database design, and practical problem-solving skills.'
-
+                'position': 'AI & Machine Learning Virtual Intern',
+                'company': 'EduSkills',
+                'year': 'Oct 2025 - Dec 2025',
+                'description': 'Ten weeks of hands-on machine learning: from cleaning data to training and evaluating models. I finished more than five complete ML projects with Scikit-learn and TensorFlow.'
             },
-        ],          
+        ],
         'skills_preview': skills_preview,
         'skills_categories': [
             {

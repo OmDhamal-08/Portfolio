@@ -49,8 +49,8 @@ case-study section.
 ## Now page
 
 `now.json` powers `/now/` and the "Currently learning" block on the home page.
-Update `updated`, `focus`, `learning` (each with `progress` 0-100), `building`
-and `goals` whenever your focus changes.
+Update `updated`, `focus`, `learning` (each with `level`: beginner / intermediate / advanced,
+and `progress` 0-100) and `goals` (strings or `{"title", "note"}`) whenever your focus changes.
 
 ## Caching
 
