@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Now - What I'm Learning | Om Dhamal{% endblock %}
+{% block meta_description %}What Om Dhamal is learning, building and aiming for right now.{% endblock %}
+
+{% block content %}
+<section class="relative overflow-hidden pt-36 pb-12">
+  <div class="bg-grid absolute inset-0 -z-10"></div>
+  <div class="orb orb-2 -top-20 right-[10%] h-72 w-72"></div>
+  <div class="orb orb-1 top-20 left-[5%] h-56 w-56"></div>
+  <div class="mx-auto max-w-4xl px-4">
+    <span class="eyebrow" data-reveal>Now</span>
+    <h1 class="mt-4 font-display text-4xl font-bold leading-tight sm:text-6xl" data-reveal data-delay="0.05">
+      {% if now.headline %}{{ now.headline }}{% else %}What I'm doing now{% endif %}
+    </h1>
+    {% if now.updated %}
+    <p class="mt-5 inline-flex items-center gap-2 text-sm text-muted" data-reveal data-delay="0.1">
+      <span class="status-dot bg-success"></span> Last updated {{ now.updated|date:"F j, Y" }}
+    </p>
+    {% endif %}
+  </div>
+</section>
+
+<div class="mx-auto max-w-4xl space-y-6 px-4">
+  {% if not now %}
+  <div class="card p-10 text-center text-muted">No update yet. Add <code class="font-mono">content/now.json</code> to fill this page.</div>
+  {% else %}
+
+  {% if now.focus %}
+  <section class="ring-gradient" data-reveal="scale">
+    <div class="bg-surface p-8 sm:p-10">
+      <p class="font-mono text-xs uppercase tracking-[0.16em] text-accent-2">Main focus</p>
+      <p class="mt-3 font-display text-2xl font-semibold leading-snug sm:text-3xl">{{ now.focus }}</p>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if now.learning %}
+  <section class="card p-8 sm:p-10" data-reveal>
+    <div class="mb-8 flex items-center gap-3">
+      <span class="grid h-10 w-10 place-items-center rounded-xl bg-accent/10 text-accent">{% include "partials/icon.html" with name="book" %}</span>
+      <h2 class="font-display text-2xl font-semibold">Currently learning</h2>
+    </div>
+    <div class="space-y-7" data-stagger="0.1">
+      {% for item in now.learning %}
+      <div>
+        <div class="mb-2.5 flex flex-wrap items-baseline justify-between gap-2">
+          <h3 class="font-semibold">
+            {% if item.resource %}<a href="{{ item.resource }}" target="_blank" rel="noopener noreferrer" class="hover:text-accent-2">{{ item.name }} <span class="inline-block align-middle text-muted">{% include "partials/icon.html" with name="external" cls="w-3.5 h-3.5" %}</span></a>{% else %}{{ item.name }}{% endif %}
+          </h3>
+          <span class="font-mono text-sm text-accent-2">{{ item.progress }}%</span>
+        </div>
+        <div class="bar"><span data-bar style="width: {{ item.progress }}%"></span></div>
+        {% if item.note %}<p class="mt-2.5 text-sm text-muted">{{ item.note }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <div class="grid gap-6 md:grid-cols-2">
+    {% if now.building %}
+    <section class="card spotlight p-8" data-reveal>
+      <div class="mb-6 flex items-center gap-3">
+        <span class="grid h-10 w-10 place-items-center rounded-xl bg-warning/10 text-warning">{% include "partials/icon.html" with name="code" %}</span>
+        <h2 class="font-display text-xl font-semibold">Building</h2>
+      </div>
+      <ul class="space-y-3.5">
+        {% for item in now.building %}<li class="flex gap-3 text-muted"><span class="mt-2 status-dot shrink-0 bg-warning"></span>{{ item }}</li>{% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+    {% if now.goals %}
+    <section class="card spotlight p-8" data-reveal data-delay="0.08">
+      <div class="mb-6 flex items-center gap-3">
+        <span class="grid h-10 w-10 place-items-center rounded-xl bg-accent-3/10 text-accent-3">{% include "partials/icon.html" with name="target" %}</span>
+        <h2 class="font-display text-xl font-semibold">Goals</h2>
+      </div>
+      <ul class="space-y-3.5">
+        {% for item in now.goals %}<li class="flex gap-3 text-muted"><span class="mt-1 text-accent-3">{% include "partials/icon.html" with name="flag" cls="w-4 h-4" %}</span>{{ item }}</li>{% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <p class="pt-6 text-center text-sm text-muted" data-reveal>
+    This is a <a href="https://nownownow.com/about" target="_blank" rel="noopener noreferrer" class="text-accent-2 hover:underline">now page</a>. I update it whenever my focus changes.
+  </p>
+</div>
+{% endblock %}

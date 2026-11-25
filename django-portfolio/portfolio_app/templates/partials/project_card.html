@@ -1,0 +1,53 @@
+{% comment %}A single project card. Expects `project`.{% endcomment %}
+<article class="card card-hover spotlight group flex h-full flex-col p-6">
+  <div class="mb-5 flex items-center justify-between gap-3">
+    <span class="chip !text-accent-2">{{ project.get_project_type_display }}</span>
+    <span class="inline-flex items-center gap-2 text-xs font-medium text-muted">
+      <span class="status-dot {% if project.status == 'completed' %}bg-success{% elif project.status == 'in_progress' %}bg-warning{% else %}bg-muted{% endif %}"></span>
+      {{ project.get_status_display }}
+    </span>
+  </div>
+
+  {% if project.featured_image %}
+  <div class="mb-5 overflow-hidden rounded-xl border border-line/10">
+    <img src="{{ project.featured_image.url }}" alt="{{ project.title }} screenshot" loading="lazy"
+         class="aspect-video w-full object-cover transition duration-700 group-hover:scale-105" />
+  </div>
+  {% endif %}
+
+  <h3 class="font-display text-xl font-semibold leading-snug">
+    <a href="{% url 'project_detail' project.slug %}" class="after:absolute after:inset-0 after:content-['']">{{ project.title }}</a>
+  </h3>
+  <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-muted">{{ project.short_description }}</p>
+
+  {% if project.problem %}
+  <p class="mt-4 rounded-xl border border-line/[0.06] bg-surface-2/60 p-3 text-xs leading-relaxed text-muted">
+    <span class="font-mono uppercase tracking-wider text-accent-3">Problem &rarr;</span> {{ project.problem|truncatewords:22 }}
+  </p>
+  {% endif %}
+
+  <div class="mt-5 flex flex-wrap gap-1.5">
+    {% for tech in project.technologies|slice:":5" %}<span class="chip !py-1 !text-[11px]">{{ tech }}</span>{% endfor %}
+    {% if project.technologies|length > 5 %}<span class="chip !py-1 !text-[11px]">+{{ project.technologies|length|add:"-5" }}</span>{% endif %}
+  </div>
+
+  <div class="relative z-10 mt-auto flex items-center justify-between gap-3 pt-6">
+    <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-ink transition group-hover:gap-2.5 group-hover:text-accent-2">
+      {% if project.has_case_study %}Read case study{% else %}View details{% endif %} {% include "partials/icon.html" with name="arrow-right" %}
+    </span>
+    <span class="flex gap-1.5">
+      {% if project.github_link %}
+      <a href="{{ project.github_link }}" target="_blank" rel="noopener noreferrer" aria-label="{{ project.title }} source code on GitHub"
+         class="grid h-9 w-9 place-items-center rounded-lg border border-line/10 text-muted transition hover:border-accent/60 hover:text-ink">
+        {% include "partials/icon.html" with name="github" cls="w-4 h-4" %}
+      </a>
+      {% endif %}
+      {% if project.live_demo %}
+      <a href="{{ project.live_demo }}" target="_blank" rel="noopener noreferrer" aria-label="{{ project.title }} live demo"
+         class="grid h-9 w-9 place-items-center rounded-lg border border-line/10 text-muted transition hover:border-accent-2/60 hover:text-ink">
+        {% include "partials/icon.html" with name="external" cls="w-4 h-4" %}
+      </a>
+      {% endif %}
+    </span>
+  </div>
+</article>

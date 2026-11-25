@@ -1,0 +1,32 @@
+{% comment %}
+  Project results grid. Rendered inside projects.html on a normal request,
+  and returned on its own when HTMX asks for it (HX-Request header).
+{% endcomment %}
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
+  <p>
+    Showing <span class="font-semibold text-ink">{{ projects|length }}</span> of {{ total_projects }} projects
+    {% if current_query %} for "<span class="text-ink">{{ current_query }}</span>"{% endif %}
+    {% if current_tech %} using <span class="text-ink">{{ current_tech }}</span>{% endif %}
+  </p>
+  {% if has_filters %}
+  <a href="{% url 'projects' %}" class="inline-flex items-center gap-1.5 text-accent-2 hover:underline">
+    {% include "partials/icon.html" with name="close" cls="w-3.5 h-3.5" %} Clear filters
+  </a>
+  {% endif %}
+</div>
+
+{% if projects %}
+<div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-stagger="0.07">
+  {% for project in projects %}
+    {% include "partials/project_card.html" %}
+  {% endfor %}
+</div>
+{% else %}
+<div class="card grid place-items-center px-6 py-20 text-center">
+  <div class="mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-accent/10 text-accent">
+    {% include "partials/icon.html" with name="search" cls="w-6 h-6" %}
+  </div>
+  <h3 class="font-display text-xl font-semibold">No projects match that search</h3>
+  <p class="mt-2 max-w-sm text-sm text-muted">Try a different keyword or technology, or clear the filters to see everything.</p>
+</div>
+{% endif %}

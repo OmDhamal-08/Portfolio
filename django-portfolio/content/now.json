@@ -1,0 +1,20 @@
+{
+  "updated": "2026-11-25",
+  "headline": "What I'm focused on right now",
+  "focus": "Strengthening backend fundamentals and building practical AI automation projects.",
+  "learning": [
+    {"name": "Machine Learning Specialization", "progress": 70, "note": "Andrew Ng's course on Coursera: neural networks and model evaluation", "resource": ""},
+    {"name": "Data Structures & Algorithms", "progress": 60, "note": "Regular practice in C++ on LeetCode and Codeforces", "resource": "https://leetcode.com/u/omdhamal77/"},
+    {"name": "Django APIs & Caching", "progress": 45, "note": "Building APIs and learning caching and testing", "resource": ""},
+    {"name": "AI Agents & Automation", "progress": 50, "note": "Voice agents and n8n workflows", "resource": ""}
+  ],
+  "building": [
+    "Food Analyzer AI: food image classification",
+    "This portfolio: adding a blog and CI"
+  ],
+  "goals": [
+    "Land a backend / ML internship",
+    "Solve 300 DSA problems",
+    "Ship one deployed AI project every month"
+  ]
+}

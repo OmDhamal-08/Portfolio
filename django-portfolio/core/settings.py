@@ -81,6 +81,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'portfolio_app.context_processors.site',
             ],
         },
     },
@@ -224,3 +225,7 @@ else:
             'LOCATION': 'unique-snowflake',
         }
     }
+
+# How long parsed content/*.json files stay cached (seconds). The cache key
+# includes each file's modification time, so edits show up immediately.
+CONTENT_CACHE_TIMEOUT = int(os.environ.get("CONTENT_CACHE_TIMEOUT", 60 * 60))

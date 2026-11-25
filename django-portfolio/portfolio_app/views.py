@@ -7,6 +7,7 @@ from django.core.mail import BadHeaderError, EmailMessage
 from django.http import HttpResponse
 from django.contrib import messages
 from django.conf import settings
+from django.utils.cache import patch_vary_headers
 from . import content_loader as content
 from .forms import ContactForm
 from .models import ContactMessage, Resume
@@ -172,19 +173,32 @@ def achievements(request):
 def projects(request):
     project_type = request.GET.get('type', '')
     status = request.GET.get('status', '')
-    projects_list = content.list_projects(project_type=project_type, status=status)
-    featured_projects = [project for project in projects_list if project.featured][:3]
-    
+    query = request.GET.get('q', '').strip()[:100]
+    tech = request.GET.get('tech', '')
+    projects_list = content.list_projects(project_type=project_type, status=status, query=query, tech=tech)
+
     context = {
         'projects': projects_list,
-        'featured_projects': featured_projects,
-        'project_types': content.PROJECT_TYPE_CHOICES,
+        'project_types': content.list_used_project_types(),
         'status_choices': content.PROJECT_STATUS_CHOICES,
+        'tech_choices': content.list_project_technologies(limit=12),
         'current_type': project_type,
         'current_status': status,
+        'current_query': query,
+        'current_tech': tech,
+        'total_projects': len(content.list_projects()),
+        'has_filters': bool(project_type or status or query or tech),
     }
-    
-    return render(request, 'projects.html', context)
+
+    # HTMX sends this header; return only the results grid so the page
+    # updates without a full reload. Normal requests get the full page.
+    if request.headers.get('HX-Request') == 'true':
+        response = render(request, 'partials/project_results.html', context)
+    else:
+        response = render(request, 'projects.html', context)
+    # Same URL returns two different bodies, so tell caches to keep them apart.
+    patch_vary_headers(response, ['HX-Request'])
+    return response
 
 
 def project_detail(request, slug):
@@ -207,6 +221,7 @@ def home(request):
     featured_certifications = [cert for cert in certifications if cert.featured][:3]
     featured_achievements = [achievement for achievement in achievements if achievement.featured][:2]
     featured_education = [education for education in education_items if education.featured][:2]
+    skills = content.list_skills()
 
     context = {
         'name': 'Om',
@@ -216,14 +231,20 @@ def home(request):
         'featured_certifications': featured_certifications,
         'featured_achievements': featured_achievements,
         'featured_education': featured_education,
+        'now': content.load_now(),
+        'top_skills': [skill.name for skill in skills][:12],
         'quick_stats': [
-            {'number': len(projects), 'label': 'Projects Completed'},
+            {'number': sum(1 for project in projects if project.status == 'completed'), 'label': 'Projects Completed'},
             {'number': len(certifications), 'label': 'Certifications'},
             {'number': len(achievements), 'label': 'Achievements'},
             {'number': len(education_items), 'label': 'Education'},
         ]
     }
     return render(request, 'index.html', context)
+
+def now(request):
+    return render(request, 'now.html', {'now': content.load_now()})
+
 
 def about(request):
     skills_by_category = content.group_skills_by_category()

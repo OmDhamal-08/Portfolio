@@ -1,0 +1,6 @@
+{% for s in social_links %}
+<a href="{{ s.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ s.label }}" title="{{ s.label }}" data-magnetic
+   class="grid h-10 w-10 place-items-center rounded-xl border border-line/10 bg-surface/60 text-muted transition hover:border-accent/60 hover:text-ink">
+  {% include "partials/icon.html" with name=s.name cls="w-[18px] h-[18px]" %}
+</a>
+{% endfor %}
