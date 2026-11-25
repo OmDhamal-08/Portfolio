@@ -1,0 +1,8 @@
+{% comment %}Inner-page header. Usage: {% include "partials/page_header.html" with label="Work" title="Projects" intro="..." %}{% endcomment %}
+<section class="page-header">
+  <div class="container-x">
+    <span class="label" data-hero-item>{{ label }}</span>
+    <h1 class="h-page mt-3" data-hero-item>{{ title }}</h1>
+    {% if intro %}<p class="lead mt-4" data-hero-item>{{ intro }}</p>{% endif %}
+  </div>
+</section>

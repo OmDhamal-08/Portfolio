@@ -6,215 +6,183 @@
 
 {% block content %}
 <!-- ============ Header ============ -->
-<section class="relative overflow-hidden pt-32 pb-14">
-  <div class="bg-grid absolute inset-0 -z-10"></div>
-  <div class="orb orb-1 -top-24 right-[15%] h-80 w-80"></div>
-  <div class="orb orb-3 top-24 left-[5%] h-56 w-56"></div>
-  <div class="mx-auto max-w-6xl px-4">
-    <a href="{% url 'projects' %}" class="inline-flex items-center gap-2 text-sm text-muted transition hover:gap-3 hover:text-ink" data-reveal="fade">
-      {% include "partials/icon.html" with name="arrow-left" %} All projects
-    </a>
-    <div class="mt-8 flex flex-wrap items-center gap-3" data-reveal>
-      <span class="chip !text-accent-2">{{ project.get_project_type_display }}</span>
-      <span class="chip">
-        <span class="status-dot {% if project.status == 'completed' %}bg-success{% elif project.status == 'in_progress' %}bg-warning{% else %}bg-muted{% endif %}"></span>
-        {{ project.get_status_display }}
-      </span>
-      <span class="chip">{% include "partials/icon.html" with name="calendar" cls="w-3.5 h-3.5" %} {{ project.get_project_duration }}</span>
+<section class="page-header">
+  <div class="container-x">
+    <a href="{% url 'projects' %}" class="link-accent text-sm" data-hero-item>&larr; All projects</a>
+    <div class="mt-6 flex flex-wrap items-center gap-2" data-hero-item>
+      <span class="badge badge-accent">{{ project.get_project_type_display }}</span>
+      <span class="badge"><span class="dot {% if project.status != 'completed' %}dot-muted{% endif %}"></span>{{ project.get_status_display }}</span>
+      <span class="badge">{% include "partials/icon.html" with name="calendar" cls="w-3.5 h-3.5" %} {{ project.get_project_duration }}</span>
     </div>
-    <h1 class="mt-6 max-w-4xl font-display text-4xl font-bold leading-[1.08] sm:text-6xl" data-reveal data-delay="0.05">{{ project.title }}</h1>
-    <p class="mt-6 max-w-3xl text-lg leading-relaxed text-muted" data-reveal data-delay="0.1">{{ project.short_description }}</p>
-    <div class="mt-8 flex flex-wrap gap-3" data-reveal data-delay="0.15">
-      {% if project.live_demo %}
-      <a href="{{ project.live_demo }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" data-magnetic>
-        Live demo {% include "partials/icon.html" with name="external" %}
-      </a>
-      {% endif %}
-      {% if project.github_link %}
-      <a href="{{ project.github_link }}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" data-magnetic>
-        {% include "partials/icon.html" with name="github" cls="w-4 h-4" %} Source code
-      </a>
-      {% endif %}
-      {% if project.documentation_link %}
-      <a href="{{ project.documentation_link }}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">
-        {% include "partials/icon.html" with name="book" cls="w-4 h-4" %} Docs
-      </a>
-      {% endif %}
+    <h1 class="h-page mt-5 max-w-3xl" data-hero-item>{{ project.title }}</h1>
+    <p class="lead mt-4" data-hero-item>{{ project.short_description }}</p>
+    <div class="mt-7 flex flex-wrap gap-3" data-hero-item>
+      {% if project.live_demo %}<a href="{{ project.live_demo }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Live demo <span class="arrow" aria-hidden="true">&rarr;</span></a>{% endif %}
+      {% if project.github_link %}<a href="{{ project.github_link }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">{% include "partials/icon.html" with name="github" cls="w-4 h-4" %} Source code</a>{% endif %}
+      {% if project.documentation_link %}<a href="{{ project.documentation_link }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">{% include "partials/icon.html" with name="book" cls="w-4 h-4" %} Docs</a>{% endif %}
     </div>
   </div>
 </section>
 
-<div class="mx-auto grid max-w-6xl gap-10 px-4 lg:grid-cols-[1fr_300px]">
-  <!-- ============ Main column ============ -->
-  <div class="min-w-0 space-y-8">
-    {% if project.featured_image %}
-    <div class="ring-gradient" data-reveal="scale">
-      <img src="{{ project.featured_image.url }}" alt="{{ project.title }} screenshot" class="w-full object-cover" />
-    </div>
-    {% endif %}
-
-    {% if project.problem or project.solution %}
-    <div class="grid gap-5 md:grid-cols-2">
-      {% if project.problem %}
-      <section class="card spotlight p-7" data-reveal>
-        <div class="mb-4 flex items-center gap-3">
-          <span class="grid h-10 w-10 place-items-center rounded-xl bg-accent-3/10 text-accent-3">{% include "partials/icon.html" with name="target" %}</span>
-          <h2 class="font-display text-xl font-semibold">The problem</h2>
-        </div>
-        <p class="leading-relaxed text-muted">{{ project.problem }}</p>
-      </section>
-      {% endif %}
-      {% if project.solution %}
-      <section class="card spotlight p-7" data-reveal data-delay="0.08">
-        <div class="mb-4 flex items-center gap-3">
-          <span class="grid h-10 w-10 place-items-center rounded-xl bg-success/10 text-success">{% include "partials/icon.html" with name="bolt" %}</span>
-          <h2 class="font-display text-xl font-semibold">The solution</h2>
-        </div>
-        <p class="leading-relaxed text-muted">{{ project.solution }}</p>
-      </section>
-      {% endif %}
-    </div>
-    {% endif %}
-
-    {% if project.architecture %}
-    <section class="card p-7 sm:p-9" data-reveal>
-      <span class="eyebrow">How it works</span>
-      <h2 class="mt-3 font-display text-2xl font-semibold">Architecture & flow</h2>
-      <ol class="mt-7 space-y-0" data-stagger="0.1">
-        {% for step in project.architecture %}
-        <li class="relative flex gap-5 pb-6 last:pb-0">
-          {% if not forloop.last %}<span class="absolute left-[1.15rem] top-10 bottom-0 w-px bg-gradient-to-b from-accent/60 to-transparent" aria-hidden="true"></span>{% endif %}
-          <span class="grid h-[2.3rem] w-[2.3rem] shrink-0 place-items-center rounded-xl border border-accent/40 bg-accent/10 font-mono text-sm font-medium text-accent">{{ forloop.counter|stringformat:"02d" }}</span>
-          <p class="pt-1.5 leading-relaxed">{{ step }}</p>
-        </li>
-        {% endfor %}
-      </ol>
-    </section>
-    {% endif %}
-
-    {% if project.challenges %}
-    <section data-reveal>
-      <span class="eyebrow">Problems I hit</span>
-      <h2 class="mt-3 font-display text-2xl font-semibold">Challenges & how I solved them</h2>
-      <div class="mt-6 space-y-4" data-stagger="0.1">
-        {% for item in project.challenges %}
-        <div class="card spotlight grid gap-4 p-6 md:grid-cols-2 md:gap-8">
-          <div>
-            <p class="mb-2 font-mono text-[11px] uppercase tracking-wider text-accent-3">Challenge {{ forloop.counter }}</p>
-            <p class="leading-relaxed">{{ item.challenge }}</p>
-          </div>
-          {% if item.fix %}
-          <div class="border-t border-line/[0.08] pt-4 md:border-l md:border-t-0 md:pl-8 md:pt-0">
-            <p class="mb-2 font-mono text-[11px] uppercase tracking-wider text-success">How I fixed it</p>
-            <p class="leading-relaxed text-muted">{{ item.fix }}</p>
-          </div>
-          {% endif %}
-        </div>
-        {% endfor %}
+<section class="section !pt-14">
+  <div class="container-x grid gap-10 lg:grid-cols-[1fr_280px]">
+    <!-- ============ Main column ============ -->
+    <div class="min-w-0 space-y-12">
+      {% if project.featured_image %}
+      <div class="card-media" data-reveal>
+        <img src="{{ project.featured_image.url }}" alt="{{ project.title }} screenshot" class="w-full object-cover" />
       </div>
-    </section>
-    {% endif %}
-
-    {% if project.results or project.learnings %}
-    <div class="grid gap-5 md:grid-cols-2">
-      {% if project.results %}
-      <section class="card p-7" data-reveal>
-        <h2 class="mb-5 font-display text-xl font-semibold">Results</h2>
-        <ul class="space-y-3">
-          {% for item in project.results %}
-          <li class="flex gap-3 text-muted"><span class="mt-1 text-success">{% include "partials/icon.html" with name="check" %}</span>{{ item }}</li>
-          {% endfor %}
-        </ul>
-      </section>
       {% endif %}
-      {% if project.learnings %}
-      <section class="card p-7" data-reveal data-delay="0.08">
-        <h2 class="mb-5 font-display text-xl font-semibold">What I learned</h2>
-        <ul class="space-y-3">
-          {% for item in project.learnings %}
-          <li class="flex gap-3 text-muted"><span class="mt-1 text-accent-2">{% include "partials/icon.html" with name="spark" cls="w-4 h-4" %}</span>{{ item }}</li>
-          {% endfor %}
-        </ul>
-      </section>
-      {% endif %}
-    </div>
-    {% endif %}
 
-    <section class="card p-7 sm:p-9" data-reveal>
-      <h2 class="mb-5 font-display text-2xl font-semibold">Project Overview</h2>
-      <div class="prose-rich">{{ project.description|rich_text }}</div>
-    </section>
-
-    {% if project.get_additional_images_list %}
-    <section data-reveal>
-      <h2 class="mb-5 font-display text-2xl font-semibold">Gallery</h2>
-      <div class="grid gap-4 sm:grid-cols-2" data-stagger>
-        {% for image in project.get_additional_images_list %}
-        <a href="{{ image }}" target="_blank" rel="noopener" class="block overflow-hidden rounded-2xl border border-line/10">
-          <img src="{{ image }}" alt="{{ project.title }} screenshot {{ forloop.counter }}" loading="lazy" class="aspect-video w-full object-cover transition duration-700 hover:scale-105" />
-        </a>
-        {% endfor %}
-      </div>
-    </section>
-    {% endif %}
-
-    {% if project.next_steps %}
-    <section class="ring-gradient" data-reveal>
-      <div class="bg-surface p-7">
-        <h2 class="mb-4 font-display text-xl font-semibold">What's next</h2>
-        <ul class="space-y-2.5">
-          {% for item in project.next_steps %}
-          <li class="flex gap-3 text-muted"><span class="text-accent" aria-hidden="true">&rarr;</span>{{ item }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-    </section>
-    {% endif %}
-  </div>
-
-  <!-- ============ Sidebar ============ -->
-  <aside class="space-y-5 lg:sticky lg:top-28 lg:self-start">
-    <div class="card p-6" data-reveal="right">
-      <h2 class="mb-5 font-mono text-xs uppercase tracking-[0.16em] text-muted">At a glance</h2>
-      <dl class="space-y-4 text-sm">
-        {% if project.role %}
-        <div><dt class="text-muted">My role</dt><dd class="mt-1 font-medium">{{ project.role }}</dd></div>
+      {% if project.problem or project.solution %}
+      <div class="grid gap-5 md:grid-cols-2" data-stagger>
+        {% if project.problem %}
+        <div class="card card-surface p-6">
+          <span class="label">The problem</span>
+          <p class="mt-3 text-muted">{{ project.problem }}</p>
+        </div>
         {% endif %}
-        <div><dt class="text-muted">Type</dt><dd class="mt-1 font-medium">{{ project.get_project_type_display }}</dd></div>
-        <div><dt class="text-muted">Timeline</dt><dd class="mt-1 font-medium">{{ project.get_project_duration }}</dd></div>
-        <div><dt class="text-muted">Status</dt><dd class="mt-1 font-medium">{{ project.get_status_display }}</dd></div>
-      </dl>
-    </div>
-    <div class="card p-6" data-reveal="right" data-delay="0.08">
-      <h2 class="mb-4 font-mono text-xs uppercase tracking-[0.16em] text-muted">Tech stack</h2>
-      <div class="flex flex-wrap gap-2">
-        {% for tech in project.technologies %}
-        <a href="{% url 'projects' %}?tech={{ tech|urlencode }}" class="chip">{{ tech }}</a>
-        {% endfor %}
+        {% if project.solution %}
+        <div class="card card-surface p-6">
+          <span class="label">The solution</span>
+          <p class="mt-3 text-muted">{{ project.solution }}</p>
+        </div>
+        {% endif %}
       </div>
+      {% endif %}
+
+      {% if project.architecture %}
+      <section data-reveal>
+        <span class="label">How it works</span>
+        <h2 class="mt-2 text-2xl font-semibold">Architecture & flow</h2>
+        <ol class="mt-6 space-y-3">
+          {% for step in project.architecture %}
+          <li class="flex items-start gap-4 rounded-xl border border-line bg-base p-4">
+            <span class="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-accent-soft text-sm font-semibold text-accent">{{ forloop.counter }}</span>
+            <p class="pt-0.5 text-ink">{{ step }}</p>
+          </li>
+          {% endfor %}
+        </ol>
+      </section>
+      {% endif %}
+
+      {% if project.challenges %}
+      <section data-reveal>
+        <span class="label">Problems I hit</span>
+        <h2 class="mt-2 text-2xl font-semibold">Challenges and how I solved them</h2>
+        <div class="mt-6 space-y-4">
+          {% for item in project.challenges %}
+          <div class="card grid gap-4 p-6 md:grid-cols-2 md:gap-8">
+            <div>
+              <p class="text-[13px] font-semibold text-ink">Challenge {{ forloop.counter }}</p>
+              <p class="mt-1.5 text-muted">{{ item.challenge }}</p>
+            </div>
+            {% if item.fix %}
+            <div class="border-t border-line pt-4 md:border-l md:border-t-0 md:pl-8 md:pt-0">
+              <p class="text-[13px] font-semibold text-accent">How I fixed it</p>
+              <p class="mt-1.5 text-muted">{{ item.fix }}</p>
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {% if project.results or project.learnings %}
+      <div class="grid gap-5 md:grid-cols-2" data-stagger>
+        {% if project.results %}
+        <div class="card p-6">
+          <h2 class="text-lg font-semibold">Results</h2>
+          <ul class="mt-4 space-y-3">
+            {% for item in project.results %}<li class="flex gap-3 text-muted"><span class="mt-1 text-accent">{% include "partials/icon.html" with name="check" %}</span>{{ item }}</li>{% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        {% if project.learnings %}
+        <div class="card p-6">
+          <h2 class="text-lg font-semibold">What I learned</h2>
+          <ul class="mt-4 space-y-3">
+            {% for item in project.learnings %}<li class="flex gap-3 text-muted"><span class="mt-1 text-accent">{% include "partials/icon.html" with name="check" %}</span>{{ item }}</li>{% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <section data-reveal>
+        <h2 class="text-2xl font-semibold">Project Overview</h2>
+        <div class="prose-rich mt-5">{{ project.description|rich_text }}</div>
+      </section>
+
+      {% if project.get_additional_images_list %}
+      <section data-reveal>
+        <h2 class="text-2xl font-semibold">Gallery</h2>
+        <div class="mt-5 grid gap-4 sm:grid-cols-2">
+          {% for image in project.get_additional_images_list %}
+          <a href="{{ image }}" target="_blank" rel="noopener" class="card-media block">
+            <img src="{{ image }}" alt="{{ project.title }} screenshot {{ forloop.counter }}" loading="lazy" class="aspect-video w-full object-cover" />
+          </a>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {% if project.next_steps %}
+      <section class="card card-surface p-6" data-reveal>
+        <h2 class="text-lg font-semibold">What's next</h2>
+        <ul class="mt-4 space-y-2.5">
+          {% for item in project.next_steps %}<li class="flex gap-3 text-muted"><span class="text-accent" aria-hidden="true">&rarr;</span>{{ item }}</li>{% endfor %}
+        </ul>
+      </section>
+      {% endif %}
     </div>
-    {% if project.has_case_study %}
-    <nav class="card hidden p-6 lg:block" aria-label="On this page" data-reveal="right" data-delay="0.12">
-      <h2 class="mb-4 font-mono text-xs uppercase tracking-[0.16em] text-muted">Interview talking points</h2>
-      <ul class="space-y-2.5 text-sm text-muted">
-        {% if project.problem %}<li class="flex gap-2"><span class="text-accent-2">&rarr;</span>Why I built it</li>{% endif %}
-        {% if project.architecture %}<li class="flex gap-2"><span class="text-accent-2">&rarr;</span>How the system flows</li>{% endif %}
-        {% if project.challenges %}<li class="flex gap-2"><span class="text-accent-2">&rarr;</span>{{ project.challenges|length }} challenge{{ project.challenges|length|pluralize }} I solved</li>{% endif %}
-        {% if project.learnings %}<li class="flex gap-2"><span class="text-accent-2">&rarr;</span>What I learned</li>{% endif %}
-      </ul>
-    </nav>
-    {% endif %}
-  </aside>
-</div>
+
+    <!-- ============ Sidebar ============ -->
+    <aside class="space-y-5 lg:sticky lg:top-24 lg:self-start">
+      <div class="card p-6" data-reveal>
+        <h2 class="label">At a glance</h2>
+        <dl class="mt-4 space-y-4 text-sm">
+          {% if project.role %}<div><dt class="text-muted">My role</dt><dd class="mt-0.5 font-medium">{{ project.role }}</dd></div>{% endif %}
+          <div><dt class="text-muted">Type</dt><dd class="mt-0.5 font-medium">{{ project.get_project_type_display }}</dd></div>
+          <div><dt class="text-muted">Timeline</dt><dd class="mt-0.5 font-medium">{{ project.get_project_duration }}</dd></div>
+          <div><dt class="text-muted">Status</dt><dd class="mt-0.5 font-medium">{{ project.get_status_display }}</dd></div>
+        </dl>
+      </div>
+      <div class="card p-6" data-reveal>
+        <h2 class="label">Tech stack</h2>
+        <div class="mt-4 flex flex-wrap gap-1.5">
+          {% for tech in project.technologies %}<a href="{% url 'projects' %}?tech={{ tech|urlencode }}" class="tag tag-accent">{{ tech }}</a>{% endfor %}
+        </div>
+      </div>
+      {% if project.has_case_study %}
+      <div class="card hidden p-6 lg:block" data-reveal>
+        <h2 class="label">Interview talking points</h2>
+        <ul class="mt-4 space-y-2 text-sm text-muted">
+          {% if project.problem %}<li>&rarr; Why I built it</li>{% endif %}
+          {% if project.architecture %}<li>&rarr; How the system flows</li>{% endif %}
+          {% if project.challenges %}<li>&rarr; {{ project.challenges|length }} challenge{{ project.challenges|length|pluralize }} I solved</li>{% endif %}
+          {% if project.learnings %}<li>&rarr; What I learned</li>{% endif %}
+        </ul>
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+</section>
 
 {% if related_projects %}
-<section class="mx-auto mt-24 max-w-6xl px-4">
-  <div class="mb-8 flex items-end justify-between gap-4" data-reveal>
-    <h2 class="font-display text-3xl font-semibold">More {{ project.get_project_type_display|lower }} projects</h2>
-    <a href="{% url 'projects' %}" class="hidden items-center gap-1.5 text-sm text-accent-2 hover:underline sm:inline-flex">View all {% include "partials/icon.html" with name="arrow-right" %}</a>
-  </div>
-  <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-stagger>
-    {% for project in related_projects %}{% include "partials/project_card.html" %}{% endfor %}
+<section class="section section-alt">
+  <div class="container-x">
+    <div class="flex items-end justify-between gap-4" data-reveal>
+      <div>
+        <span class="label">Related</span>
+        <h2 class="h-section">More {{ project.get_project_type_display|lower }} projects</h2>
+      </div>
+      <a href="{% url 'projects' %}" class="link-accent hidden sm:inline-flex">View all <span class="arrow" aria-hidden="true">&rarr;</span></a>
+    </div>
+    <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-stagger>
+      {% for project in related_projects %}{% include "partials/project_card.html" %}{% endfor %}
+    </div>
   </div>
 </section>
 {% endif %}

@@ -2,60 +2,51 @@
 {% block title %}Education | Om Dhamal{% endblock %}
 
 {% block content %}
-<section class="relative overflow-hidden pt-36 pb-12">
-  <div class="bg-grid absolute inset-0 -z-10"></div>
-  <div class="orb orb-1 -top-24 right-[20%] h-72 w-72"></div>
-  <div class="mx-auto max-w-6xl px-4">
-    <span class="eyebrow" data-reveal>Journey</span>
-    <h1 class="mt-4 font-display text-4xl font-bold leading-tight sm:text-6xl" data-reveal data-delay="0.05">Education <span class="text-gradient">timeline</span></h1>
-    <p class="mt-5 max-w-2xl text-lg text-muted" data-reveal data-delay="0.1">From my first classroom to computer science - every step that shaped how I learn.</p>
-
-    <div class="mt-10 grid max-w-2xl grid-cols-3 gap-4" data-stagger>
-      <div class="card p-5"><p class="font-display text-3xl font-bold" data-count="{{ total_education }}">{{ total_education }}</p><p class="mt-1 text-xs text-muted">Milestones</p></div>
-      <div class="card p-5"><p class="font-display text-3xl font-bold" data-count="{{ total_degrees }}">{{ total_degrees }}</p><p class="mt-1 text-xs text-muted">Degrees</p></div>
-      <div class="card p-5"><p class="font-display text-3xl font-bold" data-count="{{ currently_studying }}">{{ currently_studying }}</p><p class="mt-1 text-xs text-muted">In progress</p></div>
+<section class="page-header">
+  <div class="container-x">
+    <span class="label" data-hero-item>Education</span>
+    <h1 class="h-page mt-3" data-hero-item>Education timeline</h1>
+    <p class="lead mt-4" data-hero-item>From my first classroom to computer science: every step that shaped how I learn.</p>
+    <div class="stats mt-8 max-w-2xl !grid-cols-3" data-hero-item>
+      <div class="stat !border-b-0 !border-r !border-line"><p class="stat-number" data-count="{{ total_education }}">{{ total_education }}</p><p class="stat-label">Milestones</p></div>
+      <div class="stat !border-b-0 !border-r !border-line"><p class="stat-number" data-count="{{ total_degrees }}">{{ total_degrees }}</p><p class="stat-label">Degrees</p></div>
+      <div class="stat !border-b-0 !border-r-0"><p class="stat-number" data-count="{{ currently_studying }}">{{ currently_studying }}</p><p class="stat-label">In progress</p></div>
     </div>
   </div>
 </section>
 
-<section class="mx-auto max-w-4xl px-4">
-  <div class="timeline">
-    <div class="timeline-track" aria-hidden="true"><span class="timeline-line"></span></div>
-    <ol class="space-y-8">
+<section class="section !pt-14">
+  <div class="container-x max-w-4xl">
+    <ol class="timeline space-y-6">
       {% for edu in education_list %}
-      <li class="relative pl-16" data-reveal="left">
-        <span class="timeline-node absolute left-0 top-5">{{ edu.get_icon }}</span>
-        <article class="card card-hover spotlight p-6 sm:p-7 {% if edu.currently_studying %}!border-accent/40{% endif %}">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="chip !text-accent-2">{{ edu.get_degree_display }}</span>
-            <span class="chip">{% include "partials/icon.html" with name="calendar" cls="w-3.5 h-3.5" %} {{ edu.get_duration }}</span>
-            {% if edu.currently_studying %}<span class="chip !border-success/40 !text-success"><span class="status-dot bg-success"></span> Currently studying</span>{% endif %}
+      <li class="timeline-item" data-reveal>
+        <span class="timeline-dot" aria-hidden="true"></span>
+        <article class="card p-6 {% if edu.currently_studying %}!border-accent{% endif %}">
+          <p class="timeline-date">{{ edu.get_duration }} &middot; {{ edu.get_degree_display }}</p>
+          <h2 class="mt-1 text-xl font-semibold">{{ edu.title }}</h2>
+          <p class="mt-0.5 text-sm text-muted">{{ edu.institution }}{% if edu.location %} &middot; {{ edu.location }}{% endif %}</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {% if edu.currently_studying %}<span class="badge badge-accent">Currently studying</span>{% endif %}
+            {% if edu.grade %}<span class="badge">{{ edu.grade }}</span>{% endif %}
           </div>
-          <h2 class="mt-4 font-display text-xl font-semibold sm:text-2xl">{{ edu.title }}</h2>
-          <p class="mt-1 text-sm text-muted">{{ edu.institution }}{% if edu.location %} &middot; {{ edu.location }}{% endif %}</p>
-          {% if edu.grade %}<p class="mt-4 inline-flex rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">{{ edu.grade }}</p>{% endif %}
-          {% if edu.description %}<p class="mt-4 leading-relaxed text-muted">{{ edu.description }}</p>{% endif %}
+          {% if edu.description %}<p class="mt-3 text-[15px] text-muted">{{ edu.description }}</p>{% endif %}
 
           {% if edu.get_courses_list or edu.get_achievements_list %}
-          <div x-data="{ open: {% if forloop.last or edu.currently_studying %}true{% else %}false{% endif %} }" class="mt-5">
-            <button type="button" @click="open = !open" :aria-expanded="open" class="inline-flex items-center gap-1.5 text-sm font-medium text-accent-2">
+          <div x-data="{ open: {% if forloop.last or edu.currently_studying %}true{% else %}false{% endif %} }" class="mt-4">
+            <button type="button" @click="open = !open" :aria-expanded="open.toString()" class="link-accent text-sm">
               <span x-text="open ? 'Hide details' : 'Show subjects & highlights'">Show subjects & highlights</span>
-              <svg class="h-4 w-4 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+              <svg class="h-4 w-4 transition-transform duration-200" :class="open && 'rotate-180'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </button>
-            <div x-show="open" x-transition.opacity.duration.300ms x-cloak class="pt-4">
-              {% if edu.get_courses_list %}
-              <div class="flex flex-wrap gap-2">{% for course in edu.get_courses_list %}<span class="chip">{{ course }}</span>{% endfor %}</div>
-              {% endif %}
+            <div x-show="open" x-transition.opacity.duration.200ms x-cloak class="pt-4">
+              {% if edu.get_courses_list %}<div class="flex flex-wrap gap-1.5">{% for course in edu.get_courses_list %}<span class="tag">{{ course }}</span>{% endfor %}</div>{% endif %}
               {% if edu.get_achievements_list %}
-              <ul class="mt-4 space-y-2">{% for item in edu.get_achievements_list %}<li class="flex gap-2.5 text-sm text-muted"><span class="mt-0.5 text-success">{% include "partials/icon.html" with name="check" %}</span>{{ item }}</li>{% endfor %}</ul>
+              <ul class="mt-4 space-y-2">{% for item in edu.get_achievements_list %}<li class="flex gap-2.5 text-sm text-muted"><span class="mt-0.5 text-accent">{% include "partials/icon.html" with name="check" %}</span>{{ item }}</li>{% endfor %}</ul>
               {% endif %}
             </div>
           </div>
           {% endif %}
 
-          {% if edu.certificate %}
-          <a href="{{ edu.certificate.url }}" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-1.5 text-sm text-accent-2 hover:underline">View certificate {% include "partials/icon.html" with name="external" %}</a>
-          {% endif %}
+          {% if edu.certificate %}<a href="{{ edu.certificate.url }}" target="_blank" rel="noopener" class="link-accent mt-4 text-sm">View certificate <span class="arrow" aria-hidden="true">&rarr;</span></a>{% endif %}
         </article>
       </li>
       {% empty %}

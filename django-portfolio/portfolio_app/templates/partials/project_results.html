@@ -8,11 +8,7 @@
     {% if current_query %} for "<span class="text-ink">{{ current_query }}</span>"{% endif %}
     {% if current_tech %} using <span class="text-ink">{{ current_tech }}</span>{% endif %}
   </p>
-  {% if has_filters %}
-  <a href="{% url 'projects' %}" class="inline-flex items-center gap-1.5 text-accent-2 hover:underline">
-    {% include "partials/icon.html" with name="close" cls="w-3.5 h-3.5" %} Clear filters
-  </a>
-  {% endif %}
+  {% if has_filters %}<a href="{% url 'projects' %}" class="link-accent">Clear filters</a>{% endif %}
 </div>
 
 {% if projects %}
@@ -22,11 +18,9 @@
   {% endfor %}
 </div>
 {% else %}
-<div class="card grid place-items-center px-6 py-20 text-center">
-  <div class="mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-accent/10 text-accent">
-    {% include "partials/icon.html" with name="search" cls="w-6 h-6" %}
-  </div>
-  <h3 class="font-display text-xl font-semibold">No projects match that search</h3>
-  <p class="mt-2 max-w-sm text-sm text-muted">Try a different keyword or technology, or clear the filters to see everything.</p>
+<div class="card px-6 py-16 text-center">
+  <span class="icon-box mx-auto">{% include "partials/icon.html" with name="search" cls="w-5 h-5" %}</span>
+  <h3 class="mt-4 text-lg font-semibold">No projects match that search</h3>
+  <p class="mx-auto mt-2 max-w-sm text-sm text-muted">Try a different keyword or technology, or clear the filters to see everything.</p>
 </div>
 {% endif %}

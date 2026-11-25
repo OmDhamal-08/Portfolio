@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render
 from django.http import FileResponse
 import os
+from datetime import date
 import logging
 from django.core.cache import cache
 from django.core.mail import BadHeaderError, EmailMessage
@@ -232,6 +233,7 @@ def home(request):
         'featured_achievements': featured_achievements,
         'featured_education': featured_education,
         'now': content.load_now(),
+        'journey': _journey_timeline(featured_education, featured_certifications, featured_achievements),
         'top_skills': [skill.name for skill in skills][:12],
         'quick_stats': [
             {'number': sum(1 for project in projects if project.status == 'completed'), 'label': 'Projects Completed'},
@@ -241,6 +243,23 @@ def home(request):
         ]
     }
     return render(request, 'index.html', context)
+
+def _journey_timeline(education_items, certifications, achievements):
+    """Merge featured milestones into one list, newest first, for the home timeline."""
+    entries = []
+    for item in education_items:
+        entries.append({'date': item.start_date, 'date_label': item.get_duration(), 'kind': 'Education',
+                        'title': item.title, 'subtitle': item.institution, 'url': 'education'})
+    for item in certifications:
+        entries.append({'date': item.issue_date, 'date_label': item.issue_date.strftime('%b %Y') if item.issue_date else '',
+                        'kind': 'Certification', 'title': item.title, 'subtitle': item.issuing_organization,
+                        'url': 'certifications'})
+    for item in achievements:
+        entries.append({'date': item.date, 'date_label': item.date.strftime('%b %Y') if item.date else '',
+                        'kind': item.get_category_display(), 'title': item.title, 'subtitle': item.organization,
+                        'url': 'achievements'})
+    return sorted(entries, key=lambda entry: entry['date'] or date.min, reverse=True)
+
 
 def now(request):
     return render(request, 'now.html', {'now': content.load_now()})
