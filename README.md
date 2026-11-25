@@ -22,9 +22,9 @@ studies, my learning journey, and what I'm working on right now.
 - **Now page** (`/now/`). What I'm currently learning, building and aiming for, with progress bars.
 - **Journey pages.** Timelines for education and achievements, plus a certifications page with verify links.
 - **Contact form** with validation, spam protection and email notifications.
-- **Dark and light themes**; the choice is remembered.
-- **Smooth animations.** Scroll reveals, animated counters, a typewriter hero, timelines that draw as you scroll, buttons that pull toward the cursor, cards that light up under it.
-- **Accessible and responsive.** Works at phone width, supports keyboard navigation, and turns animations off for visitors who ask for reduced motion.
+- **Clean light design.** White and light-gray sections with a single navy accent; flat colors, no gradients or glow effects.
+- **Subtle animations.** A staggered hero reveal, sections that fade up as you scroll, numbers that count up, progress bars that fill, a scrolling skills ticker, and small hover lifts on cards and buttons.
+- **Accessible and responsive.** Works from 360px phones to desktops, meets WCAG AA text contrast, has visible keyboard focus outlines and a skip link, and shows simple fades instead of motion for visitors who ask for reduced motion.
 
 **Under the hood**
 - File-based content: portfolio data lives in JSON files, not database tables.
@@ -41,12 +41,37 @@ studies, my learning journey, and what I'm working on right now.
 |---|---|
 | Backend | Python, Django 5.1 |
 | Frontend | Django templates, Tailwind CSS, Alpine.js |
-| Interactivity | HTMX (live search), Alpine.js (theme, menus, tabs) |
+| Interactivity | HTMX (live search), Alpine.js (menus, tabs, form state) |
 | Animation | GSAP + ScrollTrigger, Lenis (smooth scrolling) |
 | Data | JSON content files; SQLite locally, Postgres in production |
 | Caching | Django cache (local memory, or Redis when `REDIS_URL` is set) |
 | Static files | WhiteNoise |
 | Hosting | Vercel (serverless Python) |
+
+---
+
+## Design
+
+The whole site uses one small palette, defined as CSS variables at the top of
+`static/css/site.css`. Tailwind's color names point at these variables, so no
+other colors can be used by accident.
+
+| Variable | Color | Used for |
+|---|---|---|
+| `--bg` | `#FFFFFF` | Page background, cards |
+| `--surface` | `#F5F6F8` | Alternate sections, tags, footer |
+| `--border` | `#E4E7EB` | Borders, dividers, progress-bar track |
+| `--text` | `#0F172A` | Headings and main text |
+| `--text-muted` | `#5B6472` | Paragraphs, labels, dates |
+| `--accent` | `#1E3A8A` | Navy: buttons, links, active nav, bars, timeline dots |
+| `--accent-soft` | `#E8EDF8` | Tech tag and badge backgrounds |
+| `--success` | `#16A34A` | Only the "Open to internships" dot |
+
+Rules: flat colors only (no gradients or glows), navy used sparingly, and all
+text meets WCAG AA contrast. `--text-light` (`#8A92A0`) is kept for non-text
+details because it is too light for readable text.
+
+Fonts: **Inter** for everything, **JetBrains Mono** for tech tags.
 
 ---
 
@@ -126,11 +151,11 @@ Without JavaScript, the form still works as a normal GET form.
 |   |   |-- templatetags/          # rich_text and get_item filters
 |   |   |-- templates/
 |   |   |   |-- base.html
-|   |   |   `-- partials/          # project card, HTMX results, icons, socials
+|   |   |   `-- partials/          # project card, HTMX results, page header, icons, socials
 |   |   |-- management/commands/validate_content.py
 |   |   `-- tests.py
 |   |-- static/
-|   |   |-- css/site.css           # Design tokens + components
+|   |   |-- css/site.css           # Color variables (white + navy) and components
 |   |   |-- js/site.js             # Animations, smooth scroll, HTMX hooks
 |   |   `-- images/
 |   `-- manage.py
