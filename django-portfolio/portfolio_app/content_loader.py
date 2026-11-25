@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 from django.conf import settings
+from django.core.cache import cache
 from django.http import Http404
 from django.utils import timezone
 from django.utils.text import slugify
@@ -103,6 +104,21 @@ class ProjectContent(ContentItem):
     def get_additional_images_list(self):
         return [_asset_url(path) for path in getattr(self, 'additional_images', []) if path]
 
+    def has_case_study(self):
+        return bool(self.problem or self.solution or self.challenges or self.learnings)
+
+    def matches_query(self, query):
+        if not query:
+            return True
+        haystack = ' '.join([
+            self.title,
+            self.short_description,
+            self.description,
+            self.get_project_type_display(),
+            ' '.join(self.technologies),
+        ]).lower()
+        return all(term in haystack for term in query.lower().split())
+
     def get_project_duration(self):
         if self.start_date and self.end_date:
             return f"{self.start_date.strftime('%b %Y')} - {self.end_date.strftime('%b %Y')}"
@@ -186,13 +202,37 @@ class SkillContent(ContentItem):
         return f'{self.proficiency}%'
 
 
-def list_projects(project_type='', status=''):
+def list_projects(project_type='', status='', query='', tech=''):
     projects = _active(load_projects())
     if project_type:
         projects = [project for project in projects if project.project_type == project_type]
     if status:
         projects = [project for project in projects if project.status == status]
+    if tech:
+        tech_lower = tech.lower()
+        projects = [
+            project for project in projects
+            if any(item.lower() == tech_lower for item in project.technologies)
+        ]
+    if query:
+        projects = [project for project in projects if project.matches_query(query)]
     return projects
+
+
+def list_project_technologies(limit=None):
+    """Technologies ordered by how many active projects use them."""
+    counts = {}
+    for project in _active(load_projects()):
+        for tech in project.technologies:
+            counts[tech] = counts.get(tech, 0) + 1
+    ordered = sorted(counts.items(), key=lambda item: (-item[1], item[0].lower()))
+    names = [name for name, _ in ordered]
+    return names[:limit] if limit else names
+
+
+def list_used_project_types():
+    used = {project.project_type for project in _active(load_projects())}
+    return [choice for choice in PROJECT_TYPE_CHOICES if choice[0] in used]
 
 
 def get_project(slug):
@@ -271,6 +311,15 @@ def load_projects():
             display_order=raw.get('display_order', order),
             featured=raw.get('featured', False),
             is_active=raw.get('is_active', True),
+            # Case-study fields (all optional)
+            role=raw.get('role') or '',
+            problem=raw.get('problem') or '',
+            solution=raw.get('solution') or '',
+            architecture=_list_value(raw.get('architecture', [])),
+            challenges=_challenges(raw.get('challenges', []), slug),
+            results=_list_value(raw.get('results', [])),
+            learnings=_list_value(raw.get('learnings', [])),
+            next_steps=_list_value(raw.get('next_steps', [])),
         )
         projects.append(project)
     return sorted(projects, key=lambda item: (item.display_order, item.title))
@@ -359,6 +408,32 @@ def load_skills():
     return sorted(skills, key=lambda item: (item.display_order, item.name))
 
 
+def load_now():
+    """The "Now / Currently Learning" section. Returns None if the file is absent."""
+    if not (_content_root() / 'now.json').exists():
+        return None
+    raw = _read_json('now.json')
+    learning = []
+    for item in raw.get('learning', []):
+        progress = int(item.get('progress', 0))
+        if not 0 <= progress <= 100:
+            raise ContentValidationError(f'now.json: progress for "{item.get("name")}" must be 0-100')
+        learning.append(ContentItem(
+            name=_required(item, 'name', 'now.json'),
+            progress=progress,
+            note=item.get('note', ''),
+            resource=item.get('resource', ''),
+        ))
+    return ContentItem(
+        updated=_date(raw.get('updated')),
+        headline=raw.get('headline', ''),
+        focus=raw.get('focus', ''),
+        learning=learning,
+        building=_list_value(raw.get('building', [])),
+        goals=_list_value(raw.get('goals', [])),
+    )
+
+
 def validate_content():
     loaders = [
         ('projects', load_projects),
@@ -366,6 +441,7 @@ def validate_content():
         ('achievements', load_achievements),
         ('education', load_education),
         ('skills', load_skills),
+        ('now', load_now),
     ]
     errors = []
     for label, loader in loaders:
@@ -376,11 +452,41 @@ def validate_content():
     return errors
 
 
+CONTENT_CACHE_PREFIX = 'portfolio-content'
+
+
 def _read_json(filename):
+    """Read a content file through Django's cache.
+
+    The cache key includes the file's modification time, so editing a JSON file
+    automatically invalidates the cached copy - no manual cache clearing needed.
+    """
     path = _content_root() / filename
     if not path.exists():
         raise ContentValidationError(f'Missing content file: {path}')
-    return json.loads(path.read_text(encoding='utf-8-sig'))
+
+    key = f'{CONTENT_CACHE_PREFIX}:{filename}:{path.stat().st_mtime_ns}'
+    data = cache.get(key)
+    if data is None:
+        try:
+            data = json.loads(path.read_text(encoding='utf-8-sig'))
+        except json.JSONDecodeError as exc:
+            raise ContentValidationError(f'{filename} is not valid JSON: {exc}') from exc
+        cache.set(key, data, getattr(settings, 'CONTENT_CACHE_TIMEOUT', 60 * 60))
+    return data
+
+
+def _challenges(value, slug):
+    """Challenges are a list of {"challenge": ..., "fix": ...} objects or plain strings."""
+    challenges = []
+    for item in value or []:
+        if isinstance(item, str):
+            challenges.append(ContentItem(challenge=item, fix=''))
+        elif isinstance(item, dict) and item.get('challenge'):
+            challenges.append(ContentItem(challenge=item['challenge'], fix=item.get('fix', '')))
+        else:
+            raise ContentValidationError(f'projects.json: invalid challenge entry in "{slug}"')
+    return challenges
 
 
 def _content_root():

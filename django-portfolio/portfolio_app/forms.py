@@ -9,8 +9,9 @@ class ContactForm(forms.Form):
         max_length=100,
         required=True,
         widget=forms.TextInput(attrs={
-            'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-            'placeholder': 'Your Full Name'
+            'class': 'input',
+            'placeholder': 'Your Full Name',
+            'autocomplete': 'name'
         })
     )
     
@@ -19,8 +20,9 @@ class ContactForm(forms.Form):
         required=True,
         validators=[EmailValidator()],
         widget=forms.EmailInput(attrs={
-            'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-            'placeholder': 'your.email@example.com'
+            'class': 'input',
+            'placeholder': 'your.email@example.com',
+            'autocomplete': 'email'
         })
     )
     
@@ -28,7 +30,7 @@ class ContactForm(forms.Form):
         max_length=200,
         required=True,
         widget=forms.TextInput(attrs={
-            'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+            'class': 'input',
             'placeholder': 'Project Inquiry or General Message'
         })
     )
@@ -37,7 +39,7 @@ class ContactForm(forms.Form):
         required=True,
         max_length=2000,
         widget=forms.Textarea(attrs={
-            'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+            'class': 'input',
             'placeholder': 'Tell me about your project or how I can help you...',
             'rows': 6
         })

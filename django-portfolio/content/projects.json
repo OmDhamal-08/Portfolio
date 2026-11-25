@@ -4,9 +4,55 @@
     "slug": "portfolio-website",
     "short_description": "A responsive Django portfolio with file-based content, contact inbox, resume uploads, and production deployment.",
     "description": "A personal portfolio website built with Django using the MVT architecture. The project now uses a file-based content layer for portfolio pages, so projects, skills, certifications, achievements, and education can be updated through JSON files without pushing that content into database tables.\n\nKey backend features:\n- File-based content loading for portfolio sections.\n- Django templates for server-rendered pages.\n- Contact form with validation, spam protection, email delivery, and database-backed message storage.\n- Resume download endpoint using Django FileResponse.\n- Admin panel kept only for contact messages, resume uploads, and Django user management.\n- Static asset delivery through WhiteNoise for Vercel deployment.\n- Environment-based configuration for secrets, database, email, and production security.\n\nWhy it matters:\nThis project demonstrates a practical hybrid Django architecture: static portfolio content stays version-controlled in external files, while truly dynamic operational data remains in the database.",
+    "role": "Solo developer - design, backend, deployment",
+    "problem": "I needed one place to show my projects, certificates and learning journey that I could update quickly without touching the database or the admin panel every time.",
+    "solution": "A Django site where portfolio content lives in version-controlled JSON files, while only truly dynamic data (contact messages, resume uploads) uses the database. Pages are server-rendered with Django templates, enhanced with HTMX for live project search and GSAP for animations.",
+    "architecture": [
+      "Request hits Vercel and is routed to Django through api/wsgi.py",
+      "URL router sends it to a view in portfolio_app/views.py",
+      "The content loader reads JSON files through Django's cache (keyed by file modification time)",
+      "The view renders a Django template; HTMX requests get only a partial template",
+      "WhiteNoise serves compressed static files; Postgres stores contact messages"
+    ],
+    "challenges": [
+      {
+        "challenge": "Editing projects required database migrations and admin work, and content was lost between deployments.",
+        "fix": "Moved portfolio content to JSON files with a validated loader and a validate_content management command."
+      },
+      {
+        "challenge": "Reading and parsing JSON on every request is wasted work.",
+        "fix": "Added Django caching with a key that includes the file's modification time, so edits invalidate the cache automatically."
+      },
+      {
+        "challenge": "Filtering projects reloaded the whole page.",
+        "fix": "Used HTMX to swap only the project grid, while still pushing the URL so filters stay shareable and work without JavaScript."
+      }
+    ],
+    "results": [
+      "Content updates are a single JSON edit and a git push",
+      "Project search and filters update instantly without page reloads",
+      "Deployed on Vercel with environment-based production settings"
+    ],
+    "learnings": [
+      "Choosing the right storage for each kind of data (files vs database)",
+      "Cache invalidation strategies",
+      "Progressive enhancement with HTMX",
+      "Production Django settings: secrets, HTTPS, static files"
+    ],
+    "next_steps": [
+      "Add a blog / learning log from Markdown files",
+      "Add GitHub Actions CI to run tests on every push"
+    ],
     "project_type": "web",
     "status": "completed",
-    "technologies": ["Django", "Python", "Tailwind CSS", "JSON", "WhiteNoise", "Vercel"],
+    "technologies": [
+      "Django",
+      "Python",
+      "Tailwind CSS",
+      "JSON",
+      "WhiteNoise",
+      "Vercel"
+    ],
     "github_link": "https://github.com/OmDhamal-08/Portfolio",
     "live_demo": "https://portfolio-five-nu-11.vercel.app/",
     "documentation_link": "",
@@ -23,9 +69,48 @@
     "slug": "heart-disease-prediction",
     "short_description": "A machine learning project for predicting heart disease risk from health-related input features.",
     "description": "A machine learning project that predicts heart disease risk from user-provided health parameters. The project is useful for explaining the complete ML workflow: data preprocessing, feature selection, model training, evaluation, and exposing predictions through a simple application interface.\n\nBackend and ML workflow:\n- Clean and prepare tabular health data.\n- Train a supervised classification model using Python ML libraries.\n- Accept user input, transform it into the model-ready format, and return a prediction.\n- Deploy the app so predictions can be tested from a browser.\n\nInterview angle:\nThe important part is not only the prediction result, but the workflow: understand the dataset, choose features, train a model, evaluate it honestly, and integrate it with an application users can interact with.",
+    "role": "ML developer - data preparation, model training, deployment",
+    "problem": "Heart disease risk depends on many health measurements, and it is hard for a non-expert to see how those factors combine. I wanted to learn the full ML workflow on a real medical dataset.",
+    "solution": "A supervised classification model trained on tabular health data, served through a backend API and connected to a simple web frontend where users enter their parameters and get a risk prediction.",
+    "architecture": [
+      "Clean and explore the health dataset with Pandas",
+      "Select features and train classification models with Scikit-learn",
+      "Evaluate models and keep the best one",
+      "Serve predictions from a backend deployed on Render",
+      "Frontend deployed on Vercel sends user input and shows the result"
+    ],
+    "challenges": [
+      {
+        "challenge": "User input from the form did not match the format the model was trained on.",
+        "fix": "Built a preprocessing step that converts form input into the exact model-ready feature order and types."
+      },
+      {
+        "challenge": "Accuracy alone can be misleading on medical data.",
+        "fix": "Compared models with multiple evaluation metrics instead of relying on a single score."
+      }
+    ],
+    "results": [
+      "End-to-end ML app usable from the browser",
+      "Separate frontend and backend deployments"
+    ],
+    "learnings": [
+      "The complete ML lifecycle from raw data to deployed model",
+      "Why evaluation must be honest for health-related predictions",
+      "Connecting a trained model to a web API"
+    ],
+    "next_steps": [
+      "Show which features influenced each prediction",
+      "Add input validation ranges based on medical guidelines"
+    ],
     "project_type": "ml",
     "status": "completed",
-    "technologies": ["Python", "Pandas", "NumPy", "Scikit-learn", "Render"],
+    "technologies": [
+      "Python",
+      "Pandas",
+      "NumPy",
+      "Scikit-learn",
+      "Render"
+    ],
     "github_link": "https://github.com/OmDhamal-08/hearth_backend",
     "live_demo": "https://heart-disease-frontend-two.vercel.app/",
     "documentation_link": "",
@@ -42,9 +127,43 @@
     "slug": "house-price-prediction",
     "short_description": "A regression-based ML project for estimating property prices from housing features.",
     "description": "A machine learning regression project that estimates house prices from structured housing data. The project highlights data cleaning, feature engineering, training regression models, and interpreting which features influence the predicted price.\n\nCore workflow:\n- Load and clean housing data.\n- Handle missing values and encode usable features.\n- Train and compare regression models.\n- Evaluate predictions using regression metrics.\n- Present the result in a simple, explainable way.\n\nInterview angle:\nThis project is a good example for discussing supervised learning, regression metrics, and why model interpretation is important when predictions affect real-world decisions.",
+    "role": "ML developer",
+    "problem": "House prices depend on many features, and I wanted to understand how regression models estimate a continuous value and which features matter most.",
+    "solution": "A regression pipeline that cleans housing data, engineers features, compares several regression models, and visualizes which features drive the predicted price.",
+    "architecture": [
+      "Load and explore the housing data",
+      "Handle missing values and encode categorical features",
+      "Train and compare regression models",
+      "Evaluate with regression metrics",
+      "Visualize results with Matplotlib"
+    ],
+    "challenges": [
+      {
+        "challenge": "Missing values and categorical columns could not be used by the models directly.",
+        "fix": "Imputed missing values and encoded categories as part of a repeatable preprocessing step."
+      },
+      {
+        "challenge": "Picking a model without a fair comparison.",
+        "fix": "Evaluated each model on the same held-out data with the same regression metrics."
+      }
+    ],
+    "learnings": [
+      "Supervised regression and its evaluation metrics",
+      "Feature engineering",
+      "Why interpretability matters when predictions affect real decisions"
+    ],
+    "next_steps": [
+      "Deploy the model behind a simple web form"
+    ],
     "project_type": "ml",
     "status": "completed",
-    "technologies": ["Python", "Pandas", "NumPy", "Scikit-learn", "Matplotlib"],
+    "technologies": [
+      "Python",
+      "Pandas",
+      "NumPy",
+      "Scikit-learn",
+      "Matplotlib"
+    ],
     "github_link": "https://github.com/OmDhamal-08/House_Price_predicition",
     "live_demo": "",
     "documentation_link": "",
@@ -61,9 +180,47 @@
     "slug": "expense-tracker",
     "short_description": "A personal finance web app for recording expenses and reviewing spending categories.",
     "description": "A web application for tracking personal expenses and organizing spending by category. It is useful for explaining CRUD operations, database-backed records, form validation, and dashboard-style summaries.\n\nCore features:\n- Add, update, and delete expense records.\n- Categorize transactions for easier review.\n- Show basic summaries that help users understand spending patterns.\n- Keep the interface simple enough for repeated daily use.\n\nInterview angle:\nThis project is a clean way to discuss backend CRUD design, validation, database tables, and how user-facing dashboards are powered by aggregated data.",
+    "role": "Full-stack developer",
+    "problem": "Tracking daily spending in notes or spreadsheets is tedious, and it is hard to see where the money goes each month.",
+    "solution": "A Django web app with full CRUD for expenses, categories for each transaction, and summary views that aggregate spending.",
+    "architecture": [
+      "Django models for expenses and categories",
+      "Django forms with validation for adding and editing records",
+      "Views that aggregate spending per category",
+      "Bootstrap templates for a simple responsive UI",
+      "Deployed on Render"
+    ],
+    "challenges": [
+      {
+        "challenge": "Invalid amounts and dates could break the summaries.",
+        "fix": "Added server-side form validation before anything is saved."
+      },
+      {
+        "challenge": "Summaries needed totals per category.",
+        "fix": "Used database aggregation queries instead of summing in Python."
+      }
+    ],
+    "results": [
+      "Deployed and usable for daily expense tracking"
+    ],
+    "learnings": [
+      "Designing CRUD flows in Django",
+      "Database aggregation",
+      "Form validation"
+    ],
+    "next_steps": [
+      "Add charts for monthly trends",
+      "Add user accounts so each person has private data"
+    ],
     "project_type": "web",
     "status": "completed",
-    "technologies": ["Django", "Python", "Bootstrap", "SQLite", "JavaScript"],
+    "technologies": [
+      "Django",
+      "Python",
+      "Bootstrap",
+      "SQLite",
+      "JavaScript"
+    ],
     "github_link": "https://github.com/OmDhamal-08/Expense_Tracker_App",
     "live_demo": "https://expense-tracker-app-vskz.onrender.com/",
     "documentation_link": "",
@@ -80,9 +237,37 @@
     "slug": "food-analyzer-ai",
     "short_description": "An in-progress AI project for food image analysis and nutrition-focused insights.",
     "description": "An in-progress AI project focused on analyzing food images and connecting image recognition with nutrition-related insights.\n\nPlanned workflow:\n- Collect and organize food image data.\n- Train or fine-tune an image classification model.\n- Return likely food labels from uploaded images.\n- Connect predictions with nutrition information.\n- Build a user interface for uploading images and reviewing results.\n\nInterview angle:\nBecause this project is still in progress, it is best to present it honestly as a learning project. Explain the planned pipeline, current challenges, and what you would improve next.",
+    "role": "ML developer (in progress)",
+    "problem": "People want quick nutrition information about their meals, but logging food manually is slow.",
+    "solution": "Planned pipeline: classify food from an uploaded image, then look up nutrition information for the predicted food.",
+    "architecture": [
+      "Collect and organize food image data",
+      "Train or fine-tune an image classification model",
+      "Return the most likely food labels for an uploaded image",
+      "Map predictions to nutrition data",
+      "Upload interface for users"
+    ],
+    "challenges": [
+      {
+        "challenge": "Food images vary a lot in lighting, angle and portion size.",
+        "fix": "Still exploring - planning data augmentation and a pretrained model as the base."
+      }
+    ],
+    "learnings": [
+      "Planning an ML project before writing code",
+      "Image data preparation"
+    ],
+    "next_steps": [
+      "Finish the classification model",
+      "Build the upload interface"
+    ],
     "project_type": "ml",
     "status": "in_progress",
-    "technologies": ["Python", "NumPy", "Scikit-learn"],
+    "technologies": [
+      "Python",
+      "NumPy",
+      "Scikit-learn"
+    ],
     "github_link": "https://github.com/OmDhamal-08/Food_analyzer_app",
     "live_demo": "",
     "documentation_link": "",
@@ -99,9 +284,38 @@
     "slug": "google-opal-ai-workflow-app",
     "short_description": "An AI-powered workflow app built using Google Opal for experimenting with prompt-based automation.",
     "description": "An AI workflow application created using Google Opal to experiment with no-code and low-code AI app building. The project focuses on designing an AI-powered flow where user input is processed through structured prompts and connected steps to generate useful output.\n\nCore features:\n- Built using Google Opal's visual AI app-building environment.\n- Designed a prompt-based workflow for handling user input and producing AI-generated responses.\n- Used connected blocks and steps to organize the flow logically.\n- Helps demonstrate understanding of AI workflow design and prompt engineering.\n- Useful for quickly prototyping AI-based tools without building a full backend from scratch.\n\nInterview angle:\nThis project is useful to explain prompt engineering, AI workflow design, rapid prototyping, and how no-code AI tools can be used to test product ideas before building a full custom application.",
+    "role": "Builder - workflow and prompt design",
+    "problem": "I wanted to test an AI product idea quickly without building a full backend first.",
+    "solution": "Built the workflow in Google Opal's visual builder: user input passes through connected, structured prompt steps that produce the final AI-generated output.",
+    "architecture": [
+      "User input block",
+      "Structured prompt steps connected in sequence",
+      "AI generation step",
+      "Output shown to the user"
+    ],
+    "challenges": [
+      {
+        "challenge": "AI output was inconsistent between runs.",
+        "fix": "Split the task into smaller structured prompt steps with clear instructions for each."
+      }
+    ],
+    "learnings": [
+      "Prompt engineering",
+      "Designing AI workflows step by step",
+      "When no-code tools are the right choice for prototyping"
+    ],
+    "next_steps": [
+      "Rebuild the strongest idea as a custom app with an API"
+    ],
     "project_type": "ai",
     "status": "completed",
-    "technologies": ["Google Opal", "AI Workflow", "Prompt Engineering", "No-Code AI", "Automation"],
+    "technologies": [
+      "Google Opal",
+      "AI Workflow",
+      "Prompt Engineering",
+      "No-Code AI",
+      "Automation"
+    ],
     "github_link": "",
     "live_demo": "https://opal.google/app/1qtUKgMmERcjhVzuO5oitwmppqrwk4PTC",
     "documentation_link": "",
@@ -118,9 +332,47 @@
     "slug": "dental-clinic-ai-chatbot",
     "short_description": "An AI receptionist chatbot for dental appointment booking using Retell AI and n8n automation.",
     "description": "An AI-powered dental clinic receptionist system designed to handle patient calls and automate appointment-related tasks. The chatbot acts as a virtual receptionist and helps users with booking, rescheduling, cancellation, and general clinic inquiries.\n\nCore features:\n- Handles patient conversations using a voice-based AI receptionist.\n- Checks appointment availability using Google Calendar.\n- Books dental appointments and stores patient details.\n- Supports rescheduling and cancellation flows.\n- Logs appointment data and call summaries into Google Sheets.\n- Handles transfer call and end-call flows through automation.\n- Uses short, clear responses suitable for voice assistant latency.\n\nInterview angle:\nThis project is strong for explaining AI automation, voice agents, webhook-based backend workflows, n8n automation, API integration, Google Calendar scheduling, Google Sheets logging, and real-world business process automation.",
+    "role": "Automation developer - voice agent and n8n workflows",
+    "problem": "A dental clinic receptionist spends much of the day answering calls for booking, rescheduling and cancelling appointments.",
+    "solution": "A voice AI receptionist built with Retell AI that talks to patients, and n8n workflows behind webhooks that check Google Calendar availability, book or change appointments, and log everything to Google Sheets.",
+    "architecture": [
+      "Patient calls the Retell AI voice agent",
+      "The agent calls n8n webhooks for actions",
+      "n8n checks availability and books events in Google Calendar",
+      "Patient details and call summaries are logged to Google Sheets",
+      "Transfer-call and end-call flows handle edge cases"
+    ],
+    "challenges": [
+      {
+        "challenge": "Long AI responses feel slow on a voice call.",
+        "fix": "Designed short, clear responses suited to voice latency."
+      },
+      {
+        "challenge": "Rescheduling and cancelling need to find the right existing booking.",
+        "fix": "Built separate n8n flows for each action that look up the booking before changing it."
+      }
+    ],
+    "results": [
+      "Handles booking, rescheduling, cancellation and general questions",
+      "Every call is logged with a summary"
+    ],
+    "learnings": [
+      "Voice agent design",
+      "Webhook-based backend workflows",
+      "Integrating Google Calendar and Sheets APIs",
+      "Automating real business processes"
+    ],
     "project_type": "automation",
     "status": "completed",
-    "technologies": ["Retell AI", "n8n", "Google Calendar", "Google Sheets", "Webhook", "JavaScript", "AI Voice Agent"],
+    "technologies": [
+      "Retell AI",
+      "n8n",
+      "Google Calendar",
+      "Google Sheets",
+      "Webhook",
+      "JavaScript",
+      "AI Voice Agent"
+    ],
     "github_link": "",
     "live_demo": "",
     "documentation_link": "",
@@ -137,9 +389,48 @@
     "slug": "sanskrit-character-recognition",
     "short_description": "A FastAPI-based ML and CNN project for recognizing Sanskrit characters and word images.",
     "description": "A machine learning and deep learning based recognition system for uploaded Sanskrit character and word images. The project provides a web interface where users can upload images and get predictions from trained models.\n\nCore features:\n- Upload Sanskrit character or word images for prediction.\n- FastAPI backend exposes prediction and evaluation APIs.\n- Frontend is built with HTML, CSS, and JavaScript.\n- Supports multiple model approaches including Pixel MLP, CNN embeddings with Linear SVM, and an end-to-end CNN model.\n- Returns unclassified output for blank, low-quality, ambiguous, or out-of-dataset inputs.\n- Includes model evaluation endpoints for checking model performance.\n\nInterview angle:\nThis project is useful to explain computer vision basics, image preprocessing, ML vs CNN model comparison, FastAPI model serving, API-based prediction flow, and how trained ML models are integrated into a web application.",
+    "role": "ML developer - models, API and frontend",
+    "problem": "Recognizing handwritten Sanskrit characters and words is difficult, and I wanted to compare classic ML against deep learning on the same task.",
+    "solution": "A FastAPI backend serving three model approaches (Pixel MLP, CNN embeddings with Linear SVM, and an end-to-end CNN), with an HTML/CSS/JS frontend for uploading images and viewing predictions.",
+    "architecture": [
+      "User uploads an image in the browser",
+      "FastAPI preprocesses the image",
+      "The selected model predicts the character or word",
+      "Low-confidence inputs return 'unclassified'",
+      "Evaluation endpoints report model performance"
+    ],
+    "challenges": [
+      {
+        "challenge": "Blank, blurry or unrelated images still produced confident-looking wrong answers.",
+        "fix": "Added an 'unclassified' output for low-quality, ambiguous or out-of-dataset inputs."
+      },
+      {
+        "challenge": "Fairly comparing very different models.",
+        "fix": "Added evaluation endpoints so every model is measured the same way."
+      }
+    ],
+    "results": [
+      "Three model approaches compared in one app",
+      "Deployed on Render"
+    ],
+    "learnings": [
+      "Image preprocessing",
+      "Classic ML vs CNN trade-offs",
+      "Serving models with FastAPI",
+      "Handling uncertain predictions safely"
+    ],
     "project_type": "ml",
     "status": "completed",
-    "technologies": ["Python", "FastAPI", "Machine Learning", "CNN", "Scikit-learn", "HTML", "CSS", "JavaScript"],
+    "technologies": [
+      "Python",
+      "FastAPI",
+      "Machine Learning",
+      "CNN",
+      "Scikit-learn",
+      "HTML",
+      "CSS",
+      "JavaScript"
+    ],
     "github_link": "https://github.com/OmDhamal-08/Sanskrit",
     "live_demo": "https://sanskrit.onrender.com/",
     "documentation_link": "",
@@ -156,9 +447,41 @@
     "slug": "directory-automation-file-sorter",
     "short_description": "A Python GUI tool that automatically organizes files into folders based on their extensions.",
     "description": "A desktop automation tool built in Python to organize files inside a selected directory based on their file extensions. The project includes a simple GUI so users can select a folder, preview sorting actions, and then perform the actual organization.\n\nCore features:\n- Select a directory using a GUI folder picker.\n- Automatically sort files into folders based on file extensions.\n- Dry run mode to preview changes before moving files.\n- Real-time log viewer to show sorting actions.\n- Option to save logs into timestamped text files.\n- Uses only Python standard library, making it lightweight and easy to run.\n\nInterview angle:\nThis project is useful to explain Python automation, file handling, GUI development, OS module usage, safe execution using dry-run mode, logging, and how small automation tools can improve daily productivity.",
+    "role": "Developer",
+    "problem": "Download folders quickly become cluttered with hundreds of mixed files.",
+    "solution": "A Tkinter desktop tool that sorts files into folders by extension, with a dry-run preview, a live log, and optional saved log files.",
+    "architecture": [
+      "Pick a folder with a GUI dialog",
+      "Scan files and group them by extension",
+      "Dry run shows planned moves",
+      "Move files with shutil",
+      "Write a timestamped log"
+    ],
+    "challenges": [
+      {
+        "challenge": "Moving files by mistake is hard to undo.",
+        "fix": "Added a dry-run mode that previews every move before anything changes."
+      }
+    ],
+    "learnings": [
+      "File handling with os and shutil",
+      "GUI development with Tkinter",
+      "Building safe automation tools"
+    ],
+    "next_steps": [
+      "Add custom sorting rules",
+      "Add an undo for the last run"
+    ],
     "project_type": "automation",
     "status": "completed",
-    "technologies": ["Python", "Tkinter", "OS Module", "Shutil", "File Automation", "GUI"],
+    "technologies": [
+      "Python",
+      "Tkinter",
+      "OS Module",
+      "Shutil",
+      "File Automation",
+      "GUI"
+    ],
     "github_link": "https://github.com/OmDhamal-08/Automation/tree/main/Directory_Automation",
     "live_demo": "",
     "documentation_link": "",
@@ -171,4 +494,3 @@
     "is_active": true
   }
 ]
-
