@@ -184,3 +184,17 @@ class ResumeDownloadTests(TestCase):
             response = self.client.get(reverse('download_resume'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
+
+
+class ContactDatabaseDownTests(TestCase):
+    def test_contact_form_still_sends_email_when_database_fails(self):
+        from unittest import mock
+        from django.core import mail
+        from django.db import DatabaseError
+
+        data = {'name': 'Test User', 'email': 'test@example.com', 'subject': 'Hello there',
+                'message': 'This is a test message from the contact form.'}
+        with mock.patch('portfolio_app.views.ContactMessage.objects.create', side_effect=DatabaseError('tenant not found')):
+            response = self.client.post(reverse('contact'), data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 2)

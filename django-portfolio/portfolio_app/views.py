@@ -42,6 +42,20 @@ def education(request):
     }
     return render(request, 'education.html', context)
 
+def _update_contact_status(contact_message, status, error=''):
+    if contact_message is None:
+        return
+    try:
+        contact_message.email_status = status
+        fields = ['email_status', 'updated_at']
+        if error:
+            contact_message.email_error = error
+            fields.append('email_error')
+        contact_message.save(update_fields=fields)
+    except Exception:
+        logger.exception('Could not update contact message status')
+
+
 def contact(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
@@ -59,14 +73,19 @@ def contact(request):
             email = form.cleaned_data['email']
             subject = form.cleaned_data['subject']
             message = form.cleaned_data['message']
-            contact_message = ContactMessage.objects.create(
-                name=name,
-                email=email,
-                subject=subject,
-                message=message,
-                ip_address=client_ip,
-                user_agent=request.META.get('HTTP_USER_AGENT', '')[:255],
-            )
+            # Saving to the database is a bonus: if it is down, still send the email.
+            try:
+                contact_message = ContactMessage.objects.create(
+                    name=name,
+                    email=email,
+                    subject=subject,
+                    message=message,
+                    ip_address=client_ip,
+                    user_agent=request.META.get('HTTP_USER_AGENT', '')[:255],
+                )
+            except Exception:
+                logger.exception('Could not save contact message from %s <%s>', name, email)
+                contact_message = None
             
             email_subject = f"Portfolio Contact: {subject}"
             email_message = f"""
@@ -111,21 +130,16 @@ Om Dhamal
                     [email],
                 ).send(fail_silently=False)
 
-                contact_message.email_status = 'sent'
-                contact_message.save(update_fields=['email_status', 'updated_at'])
+                _update_contact_status(contact_message, 'sent')
                 
                 messages.success(request, 'Your message has been sent successfully! I will get back to you soon.')
                 return redirect('contact')
                 
             except BadHeaderError:
-                contact_message.email_status = 'failed'
-                contact_message.email_error = 'Invalid email header.'
-                contact_message.save(update_fields=['email_status', 'email_error', 'updated_at'])
+                _update_contact_status(contact_message, 'failed', 'Invalid email header.')
                 messages.error(request, 'Invalid header found. Please try again.')
             except Exception as exc:
-                contact_message.email_status = 'failed'
-                contact_message.email_error = str(exc)
-                contact_message.save(update_fields=['email_status', 'email_error', 'updated_at'])
+                _update_contact_status(contact_message, 'failed', str(exc))
                 logger.exception('Contact form email failed for %s <%s>', name, email)
                 messages.success(request, 'Your message has been received. I will get back to you soon.')
                 return redirect('contact')
