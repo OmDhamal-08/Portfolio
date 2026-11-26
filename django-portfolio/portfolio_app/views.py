@@ -1,16 +1,18 @@
-from django.shortcuts import redirect, render
-from django.http import FileResponse
-import os
 import logging
-from django.core.cache import cache
-from django.core.mail import BadHeaderError, EmailMessage
-from django.http import HttpResponse
-from django.contrib import messages
+from datetime import date
+from urllib.parse import quote
+
 from django.conf import settings
+from django.contrib import messages
+from django.core.cache import cache
+from django.core.mail import EmailMessage
+from django.shortcuts import redirect, render
+from django.templatetags.static import static
 from django.utils.cache import patch_vary_headers
+
 from . import content_loader as content
+from .context_processors import CONTACT_EMAIL
 from .forms import ContactForm
-from .models import ContactMessage, Resume
 
 
 logger = logging.getLogger(__name__)
@@ -42,104 +44,67 @@ def education(request):
     }
     return render(request, 'education.html', context)
 
+def _mailto_link(subject='', body=''):
+    """A mailto: link that opens the visitor's email app with the message filled in."""
+    return f'mailto:{CONTACT_EMAIL}?subject={quote(subject)}&body={quote(body)}'
+
+
+def _send_contact_emails(name, email, subject, message):
+    """Email the message to me (reply goes straight to the visitor) and send them a copy."""
+    EmailMessage(
+        f'Portfolio contact: {subject}',
+        f'Name: {name}\nEmail: {email}\nSubject: {subject}\n\n{message}\n\n'
+        '---\nSent from the contact form on your portfolio. Reply to this email to answer.',
+        settings.DEFAULT_FROM_EMAIL,
+        [settings.CONTACT_EMAIL],
+        reply_to=[email],
+    ).send(fail_silently=False)
+
+    try:
+        EmailMessage(
+            'Thanks for your message',
+            f'Hi {name},\n\nThanks for reaching out through my portfolio. I have your message and will '
+            f'reply soon.\n\nYour message:\n{subject}\n\n{message}\n\nBest regards,\nOm Dhamal',
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+        ).send(fail_silently=False)
+    except Exception:
+        # The important email already reached me; a failed copy is not worth an error page.
+        logger.exception('Could not send the confirmation copy to %s', email)
+
+
 def contact(request):
+    form = ContactForm(request.POST or None)
+    send_failed = False
+
     if request.method == 'POST':
-        form = ContactForm(request.POST)
-        client_ip = get_client_ip(request)
-        rate_key = f"contact-form:{client_ip or 'unknown'}"
+        rate_key = f"contact-form:{get_client_ip(request) or 'unknown'}"
         attempts = cache.get(rate_key, 0)
 
         if attempts >= 5:
-            messages.error(request, 'Too many messages were submitted. Please try again after a few minutes.')
-        else:
+            messages.error(request, 'Too many messages in a short time. Please try again in a few minutes.')
+        elif form.is_valid():
             cache.set(rate_key, attempts + 1, 15 * 60)
-
-        if attempts < 5 and form.is_valid():
-            name = form.cleaned_data['name']
-            email = form.cleaned_data['email']
-            subject = form.cleaned_data['subject']
-            message = form.cleaned_data['message']
-            contact_message = ContactMessage.objects.create(
-                name=name,
-                email=email,
-                subject=subject,
-                message=message,
-                ip_address=client_ip,
-                user_agent=request.META.get('HTTP_USER_AGENT', '')[:255],
-            )
-            
-            email_subject = f"Portfolio Contact: {subject}"
-            email_message = f"""
-Name: {name}
-Email: {email}
-Subject: {subject}
-
-Message:
-{message}
-
----
-This message was sent from your portfolio contact form.
-            """
-            
+            data = form.cleaned_data
             try:
-                EmailMessage(
-                    email_subject,
-                    email_message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [settings.CONTACT_EMAIL],
-                    reply_to=[email],
-                ).send(fail_silently=False)
-                
-                confirmation_subject = "Thank you for contacting me!"
-                confirmation_message = f"""
-Hi {name},
-
-Thank you for reaching out through my portfolio website. I have received your message and will get back to you as soon as possible.
-
-Here's a copy of your message:
-Subject: {subject}
-Message: {message}
-
-Best regards,
-Om Dhamal
-                """
-                
-                EmailMessage(
-                    confirmation_subject,
-                    confirmation_message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [email],
-                ).send(fail_silently=False)
-
-                contact_message.email_status = 'sent'
-                contact_message.save(update_fields=['email_status', 'updated_at'])
-                
-                messages.success(request, 'Your message has been sent successfully! I will get back to you soon.')
+                _send_contact_emails(data['name'], data['email'], data['subject'], data['message'])
+            except Exception:
+                # There is no database, so never pretend the message was saved.
+                logger.exception('Contact form email failed for %s', data['email'])
+                send_failed = True
+            else:
+                messages.success(request, 'Message sent! I will get back to you soon.')
                 return redirect('contact')
-                
-            except BadHeaderError:
-                contact_message.email_status = 'failed'
-                contact_message.email_error = 'Invalid email header.'
-                contact_message.save(update_fields=['email_status', 'email_error', 'updated_at'])
-                messages.error(request, 'Invalid header found. Please try again.')
-            except Exception as exc:
-                contact_message.email_status = 'failed'
-                contact_message.email_error = str(exc)
-                contact_message.save(update_fields=['email_status', 'email_error', 'updated_at'])
-                logger.exception('Contact form email failed for %s <%s>', name, email)
-                messages.success(request, 'Your message has been received. I will get back to you soon.')
-                return redirect('contact')
-        
-        elif attempts < 5:
+        else:
             messages.error(request, 'Please correct the errors below.')
-    
-    else:
-        form = ContactForm()
-    
-    context = {
-        'form': form,
-    }
-    return render(request, 'contact.html', context)
+
+    mailto = _mailto_link()
+    if send_failed:
+        data = form.cleaned_data
+        mailto = _mailto_link(data['subject'], f"{data['message']}\n\n- {data['name']}")
+
+    return render(request, 'contact.html', {'form': form, 'send_failed': send_failed, 'mailto': mailto})
+
 
 def certifications(request):
     cert_type = request.GET.get('type', '')
@@ -150,8 +115,9 @@ def certifications(request):
     context = {
         'certifications': certifications_list,
         'featured_certifications': featured_certifications,
-        'cert_types': content.CERTIFICATION_TYPE_CHOICES,
-        'level_choices': content.CERTIFICATION_LEVEL_CHOICES,
+        # Only offer filters for types and levels that at least one certificate has
+        'cert_types': content.list_used_certification_types(),
+        'level_choices': content.list_used_certification_levels(),
         'current_type': cert_type,
         'current_level': level,
     }
@@ -225,13 +191,14 @@ def home(request):
 
     context = {
         'name': 'Om',
-        'title': 'Computer Science Student | Django Developer | ML Learner',
+        'title': 'Computer Engineering Student | Django & FastAPI Developer | AI/ML Builder',
         'tagline': 'Building practical web and machine learning projects while learning strong backend fundamentals.',
         'featured_projects': featured_projects,
         'featured_certifications': featured_certifications,
         'featured_achievements': featured_achievements,
         'featured_education': featured_education,
         'now': content.load_now(),
+        'journey': _journey_timeline(featured_education, featured_certifications, featured_achievements),
         'top_skills': [skill.name for skill in skills][:12],
         'quick_stats': [
             {'number': sum(1 for project in projects if project.status == 'completed'), 'label': 'Projects Completed'},
@@ -241,6 +208,23 @@ def home(request):
         ]
     }
     return render(request, 'index.html', context)
+
+def _journey_timeline(education_items, certifications, achievements):
+    """Merge featured milestones into one list, newest first, for the home timeline."""
+    entries = []
+    for item in education_items:
+        entries.append({'date': item.start_date, 'date_label': item.get_duration(), 'kind': 'Education',
+                        'title': item.title, 'subtitle': item.institution, 'url': 'education'})
+    for item in certifications:
+        entries.append({'date': item.issue_date, 'date_label': item.issue_date.strftime('%b %Y') if item.issue_date else '',
+                        'kind': 'Certification', 'title': item.title, 'subtitle': item.issuing_organization,
+                        'url': 'certifications'})
+    for item in achievements:
+        entries.append({'date': item.date, 'date_label': item.date.strftime('%b %Y') if item.date else '',
+                        'kind': item.get_category_display(), 'title': item.title, 'subtitle': item.organization,
+                        'url': 'achievements'})
+    return sorted(entries, key=lambda entry: entry['date'] or date.min, reverse=True)
+
 
 def now(request):
     return render(request, 'now.html', {'now': content.load_now()})
@@ -257,47 +241,41 @@ def about(request):
     context = {
         'personal_info': {
             'name': 'Om Dhamal',
-            'title': 'Computer Science Student | Django Developer | ML Learner',
+            'title': 'Computer Engineering Student | Django & FastAPI Developer | AI/ML Builder',
             'location': 'Pune, India',
-            'email': 'dhamalom@gmail.com',
-            'bio': 'I am a Computer Science student focused on Django, backend development, and practical machine learning projects.',
+            'email': 'dhamalomm@gmail.com',
+            'bio': 'I build backends, AI agents and machine learning projects, and I like making them work reliably, not just in a demo.',
             'detailed_bio': [
-
-               'I am an enthusiastic and motivated Computer Science student currently pursuing my B.Tech in CSE. I\'m actively learning Machine Learning, Data Structures & Algorithms, and full-stack development, with a strong interest in building intelligent and efficient software solutions.',
-
-                'I enjoy understanding how things work, breaking down complex ideas, and turning them into simple, practical implementations. My learning journey includes hands-on projects in Python, Django, and foundational machine learning, which help me continuously grow as a developer.',
-
-                'Although I\'m early in my professional journey, I am passionate, consistent, and eager to take on real-world challenges. I love exploring new technologies, improving my problem-solving skills, and building projects that enhance my understanding.',
-
-                'When I\'m not studying or coding, I enjoy experimenting with new tech tools, working on personal projects, and learning by building.'
+                'I study Computer Engineering at JSPM\'s RSCOE in Pune, but most of what I know comes from building things and breaking them outside the classroom.',
+                'My work sits where backend development meets AI. I write APIs with Django and FastAPI, design the databases behind them, and lately spend most of my time on LLM apps: RAG pipelines, agents that call tools, and the checks that keep their answers honest.',
+                'Machine learning is where it started. My EduSkills internship and projects like ZonePredict AI taught me that clean data and a fair baseline matter more than an impressive-looking score.',
+                'I keep my problem solving sharp with C++ on LeetCode and Codeforces. Next, I want to join a team as an intern or engineer and ship real products, and one day build a startup of my own.',
             ]
         },
         'education': [
             {
-                'degree': 'Bachelor of Technology in Computer Science',
-                'institution': 'Rajashree Shahu College of Engineering (JSPM Tathawade)',
+                'degree': 'B.Tech in Computer Engineering',
+                'institution': "JSPM's Rajarshi Shahu College of Engineering, Pune",
                 'year': '2023-Present',
-                'description': 'Pursuing B.Tech in Computer Science. Learning core CS subjects, machine learning, and software development. Actively involved in AI/ML projects and continuous self-learning. CGPA: 9.43 (ongoing).',
+                'description': 'Regular B.Tech curriculum with subjects such as DSA, DBMS, Operating Systems and Computer Networks. CGPA: 9.15/10 (till 6th semester).',
                 'icon': '🎓'
             },
             {
-                'degree': 'Machine Learning Specialization',
-                'institution': 'Coursera - Andrew Ng',
-                'year': '2024-Present',
-                'description': 'Comprehensive specialization covering supervised learning, unsupervised learning, neural networks, TensorFlow, and model evaluation. Currently studying.',
-                'icon': '🤖'
-            }
-
+                'degree': 'HSC and SSC',
+                'institution': "Chaitannya's International School, Baramati",
+                'year': '2023',
+                'description': 'HSC: 76.17% | SSC: 92.20%',
+                'icon': '🏫'
+            },
         ],
         'experience': [
             {
-            'position': 'Academic and Personal Projects',
-            'company': 'B.Tech Computer Science',
-            'year': '2023-Present',
-            'description': 'Building Django and machine learning projects to strengthen backend development, database design, and practical problem-solving skills.'
-
+                'position': 'AI & Machine Learning Virtual Intern',
+                'company': 'EduSkills',
+                'year': 'Oct 2025 - Dec 2025',
+                'description': 'Ten weeks of hands-on machine learning: from cleaning data to training and evaluating models. I finished more than five complete ML projects with Scikit-learn and TensorFlow.'
             },
-        ],          
+        ],
         'skills_preview': skills_preview,
         'skills_categories': [
             {
@@ -327,18 +305,5 @@ def skills(request):
     return render(request, 'skills.html', context)
 
 def download_resume(request):
-    active_resume = Resume.objects.filter(is_active=True).first()
-    if active_resume and active_resume.file and active_resume.file.storage.exists(active_resume.file.name):
-        filename = f"Om_Dhamal_Resume_{active_resume.version}.pdf" if active_resume.version else "Om_Dhamal_Resume.pdf"
-        return FileResponse(active_resume.file.open('rb'), as_attachment=True, filename=filename)
-
-    resume_path = os.path.join(settings.BASE_DIR, 'static', 'resume.pdf')
-    if os.path.exists(resume_path):
-        return FileResponse(open(resume_path, 'rb'), as_attachment=True, filename='Om_Dhamal_Resume.pdf')
-    else:
-        resume_content = """OM DHAMAL - Resume
-        (Your PDF resume will be available soon)"""
-        
-        response = HttpResponse(resume_content, content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename="Om_Dhamal_Resume.txt"'
-        return response
+    """Old /download-resume/ links: send them to the PDF, which WhiteNoise serves directly."""
+    return redirect(static('resume.pdf'), permanent=True)

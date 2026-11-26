@@ -3,82 +3,62 @@
 {% block meta_description %}Django, machine learning and AI automation projects by Om Dhamal, each with a short case study.{% endblock %}
 
 {% block content %}
-<section class="relative overflow-hidden pt-36 pb-12">
-  <div class="bg-grid absolute inset-0 -z-10"></div>
-  <div class="orb orb-1 -top-20 left-[10%] h-72 w-72"></div>
-  <div class="orb orb-2 top-10 right-[5%] h-60 w-60"></div>
-  <div class="mx-auto max-w-6xl px-4">
-    <span class="eyebrow" data-reveal>Work</span>
-    <h1 class="mt-4 font-display text-4xl font-bold leading-tight sm:text-6xl" data-reveal data-delay="0.05">
-      Projects & <span class="text-gradient">case studies</span>
-    </h1>
-    <p class="mt-5 max-w-2xl text-lg text-muted" data-reveal data-delay="0.1">
-      Each project explains the problem, how I built it, what went wrong and what I learned.
-    </p>
-  </div>
-</section>
+{% include "partials/page_header.html" with label="Projects" title="Projects & case studies" intro="Each project explains the problem, how I built it, what went wrong and what I learned." %}
 
-<section class="mx-auto max-w-6xl px-4">
-  <!-- Search & filters. Works as a normal GET form without JavaScript;
-       with HTMX it swaps only #project-results and updates the URL. -->
-  <form id="project-filters" action="{% url 'projects' %}" method="get"
-        class="card mb-10 p-4 sm:p-5" data-reveal
-        hx-get="{% url 'projects' %}" hx-target="#project-results" hx-push-url="true"
-        hx-trigger="input changed delay:300ms from:#project-search, change, submit"
-        hx-indicator="#search-indicator">
-    <div class="flex flex-col gap-3 lg:flex-row">
-      <label class="relative flex-1">
-        <span class="sr-only">Search projects</span>
-        <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
-          {% include "partials/icon.html" with name="search" cls="w-5 h-5" %}
-        </span>
-        <input id="project-search" type="search" name="q" value="{{ current_query }}" autocomplete="off"
-               placeholder="Search by name, idea or tech (e.g. Django, CNN, n8n)" class="input !pl-12" />
-        <span id="search-indicator" class="htmx-indicator absolute right-4 top-1/2 -translate-y-1/2">
-          <span class="block h-4 w-4 animate-spin rounded-full border-2 border-accent-2 border-t-transparent"></span>
-        </span>
-      </label>
-      <div class="grid grid-cols-2 gap-3 lg:w-[22rem]">
-        <label>
-          <span class="sr-only">Project type</span>
-          <select name="type" class="input">
-            <option value="">All types</option>
-            {% for value, label in project_types %}
-            <option value="{{ value }}" {% if current_type == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
+<section class="section !pt-12">
+  <div class="container-x">
+    <!-- Search & filters. Works as a normal GET form without JavaScript;
+         with HTMX it swaps only #project-results and updates the URL. -->
+    <form id="project-filters" action="{% url 'projects' %}" method="get" class="card mb-10 p-4 sm:p-5" data-reveal
+          hx-get="{% url 'projects' %}" hx-target="#project-results" hx-push-url="true"
+          hx-trigger="input changed delay:300ms from:#project-search, change, submit"
+          hx-indicator="#search-indicator">
+      <div class="flex flex-col gap-3 lg:flex-row">
+        <label class="relative flex-1">
+          <span class="sr-only">Search projects</span>
+          <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">{% include "partials/icon.html" with name="search" cls="w-[18px] h-[18px]" %}</span>
+          <input id="project-search" type="search" name="q" value="{{ current_query }}" autocomplete="off"
+                 placeholder="Search by name, idea or tech (e.g. Django, CNN, n8n)" class="input !pl-11" />
+          <span id="search-indicator" class="htmx-indicator absolute right-4 top-1/2 -translate-y-1/2"><span class="spinner block"></span></span>
         </label>
-        <label>
-          <span class="sr-only">Status</span>
-          <select name="status" class="input">
-            <option value="">Any status</option>
-            {% for value, label in status_choices %}
-            <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-        </label>
+        <div class="grid grid-cols-2 gap-3 lg:w-[22rem]">
+          <label>
+            <span class="sr-only">Project type</span>
+            <select name="type" class="input">
+              <option value="">All types</option>
+              {% for value, label in project_types %}<option value="{{ value }}" {% if current_type == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+          </label>
+          <label>
+            <span class="sr-only">Status</span>
+            <select name="status" class="input">
+              <option value="">Any status</option>
+              {% for value, label in status_choices %}<option value="{{ value }}" {% if current_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+          </label>
+        </div>
+        <noscript><button type="submit" class="btn btn-primary">Search</button></noscript>
       </div>
-      <noscript><button type="submit" class="btn btn-primary">Search</button></noscript>
+
+      <fieldset class="mt-4 flex flex-wrap items-center gap-2">
+        <legend class="sr-only">Filter by technology</legend>
+        <span class="mr-1 text-[13px] font-medium text-muted">Tech:</span>
+        <label>
+          <input type="radio" name="tech" value="" class="peer sr-only" {% if not current_tech %}checked{% endif %} />
+          <span class="chip peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent {% if not current_tech %}chip-active{% endif %}">All</span>
+        </label>
+        {% for tech in tech_choices %}
+        <label>
+          <input type="radio" name="tech" value="{{ tech }}" class="peer sr-only" {% if current_tech == tech %}checked{% endif %} />
+          <span class="chip peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent {% if current_tech == tech %}chip-active{% endif %}">{{ tech }}</span>
+        </label>
+        {% endfor %}
+      </fieldset>
+    </form>
+
+    <div id="project-results" aria-live="polite">
+      {% include "partials/project_results.html" %}
     </div>
-
-    <fieldset class="mt-4 flex flex-wrap items-center gap-2">
-      <legend class="sr-only">Filter by technology</legend>
-      <span class="mr-1 font-mono text-[11px] uppercase tracking-wider text-muted">Tech</span>
-      <label class="cursor-pointer">
-        <input type="radio" name="tech" value="" class="peer sr-only" {% if not current_tech %}checked{% endif %} />
-        <span class="chip peer-focus-visible:ring-2 peer-focus-visible:ring-accent-2 {% if not current_tech %}chip-active{% endif %}">All</span>
-      </label>
-      {% for tech in tech_choices %}
-      <label class="cursor-pointer">
-        <input type="radio" name="tech" value="{{ tech }}" class="peer sr-only" {% if current_tech == tech %}checked{% endif %} />
-        <span class="chip peer-focus-visible:ring-2 peer-focus-visible:ring-accent-2 {% if current_tech == tech %}chip-active{% endif %}">{{ tech }}</span>
-      </label>
-      {% endfor %}
-    </fieldset>
-  </form>
-
-  <div id="project-results" aria-live="polite">
-    {% include "partials/project_results.html" %}
   </div>
 </section>
 {% endblock %}

@@ -1,93 +1,107 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Contact | Om Dhamal{% endblock %}
 
 {% block content %}
-<section class="relative overflow-hidden pt-36 pb-12">
-  <div class="bg-grid absolute inset-0 -z-10"></div>
-  <div class="orb orb-1 -top-24 left-[20%] h-72 w-72"></div>
-  <div class="orb orb-2 top-20 right-[10%] h-56 w-56"></div>
-  <div class="mx-auto max-w-6xl px-4">
-    <span class="eyebrow" data-reveal>Contact</span>
-    <h1 class="mt-4 font-display text-4xl font-bold leading-tight sm:text-6xl" data-reveal data-delay="0.05">Let's build <span class="text-gradient">something</span>.</h1>
-    <p class="mt-5 max-w-2xl text-lg text-muted" data-reveal data-delay="0.1">Internship, project idea or just a question about my work - I read every message and usually reply within a day or two.</p>
+{% include "partials/page_header.html" with label="Contact" title="Let's build something." intro="Internship, project idea or just a question about my work: I read every message and usually reply within a day or two." %}
+
+<section class="section !pt-14">
+  <div class="container-x grid gap-8 lg:grid-cols-[1fr_1.5fr]">
+    <!-- Info -->
+    <aside class="space-y-4" data-stagger="0.08">
+      <!-- Email: copy or open the visitor's mail app -->
+      <div class="card p-5" x-data="{ copied: false }">
+        <div class="flex items-center gap-4">
+          <span class="icon-box">{% include "partials/icon.html" with name="mail" %}</span>
+          <span class="min-w-0">
+            <span class="block text-sm text-muted">Email</span>
+            <span class="block truncate font-semibold text-ink">{{ contact_email }}</span>
+          </span>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button type="button" class="btn btn-secondary btn-sm"
+                  @click="navigator.clipboard.writeText('{{ contact_email }}').then(() => { copied = true; setTimeout(() => copied = false, 2000) })">
+            <span x-text="copied ? 'Copied!' : 'Copy email'">Copy email</span>
+          </button>
+          <a href="{{ mailto }}" class="btn btn-secondary btn-sm">Open email app</a>
+        </div>
+      </div>
+
+      <!-- Resume: view in the browser or download -->
+      <div class="card card-surface p-5">
+        <p class="flex items-center gap-2 font-semibold"><span class="dot dot-success"></span> Open to internships</p>
+        <p class="mt-2 text-sm text-muted">Backend (Django / FastAPI), machine learning and AI engineering roles.</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <a href="{% static 'resume.pdf' %}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">View resume</a>
+          <a href="{% static 'resume.pdf' %}" download="Om_Dhamal_Resume.pdf" class="btn btn-primary btn-sm">{% include "partials/icon.html" with name="download" %} Download</a>
+        </div>
+      </div>
+
+      <div class="card p-5">
+        <p class="text-sm text-muted">Find me online</p>
+        <div class="mt-3 flex flex-wrap gap-2">{% include "partials/socials.html" %}</div>
+      </div>
+
+      <div class="card flex items-center gap-4 p-5">
+        <span class="icon-box">{% include "partials/icon.html" with name="pin" %}</span>
+        <span>
+          <span class="block text-sm text-muted">Location</span>
+          <span class="block font-semibold">{{ contact_location }}</span>
+        </span>
+      </div>
+    </aside>
+
+    <!-- Form -->
+    <div class="card p-6 sm:p-8" data-reveal>
+      <h2 class="text-xl font-semibold">Send a message</h2>
+      <p class="mt-1 text-sm text-muted">It goes straight to my inbox, and you get a copy. All fields are required.</p>
+
+      <form method="post" class="mt-6 space-y-5" x-data="{ sending: false }" @submit="sending = true" novalidate>
+        {% csrf_token %}
+        {{ form.website }}
+        {% if send_failed %}
+        <div class="rounded-lg border border-line bg-surface p-4 text-sm" role="alert">
+          <p class="font-semibold text-ink">Your message couldn't be sent right now.</p>
+          <p class="mt-1 text-muted">Nothing is lost: your text is still below. Send it from your own email app instead, it's already filled in.</p>
+          <a href="{{ mailto }}" class="btn btn-primary btn-sm mt-3">Send with my email app <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </div>
+        {% endif %}
+        {% if form.non_field_errors %}
+        <div class="rounded-lg border border-line bg-surface p-3 text-sm font-medium text-ink">{% for error in form.non_field_errors %}{{ error }} {% endfor %}</div>
+        {% endif %}
+
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="{{ form.name.id_for_label }}" class="mb-2 block text-sm font-medium">Name</label>
+            {{ form.name }}
+            {% if form.name.errors %}<p class="field-error">{% for error in form.name.errors %}{{ error }}{% endfor %}</p>{% endif %}
+          </div>
+          <div>
+            <label for="{{ form.email.id_for_label }}" class="mb-2 block text-sm font-medium">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}<p class="field-error">{% for error in form.email.errors %}{{ error }}{% endfor %}</p>{% endif %}
+          </div>
+        </div>
+        <div>
+          <label for="{{ form.subject.id_for_label }}" class="mb-2 block text-sm font-medium">Subject</label>
+          {{ form.subject }}
+          {% if form.subject.errors %}<p class="field-error">{% for error in form.subject.errors %}{{ error }}{% endfor %}</p>{% endif %}
+        </div>
+        <div x-data="{ count: {{ form.message.value|default_if_none:''|length }} }">
+          <div class="mb-2 flex items-baseline justify-between">
+            <label for="{{ form.message.id_for_label }}" class="block text-sm font-medium">Message</label>
+            <span class="text-xs text-muted"><span x-text="count">0</span>/2000</span>
+          </div>
+          <div @input="count = $event.target.value.length">{{ form.message }}</div>
+          {% if form.message.errors %}<p class="field-error">{% for error in form.message.errors %}{{ error }}{% endfor %}</p>{% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full" :disabled="sending">
+          <span x-show="!sending" class="inline-flex items-center gap-2">Send message <span class="arrow" aria-hidden="true">&rarr;</span></span>
+          <span x-show="sending" x-cloak class="inline-flex items-center gap-2"><span class="spinner"></span> Sending...</span>
+        </button>
+      </form>
+    </div>
   </div>
 </section>
-
-<div class="mx-auto grid max-w-6xl gap-8 px-4 lg:grid-cols-[1fr_1.5fr]">
-  <!-- Info -->
-  <aside class="space-y-5">
-    <a href="mailto:{{ contact_email }}" class="card card-hover spotlight group flex items-center gap-4 p-6" data-reveal="left">
-      <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-accent/10 text-accent">{% include "partials/icon.html" with name="mail" %}</span>
-      <span class="min-w-0">
-        <span class="block font-mono text-[11px] uppercase tracking-wider text-muted">Email</span>
-        <span class="block truncate font-semibold transition group-hover:text-accent-2">{{ contact_email }}</span>
-      </span>
-    </a>
-    <div class="card flex items-center gap-4 p-6" data-reveal="left" data-delay="0.06">
-      <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-accent-2/10 text-accent-2">{% include "partials/icon.html" with name="pin" %}</span>
-      <span>
-        <span class="block font-mono text-[11px] uppercase tracking-wider text-muted">Location</span>
-        <span class="block font-semibold">{{ contact_location }}</span>
-      </span>
-    </div>
-    <div class="card p-6" data-reveal="left" data-delay="0.12">
-      <p class="font-mono text-[11px] uppercase tracking-wider text-muted">Find me online</p>
-      <div class="mt-4 flex flex-wrap gap-2">{% include "partials/socials.html" %}</div>
-    </div>
-    <div class="ring-gradient" data-reveal="left" data-delay="0.18">
-      <div class="bg-surface p-6">
-        <p class="flex items-center gap-2 font-semibold"><span class="status-dot bg-success"></span> Available for internships</p>
-        <p class="mt-2 text-sm text-muted">Backend (Django / FastAPI), machine learning and AI automation roles.</p>
-        <a href="{% url 'download_resume' %}" class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent-2 hover:underline">{% include "partials/icon.html" with name="download" %} Download resume</a>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Form -->
-  <section class="card p-6 sm:p-9" data-reveal="right">
-    <h2 class="font-display text-2xl font-semibold">Send a message</h2>
-    <p class="mt-1 text-sm text-muted">All fields are required.</p>
-
-    <form method="post" class="mt-7 space-y-5" x-data="{ sending: false }" @submit="sending = true" novalidate>
-      {% csrf_token %}
-      {{ form.website }}
-      {% if form.non_field_errors %}
-      <div class="rounded-xl border border-accent-3/40 bg-accent-3/10 p-3 text-sm text-accent-3">{% for error in form.non_field_errors %}{{ error }} {% endfor %}{% if form.website.errors %}{{ form.website.errors|join:" " }}{% endif %}</div>
-      {% endif %}
-
-      <div class="grid gap-5 sm:grid-cols-2">
-        <div>
-          <label for="{{ form.name.id_for_label }}" class="mb-2 block text-sm font-medium">Name</label>
-          {{ form.name }}
-          {% if form.name.errors %}<p class="mt-1.5 text-sm text-accent-3">{% for error in form.name.errors %}{{ error }}{% endfor %}</p>{% endif %}
-        </div>
-        <div>
-          <label for="{{ form.email.id_for_label }}" class="mb-2 block text-sm font-medium">Email</label>
-          {{ form.email }}
-          {% if form.email.errors %}<p class="mt-1.5 text-sm text-accent-3">{% for error in form.email.errors %}{{ error }}{% endfor %}</p>{% endif %}
-        </div>
-      </div>
-      <div>
-        <label for="{{ form.subject.id_for_label }}" class="mb-2 block text-sm font-medium">Subject</label>
-        {{ form.subject }}
-        {% if form.subject.errors %}<p class="mt-1.5 text-sm text-accent-3">{% for error in form.subject.errors %}{{ error }}{% endfor %}</p>{% endif %}
-      </div>
-      <div x-data="{ count: {{ form.message.value|default_if_none:''|length }} }">
-        <div class="mb-2 flex items-baseline justify-between">
-          <label for="{{ form.message.id_for_label }}" class="block text-sm font-medium">Message</label>
-          <span class="font-mono text-xs text-muted"><span x-text="count">0</span>/2000</span>
-        </div>
-        <div @input="count = $event.target.value.length">{{ form.message }}</div>
-        {% if form.message.errors %}<p class="mt-1.5 text-sm text-accent-3">{% for error in form.message.errors %}{{ error }}{% endfor %}</p>{% endif %}
-      </div>
-
-      <button type="submit" class="btn btn-primary w-full !py-4 disabled:opacity-70" :disabled="sending" data-magnetic>
-        <span x-show="!sending" class="inline-flex items-center gap-2">Send message {% include "partials/icon.html" with name="arrow-right" %}</span>
-        <span x-show="sending" x-cloak class="inline-flex items-center gap-2">
-          <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span> Sending...
-        </span>
-      </button>
-    </form>
-  </section>
-</div>
 {% endblock %}

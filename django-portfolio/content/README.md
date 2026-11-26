@@ -8,12 +8,10 @@ database tables:
 - `achievements.json`
 - `education.json`
 - `skills.json`
+- `now.json`
 
-The database is still used for:
-
-- Django admin users, permissions, and sessions
-- Contact form messages
-- Resume uploads
+The project has no database. Contact messages are sent by email, and the
+resume is the static file `static/resume.pdf`.
 
 After editing content, run:
 
@@ -28,6 +26,9 @@ For example:
 ```json
 "featured_image": "images/projects/portfolio.png"
 ```
+
+A certificate can link its PDF with `"certificate_file": "certificates/my-cert.pdf"`
+(the file goes in `static/certificates/`). It shows as a "Certificate" link next to "Verify".
 
 
 ## Project case studies
@@ -49,8 +50,8 @@ case-study section.
 ## Now page
 
 `now.json` powers `/now/` and the "Currently learning" block on the home page.
-Update `updated`, `focus`, `learning` (each with `progress` 0-100), `building`
-and `goals` whenever your focus changes.
+Update `updated`, `focus`, `learning` (each with `level`: beginner / intermediate / advanced,
+and `progress` 0-100) and `goals` (strings or `{"title", "note"}`) whenever your focus changes.
 
 ## Caching
 

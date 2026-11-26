@@ -1,4 +1,5 @@
-from django.test import TestCase
+from django.test import SimpleTestCase as TestCase  # no database in this project
+from django.conf import settings
 from django.urls import reverse
 
 from . import content_loader as content
@@ -32,7 +33,7 @@ class PortfolioPageTests(TestCase):
         response = self.client.get(reverse('home'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Portfolio Website')
+        self.assertContains(response, 'ShopMind AI')
 
     def test_projects_page_renders_and_filters(self):
         response = self.client.get(reverse('projects'), {'type': 'ml', 'status': 'completed'})
@@ -50,7 +51,11 @@ class PortfolioPageTests(TestCase):
         response = self.client.get(reverse('certifications'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'OCI AI Foundations')
+        self.assertContains(response, 'AWS Certified Cloud Practitioner')
+        self.assertNotContains(response, 'Oracle')
+        # Filter chips only list types that are actually used
+        self.assertContains(response, 'Foundational Certification')
+        self.assertNotContains(response, 'Professional Certification')
 
     def test_achievements_page_renders(self):
         response = self.client.get(reverse('achievements'))
@@ -62,7 +67,7 @@ class PortfolioPageTests(TestCase):
         response = self.client.get(reverse('education'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Bachelor of Technology in Computer Science')
+        self.assertContains(response, 'B.Tech in Computer Engineering')
 
     def test_skills_page_renders(self):
         response = self.client.get(reverse('skills'))
@@ -164,3 +169,42 @@ class ContentCacheTests(TestCase):
             self.assertTrue(reader.called)
         finally:
             os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns))
+
+
+class ResumeLinkTests(TestCase):
+    def test_resume_buttons_link_straight_to_the_pdf(self):
+        response = self.client.get(reverse('home'))
+        self.assertContains(response, 'href="/static/resume.pdf" download="Om_Dhamal_Resume.pdf"')
+
+    def test_old_download_url_redirects_to_the_pdf(self):
+        response = self.client.get(reverse('download_resume'))
+        self.assertRedirects(response, '/static/resume.pdf', status_code=301, fetch_redirect_response=False)
+
+
+class ContactFormTests(TestCase):
+    data = {'name': 'Test User', 'email': 'test@example.com', 'subject': 'Hello there',
+            'message': 'This is a test message from the contact form.'}
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()  # reset the per-IP rate limit
+
+    def test_message_is_emailed_to_me_with_a_copy_to_the_visitor(self):
+        from django.core import mail
+
+        response = self.client.post(reverse('contact'), self.data)
+        self.assertRedirects(response, reverse('contact'))
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(mail.outbox[0].to, [settings.CONTACT_EMAIL])
+        self.assertEqual(mail.outbox[0].reply_to, ['test@example.com'])
+        self.assertEqual(mail.outbox[1].to, ['test@example.com'])
+
+    def test_failed_send_keeps_the_text_and_offers_a_mailto_fallback(self):
+        from unittest import mock
+
+        with mock.patch('portfolio_app.views.EmailMessage.send', side_effect=OSError('SMTP down')):
+            response = self.client.post(reverse('contact'), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "couldn't be sent")
+        self.assertContains(response, 'This is a test message from the contact form.')
+        self.assertContains(response, 'mailto:dhamalomm@gmail.com?subject=Hello%20there')

@@ -3,219 +3,156 @@
 {% block title %}Om Dhamal | Django Developer & ML Learner{% endblock %}
 
 {% block content %}
-<!-- ================= Hero ================= -->
-<section class="relative flex min-h-[100svh] items-center overflow-hidden pt-28 pb-16" data-hero>
-  <div class="bg-grid absolute inset-0 -z-10"></div>
-  <div class="orb orb-1 -top-32 left-[8%] h-[26rem] w-[26rem]" data-parallax="0.4"></div>
-  <div class="orb orb-2 top-1/3 right-[4%] h-80 w-80" data-parallax="0.7"></div>
-  <div class="orb orb-3 bottom-0 left-1/3 h-64 w-64" data-parallax="0.25"></div>
-
-  <div class="mx-auto grid w-full max-w-6xl items-center gap-14 px-4 lg:grid-cols-[1.25fr_1fr]">
+<!-- ================= Hero (white) ================= -->
+<section class="section !pt-16 md:!pt-24">
+  <div class="container-x grid items-center gap-12 lg:grid-cols-[1.35fr_1fr] lg:gap-16">
     <div>
-      <a href="{% url 'now' %}" data-hero-fade
-         class="group inline-flex items-center gap-2.5 rounded-full border border-line/10 bg-surface/60 py-1.5 pl-2 pr-4 text-sm text-muted backdrop-blur transition hover:border-success/50 hover:text-ink">
-        <span class="inline-flex items-center gap-2 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success">
-          <span class="status-dot bg-success"></span> Open to internships
-        </span>
-        See what I'm working on
-        <span class="transition group-hover:translate-x-0.5">{% include "partials/icon.html" with name="arrow-right" cls="w-3.5 h-3.5" %}</span>
+      <a href="{% url 'now' %}" class="badge transition-colors hover:border-faint hover:text-ink" data-hero-item>
+        <span class="dot dot-success"></span> Open to internships
       </a>
 
-      <h1 class="mt-8 font-display text-5xl font-bold leading-[1.02] sm:text-7xl">
-        <span class="block overflow-hidden pb-1"><span class="block" data-hero-line>Hi, I'm {{ name }}.</span></span>
-        <span class="block overflow-hidden pb-2"><span class="block text-gradient" data-hero-line>I build things</span></span>
-        <span class="block overflow-hidden pb-1"><span class="block" data-hero-line>that <span class="text-muted">actually</span> work.</span></span>
+      <h1 class="h-hero mt-6">
+        <span class="block" data-hero-item>Hi, I'm {{ name }}.</span>
+        <span class="block" data-hero-item>I build things that</span>
+        <span class="block text-accent" data-hero-item>actually work.</span>
       </h1>
 
-      <p class="mt-7 font-mono text-base text-muted sm:text-lg" data-hero-fade>
-        <span class="text-accent-2">&gt;</span>
-        <span data-typewriter='["Django backend developer", "Machine learning learner", "AI automation builder", "Computer Science student"]'>Django backend developer</span><span class="caret" aria-hidden="true"></span>
+      <p class="mt-5 text-[17px] font-medium text-ink" data-hero-item>
+        <span data-typewriter='["Django backend developer", "Machine learning learner", "AI automation builder", "Computer Engineering student"]'>Django backend developer</span>
       </p>
-      <p class="mt-5 max-w-xl text-lg leading-relaxed text-muted" data-hero-fade>{{ tagline }}</p>
+      <p class="lead mt-3" data-hero-item>{{ tagline }}</p>
 
-      <div class="mt-9 flex flex-wrap gap-3" data-hero-fade>
-        <a href="{% url 'projects' %}" class="btn btn-primary" data-magnetic>View my work {% include "partials/icon.html" with name="arrow-right" %}</a>
-        <a href="{% url 'download_resume' %}" class="btn btn-ghost" data-magnetic>{% include "partials/icon.html" with name="download" %} Resume</a>
+      <div class="mt-8 flex flex-wrap gap-3" data-hero-item>
+        <a href="{% url 'projects' %}" class="btn btn-primary">View my work <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a href="{% static 'resume.pdf' %}" download="Om_Dhamal_Resume.pdf" class="btn btn-secondary">{% include "partials/icon.html" with name="download" %} Resume</a>
       </div>
 
-      <div class="mt-10 flex items-center gap-2" data-hero-fade>
+      <div class="mt-8 flex flex-wrap items-center gap-2" data-hero-item>
         {% include "partials/socials.html" %}
       </div>
     </div>
 
-    <!-- Photo with orbit rings and floating badges -->
-    <div class="relative mx-auto aspect-square w-full max-w-[22rem] lg:max-w-[25rem]" data-hero-photo>
-      <div class="orbit"><span class="orbit-dot"></span></div>
-      <div class="orbit orbit-2"><span class="orbit-dot"></span></div>
-      <div class="ring-gradient absolute inset-[9%] !rounded-full">
-        <div class="h-full w-full overflow-hidden !rounded-full bg-surface">
-          <img src="{% static 'images/profile.jpg' %}" alt="Portrait of Om Dhamal" class="profile-headshot h-full w-full"
-               onerror="this.src='{% static 'images/profile.svg' %}'" />
-        </div>
+    <div class="mx-auto w-full max-w-[340px] lg:max-w-[380px]" data-hero-item>
+      <div class="overflow-hidden rounded-2xl border border-line bg-surface">
+        <img src="{% static 'images/profile.jpg' %}" alt="Portrait of Om Dhamal" class="profile-headshot aspect-[4/5] w-full"
+             onerror="this.src='{% static 'images/profile.svg' %}'" />
       </div>
-      <div class="card float-y absolute -left-2 top-[12%] flex items-center gap-2.5 px-3.5 py-2.5 text-sm shadow-xl sm:-left-8">
-        <span class="grid h-8 w-8 place-items-center rounded-lg bg-accent/15 text-accent">{% include "partials/icon.html" with name="code" cls="w-4 h-4" %}</span>
-        <span><span class="block font-semibold leading-tight">Django</span><span class="text-xs text-muted">Backend</span></span>
-      </div>
-      <div class="card float-y absolute -right-2 bottom-[14%] flex items-center gap-2.5 px-3.5 py-2.5 text-sm shadow-xl sm:-right-6" style="animation-delay:-3s">
-        <span class="grid h-8 w-8 place-items-center rounded-lg bg-accent-2/15 text-accent-2">{% include "partials/icon.html" with name="spark" cls="w-4 h-4" %}</span>
-        <span><span class="block font-semibold leading-tight">ML & AI</span><span class="text-xs text-muted">Models & agents</span></span>
-      </div>
+      <p class="mt-3 flex items-center gap-1.5 text-sm text-muted">{% include "partials/icon.html" with name="pin" cls="w-4 h-4" %} {{ contact_location }}</p>
     </div>
-  </div>
-
-  <a href="#stats" class="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs text-muted md:flex" aria-label="Scroll down">
-    <span class="h-10 w-6 rounded-full border border-line/20 p-1"><span class="mx-auto block h-2 w-1 animate-bounce rounded-full bg-accent-2"></span></span>
-  </a>
-</section>
-
-<!-- ================= Stats ================= -->
-<section id="stats" class="mx-auto max-w-6xl px-4">
-  <div class="grid grid-cols-2 gap-4 md:grid-cols-4" data-stagger>
-    {% for stat in quick_stats %}
-    <div class="card spotlight p-6 text-center">
-      <p class="font-display text-4xl font-bold sm:text-5xl"><span data-count="{{ stat.number }}">{{ stat.number }}</span><span class="text-accent-2">+</span></p>
-      <p class="mt-2 text-sm text-muted">{{ stat.label }}</p>
-    </div>
-    {% endfor %}
   </div>
 </section>
 
-<!-- ================= Skills marquee ================= -->
-{% if top_skills %}
-<section class="marquee mt-16 overflow-hidden py-4" aria-label="Technologies I use">
-  <div class="marquee-track gap-4">
-    {% for round in "ab" %}
-      {% for skill in top_skills %}
-      <span class="inline-flex shrink-0 items-center gap-3 px-2 font-display text-2xl font-semibold text-muted/70 sm:text-3xl" {% if round == "b" %}aria-hidden="true"{% endif %}>
-        {{ skill }} <span class="text-accent/60">&#10022;</span>
-      </span>
+<!-- ================= Stats + skills ticker (gray) ================= -->
+<section class="section section-alt !py-16 md:!py-20">
+  <div class="container-x">
+    <div class="stats" data-reveal>
+      {% for stat in quick_stats %}
+      <div class="stat">
+        <p class="stat-number"><span data-count="{{ stat.number }}">{{ stat.number }}</span>+</p>
+        <p class="stat-label">{{ stat.label }}</p>
+      </div>
       {% endfor %}
-    {% endfor %}
+    </div>
   </div>
-</section>
-{% endif %}
 
-<!-- ================= Now ================= -->
+  {% if top_skills %}
+  <div class="marquee mt-10" aria-label="Technologies I use" data-reveal>
+    <div class="marquee-track">
+      {% for round in "ab" %}{% for skill in top_skills %}
+      <span class="tag" {% if round == "b" %}aria-hidden="true"{% endif %}>{{ skill }}</span>
+      {% endfor %}{% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+<!-- ================= Now (white) ================= -->
 {% if now %}
-<section class="mx-auto mt-24 max-w-6xl px-4">
-  <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
-    <div>
-      <span class="eyebrow" data-reveal>Now</span>
-      <h2 class="mt-3 font-display text-3xl font-bold sm:text-5xl" data-reveal>Currently <span class="text-gradient">learning</span></h2>
+<section class="section">
+  <div class="container-x">
+    <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
+      <div>
+        <span class="label">Now</span>
+        <h2 class="h-section">Currently learning</h2>
+        <p class="lead mt-3">{{ now.focus }}</p>
+      </div>
+      <a href="{% url 'now' %}" class="link-accent">Full update <span class="arrow" aria-hidden="true">&rarr;</span></a>
     </div>
-    <a href="{% url 'now' %}" class="inline-flex items-center gap-1.5 text-sm text-accent-2 hover:underline" data-reveal>Full update {% include "partials/icon.html" with name="arrow-right" %}</a>
-  </div>
 
-  <div class="grid gap-5 lg:grid-cols-3">
-    <div class="card spotlight p-7 lg:col-span-2" data-reveal>
-      <p class="text-lg leading-relaxed">{{ now.focus }}</p>
-      <div class="mt-7 grid gap-5 sm:grid-cols-2">
-        {% for item in now.learning %}
-        <div>
-          <div class="mb-2 flex items-center justify-between text-sm">
-            <span class="font-medium">{{ item.name }}</span>
-            <span class="font-mono text-xs text-muted">{{ item.progress }}%</span>
-          </div>
-          <div class="bar"><span data-bar style="width: {{ item.progress }}%"></span></div>
+    <div class="mt-10 grid gap-4 sm:grid-cols-2" data-stagger>
+      {% for item in now.learning|slice:":4" %}
+      <div class="card p-6">
+        <div class="flex items-baseline justify-between gap-3">
+          <h3 class="font-semibold">{{ item.name }}</h3>
+          {% if item.level_label %}<span class="badge {% if item.level == 'intermediate' %}badge-accent{% endif %} shrink-0 !py-1 !text-xs">{{ item.level_label }}</span>{% endif %}
         </div>
-        {% endfor %}
+        <div class="bar mt-3" role="progressbar" aria-valuenow="{{ item.progress }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ item.name }} progress">
+          <span data-bar style="width: {{ item.progress }}%"></span>
+        </div>
+        {% if item.note %}<p class="mt-3 text-sm text-muted">{{ item.note }}</p>{% endif %}
       </div>
+      {% endfor %}
     </div>
-    <div class="card p-7" data-reveal data-delay="0.1">
-      <h3 class="mb-4 font-mono text-xs uppercase tracking-[0.16em] text-muted">Building</h3>
-      <ul class="space-y-3">
-        {% for item in now.building %}
-        <li class="flex gap-3 text-sm"><span class="mt-1.5 status-dot shrink-0 bg-warning"></span>{{ item }}</li>
-        {% endfor %}
-      </ul>
-      {% if now.updated %}<p class="mt-6 text-xs text-muted">Updated {{ now.updated|date:"F j, Y" }}</p>{% endif %}
-    </div>
+
   </div>
 </section>
 {% endif %}
 
-<!-- ================= Featured projects ================= -->
+<!-- ================= Featured projects (gray) ================= -->
 {% if featured_projects %}
-<section class="mx-auto mt-28 max-w-6xl px-4">
-  <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
-    <div>
-      <span class="eyebrow" data-reveal>Selected work</span>
-      <h2 class="mt-3 font-display text-3xl font-bold sm:text-5xl" data-reveal>Featured <span class="text-gradient">projects</span></h2>
+<section class="section section-alt">
+  <div class="container-x">
+    <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
+      <div>
+        <span class="label">Projects</span>
+        <h2 class="h-section">Featured work</h2>
+        <p class="lead mt-3">Each project has a short case study: the problem, how I built it, and what I learned.</p>
+      </div>
+      <a href="{% url 'projects' %}" class="btn btn-secondary">All projects <span class="arrow" aria-hidden="true">&rarr;</span></a>
     </div>
-    <a href="{% url 'projects' %}" class="btn btn-ghost" data-reveal data-magnetic>All projects {% include "partials/icon.html" with name="arrow-right" %}</a>
-  </div>
-  <div class="grid gap-6 md:grid-cols-2" data-stagger="0.12">
-    {% for project in featured_projects %}{% include "partials/project_card.html" %}{% endfor %}
+    <div class="mt-10 grid gap-6 md:grid-cols-2" data-stagger="0.1">
+      {% for project in featured_projects %}{% include "partials/project_card.html" %}{% endfor %}
+    </div>
   </div>
 </section>
 {% endif %}
 
-<!-- ================= Journey preview (bento) ================= -->
-<section class="mx-auto mt-28 max-w-6xl px-4">
-  <span class="eyebrow" data-reveal>Journey</span>
-  <h2 class="mt-3 font-display text-3xl font-bold sm:text-5xl" data-reveal>Learning <span class="text-gradient">in public</span></h2>
-
-  <div class="mt-10 grid gap-5 md:grid-cols-6">
-    {% for edu in featured_education|slice:":1" %}
-    <a href="{% url 'education' %}" class="card card-hover spotlight group p-7 md:col-span-3" data-reveal>
-      <div class="flex items-center justify-between">
-        <span class="text-3xl">{{ edu.get_icon }}</span>
-        <span class="text-muted transition group-hover:translate-x-1 group-hover:text-accent-2">{% include "partials/icon.html" with name="arrow-right" %}</span>
+<!-- ================= Learning in public timeline (white) ================= -->
+{% if journey %}
+<section class="section">
+  <div class="container-x grid gap-12 lg:grid-cols-[1fr_1.4fr]">
+    <div data-reveal>
+      <span class="label">Journey</span>
+      <h2 class="h-section">Learning in public</h2>
+      <p class="lead mt-3">Recent milestones from my degree, certifications and hackathons.</p>
+      <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+        <a href="{% url 'education' %}" class="link-accent">Education <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a href="{% url 'certifications' %}" class="link-accent">Certifications <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a href="{% url 'achievements' %}" class="link-accent">Achievements <span class="arrow" aria-hidden="true">&rarr;</span></a>
       </div>
-      <p class="mt-6 font-mono text-xs uppercase tracking-wider text-accent-2">Education &middot; {{ edu.get_duration }}</p>
-      <h3 class="mt-2 font-display text-xl font-semibold">{{ edu.title }}</h3>
-      <p class="mt-1 text-sm text-muted">{{ edu.institution }}</p>
-      {% if edu.grade %}<p class="mt-4 inline-flex rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">{{ edu.grade }}</p>{% endif %}
-    </a>
-    {% endfor %}
-
-    <a href="{% url 'certifications' %}" class="card card-hover spotlight group p-7 md:col-span-3" data-reveal data-delay="0.08">
-      <div class="flex items-center justify-between">
-        <span class="grid h-11 w-11 place-items-center rounded-xl bg-accent/10 text-accent">{% include "partials/icon.html" with name="award" %}</span>
-        <span class="text-muted transition group-hover:translate-x-1 group-hover:text-accent-2">{% include "partials/icon.html" with name="arrow-right" %}</span>
-      </div>
-      <p class="mt-6 font-mono text-xs uppercase tracking-wider text-accent">Certifications</p>
-      <ul class="mt-3 space-y-2.5">
-        {% for cert in featured_certifications %}
-        <li class="flex items-start justify-between gap-3 text-sm">
-          <span class="font-medium">{{ cert.title }}</span>
-          <span class="shrink-0 text-xs text-muted">{{ cert.issuing_organization }}</span>
-        </li>
-        {% endfor %}
-      </ul>
-    </a>
-
-    {% for achievement in featured_achievements %}
-    <a href="{% url 'achievements' %}" class="card card-hover spotlight group p-7 md:col-span-2" data-reveal data-delay="{% cycle '0' '0.08' %}">
-      <span class="text-3xl">{{ achievement.get_icon }}</span>
-      <p class="mt-5 font-mono text-xs uppercase tracking-wider text-accent-3">{{ achievement.get_category_display }}{% if achievement.date %} &middot; {{ achievement.date|date:"M Y" }}{% endif %}</p>
-      <h3 class="mt-2 font-display text-lg font-semibold leading-snug">{{ achievement.title }}</h3>
-      {% if achievement.result %}<p class="mt-2 text-sm text-muted">{{ achievement.result }}</p>{% endif %}
-    </a>
-    {% endfor %}
-
-    <a href="{% url 'about' %}" class="ring-gradient group md:col-span-2 {% if featured_achievements|length == 0 %}md:col-span-6{% elif featured_achievements|length == 1 %}md:col-span-4{% endif %}" data-reveal data-delay="0.16">
-      <div class="flex h-full flex-col justify-between bg-surface p-7">
-        <p class="font-display text-xl font-semibold leading-snug">Want the full story - from school to shipping AI projects?</p>
-        <span class="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-accent-2 transition group-hover:gap-3">Read about me {% include "partials/icon.html" with name="arrow-right" %}</span>
-      </div>
-    </a>
+    </div>
+    <ol class="timeline space-y-8" data-stagger="0.08">
+      {% for entry in journey %}
+      <li class="timeline-item">
+        <span class="timeline-dot" aria-hidden="true"></span>
+        <p class="timeline-date">{{ entry.date_label }} &middot; {{ entry.kind }}</p>
+        <h3 class="mt-1 font-semibold leading-snug"><a href="{% url entry.url %}" class="hover:text-accent">{{ entry.title }}</a></h3>
+        {% if entry.subtitle %}<p class="mt-0.5 text-sm text-muted">{{ entry.subtitle }}</p>{% endif %}
+      </li>
+      {% endfor %}
+    </ol>
   </div>
 </section>
+{% endif %}
 
-<!-- ================= CTA ================= -->
-<section class="mx-auto mt-28 max-w-6xl px-4">
-  <div class="ring-gradient" data-reveal="scale">
-    <div class="relative overflow-hidden bg-surface px-6 py-16 text-center sm:px-16">
-      <div class="orb orb-1 -left-10 -top-20 h-60 w-60"></div>
-      <div class="orb orb-2 -bottom-24 -right-10 h-60 w-60"></div>
-      <h2 class="relative font-display text-3xl font-bold sm:text-5xl">Have an idea or an internship?<br /><span class="text-gradient">Let's build it together.</span></h2>
-      <p class="relative mx-auto mt-5 max-w-xl text-muted">I'm looking for internships and real projects where I can learn fast and ship useful software.</p>
-      <div class="relative mt-8 flex flex-wrap justify-center gap-3">
-        <a href="{% url 'contact' %}" class="btn btn-primary" data-magnetic>Get in touch {% include "partials/icon.html" with name="arrow-right" %}</a>
-        <a href="mailto:{{ contact_email }}" class="btn btn-ghost" data-magnetic>{% include "partials/icon.html" with name="mail" cls="w-4 h-4" %} {{ contact_email }}</a>
-      </div>
+<!-- ================= Contact CTA (navy) ================= -->
+<section class="cta-band section">
+  <div class="container-x" data-reveal>
+    <h2 class="h-section !mt-0 max-w-2xl">Have an internship or a project in mind? Let's build it together.</h2>
+    <p class="measure mt-4 text-[17px]">I'm looking for internships and real projects where I can learn fast and ship useful software.</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href="{% url 'contact' %}" class="btn btn-invert">Get in touch <span class="arrow" aria-hidden="true">&rarr;</span></a>
+      <a href="mailto:{{ contact_email }}" class="btn border-on-accent text-on-accent hover:bg-accent-hover">{{ contact_email }}</a>
     </div>
   </div>
 </section>

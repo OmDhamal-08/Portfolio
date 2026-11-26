@@ -4,60 +4,56 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Om Dhamal | Django Developer & ML Learner{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}Om Dhamal - Computer Science student building Django backends, machine learning projects and AI automations.{% endblock %}" />
+    <meta name="description" content="{% block meta_description %}Om Dhamal - Computer Engineering student building Django and FastAPI backends, machine learning projects and AI agents.{% endblock %}" />
     <meta property="og:title" content="{% block og_title %}Om Dhamal | Portfolio{% endblock %}" />
     <meta property="og:description" content="Projects, case studies and the learning journey of Om Dhamal." />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#07080c" />
+    <meta name="theme-color" content="#FFFFFF" />
     <link rel="icon" href="{% static 'images/profile.svg' %}" type="image/svg+xml" />
 
-    <!-- Apply the saved theme before anything paints (avoids a flash) -->
     <script>
-      (function () {
-        var d = document.documentElement;
-        d.classList.remove("no-js");
-        d.classList.add("js");
-        var theme = null;
-        try { theme = localStorage.getItem("theme"); } catch (e) {}
-        if (theme === "light") d.classList.add("light");
-      })();
+      document.documentElement.classList.replace("no-js", "js");
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
     <script src="https://cdn.tailwindcss.com/3.4.5"></script>
     <script>
-      // Map Tailwind color names to the CSS design tokens in site.css
-      const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+      // Tailwind color names point at the CSS variables in site.css,
+      // so templates can only use the approved palette.
+      const v = (name) => `var(--${name})`;
       tailwind.config = {
         theme: {
+          colors: {
+            transparent: "transparent",
+            current: "currentColor",
+            base: v("bg"),
+            surface: v("surface"),
+            "surface-hover": v("surface-hover"),
+            line: v("border"),
+            ink: v("text"),
+            muted: v("text-muted"),
+            faint: v("text-light"),
+            accent: v("accent"),
+            "accent-hover": v("accent-hover"),
+            "accent-soft": v("accent-soft"),
+            "on-accent": v("on-accent"),
+            success: v("success"),
+          },
           extend: {
-            colors: {
-              base: token("bg"),
-              surface: token("surface"),
-              "surface-2": token("surface-2"),
-              ink: token("text"),
-              muted: token("muted"),
-              accent: token("accent"),
-              "accent-2": token("accent-2"),
-              "accent-3": token("accent-3"),
-              success: token("success"),
-              warning: token("warning"),
-              line: token("line"),
-            },
             fontFamily: {
-              display: ['"Space Grotesk"', "Inter", "sans-serif"],
+              sans: ["Inter", "system-ui", "sans-serif"],
               mono: ['"JetBrains Mono"', "monospace"],
             },
+            maxWidth: { content: "1120px" },
           },
         },
       };
     </script>
 
     <link rel="stylesheet" href="{% static 'css/site.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/custom.css' %}" />
     {% block extra_head %}{% endblock %}
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
@@ -68,100 +64,78 @@
   </head>
 
   {% with page=request.resolver_match.url_name %}
-  <body class="noise min-h-screen antialiased"
-        x-data="{ menu: false, light: document.documentElement.classList.contains('light') }"
-        @keydown.escape.window="menu = false">
-
-    <div id="cursor-glow" aria-hidden="true"></div>
-    <div id="scroll-progress" class="fixed top-0 left-0 right-0 h-[2px] z-[70]" aria-hidden="true"></div>
-    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[80] btn btn-primary">Skip to content</a>
+  <body class="min-h-screen" x-data="{ menu: false }" @keydown.escape.window="menu = false">
+    <a href="#main" class="skip-link">Skip to content</a>
 
     <!-- ================= Navigation ================= -->
-    <header id="site-nav" class="fixed inset-x-0 top-0 z-50 px-4 pt-4">
-      <nav class="nav-shell mx-auto flex max-w-6xl items-center justify-between rounded-full px-4 py-2.5 md:px-6" aria-label="Main">
-        <a href="{% url 'home' %}" class="group flex items-center gap-3">
-          <span class="relative grid h-9 w-9 place-items-center overflow-hidden rounded-full ring-2 ring-accent/50 transition group-hover:ring-accent-2">
-            <img src="{% static 'images/profile.jpg' %}" alt="" class="profile-headshot h-full w-full"
-                 onerror="this.remove()" />
-            <span class="absolute inset-0 -z-10 grid place-items-center bg-accent font-display font-bold text-white">O</span>
+    <header id="site-nav" class="site-nav">
+      <nav class="container-x flex h-16 items-center justify-between" aria-label="Main">
+        <a href="{% url 'home' %}" class="flex items-center gap-3">
+          <span class="relative grid h-9 w-9 place-items-center overflow-hidden rounded-full border border-line bg-surface">
+            <img src="{% static 'images/profile.jpg' %}" alt="" class="profile-headshot h-full w-full" onerror="this.remove()" />
           </span>
-          <span class="font-display text-lg font-semibold tracking-tight">Om<span class="text-accent-2">.</span>Dhamal</span>
+          <span class="text-[17px] font-semibold tracking-tight text-ink">Om Dhamal</span>
         </a>
 
-        <div class="hidden items-center gap-7 text-sm font-medium lg:flex">
-          <a href="{% url 'home' %}" class="nav-link {% if page == 'home' %}is-active{% endif %}">Home</a>
-          <a href="{% url 'about' %}" class="nav-link {% if page == 'about' %}is-active{% endif %}">About</a>
-          <a href="{% url 'projects' %}" class="nav-link {% if page == 'projects' or page == 'project_detail' %}is-active{% endif %}">Projects</a>
-          <a href="{% url 'skills' %}" class="nav-link {% if page == 'skills' %}is-active{% endif %}">Skills</a>
-          <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-            <button type="button" class="nav-link inline-flex items-center gap-1 {% if page == 'education' or page == 'certifications' or page == 'achievements' %}is-active{% endif %}"
-                    @click="open = !open" :aria-expanded="open" aria-haspopup="true">
+        <div class="hidden items-center gap-8 lg:flex">
+          <a href="{% url 'home' %}" class="nav-link {% if page == 'home' %}is-active{% endif %}" {% if page == 'home' %}aria-current="page"{% endif %}>Home</a>
+          <a href="{% url 'about' %}" class="nav-link {% if page == 'about' %}is-active{% endif %}" {% if page == 'about' %}aria-current="page"{% endif %}>About</a>
+          <a href="{% url 'projects' %}" class="nav-link {% if page == 'projects' or page == 'project_detail' %}is-active{% endif %}" {% if page == 'projects' %}aria-current="page"{% endif %}>Projects</a>
+          <a href="{% url 'skills' %}" class="nav-link {% if page == 'skills' %}is-active{% endif %}" {% if page == 'skills' %}aria-current="page"{% endif %}>Skills</a>
+          <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @focusout="if (!$el.contains($event.relatedTarget)) open = false">
+            <button type="button" class="nav-link {% if page == 'education' or page == 'certifications' or page == 'achievements' %}is-active{% endif %}"
+                    @click="open = !open" :aria-expanded="open.toString()" aria-expanded="false" aria-haspopup="true">
               Journey
-              <svg class="h-3.5 w-3.5 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+              <svg class="h-3.5 w-3.5 transition-transform duration-200" :class="open && 'rotate-180'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </button>
-            <div x-show="open" x-cloak x-transition.opacity.scale.origin.top
-                 class="absolute left-1/2 top-full w-60 -translate-x-1/2 pt-4">
-              <div class="card p-2 shadow-2xl">
-                <a href="{% url 'education' %}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-muted transition hover:bg-surface-2 hover:text-ink">
-                  {% include "partials/icon.html" with name="book" cls="w-4 h-4 text-accent-2" %} Education
-                </a>
-                <a href="{% url 'certifications' %}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-muted transition hover:bg-surface-2 hover:text-ink">
-                  {% include "partials/icon.html" with name="award" cls="w-4 h-4 text-accent" %} Certifications
-                </a>
-                <a href="{% url 'achievements' %}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-muted transition hover:bg-surface-2 hover:text-ink">
-                  {% include "partials/icon.html" with name="flag" cls="w-4 h-4 text-accent-3" %} Achievements
-                </a>
+            <div x-show="open" x-cloak x-transition.opacity.duration.150ms class="absolute left-1/2 top-full w-56 -translate-x-1/2 pt-3">
+              <div class="dropdown">
+                <a href="{% url 'education' %}" class="{% if page == 'education' %}is-active{% endif %}">{% include "partials/icon.html" with name="book" cls="w-4 h-4" %} Education</a>
+                <a href="{% url 'certifications' %}" class="{% if page == 'certifications' %}is-active{% endif %}">{% include "partials/icon.html" with name="award" cls="w-4 h-4" %} Certifications</a>
+                <a href="{% url 'achievements' %}" class="{% if page == 'achievements' %}is-active{% endif %}">{% include "partials/icon.html" with name="flag" cls="w-4 h-4" %} Achievements</a>
               </div>
             </div>
           </div>
-          <a href="{% url 'now' %}" class="nav-link inline-flex items-center gap-2 {% if page == 'now' %}is-active{% endif %}">
-            <span class="status-dot bg-success"></span> Now
-          </a>
+          <a href="{% url 'now' %}" class="nav-link {% if page == 'now' %}is-active{% endif %}" {% if page == 'now' %}aria-current="page"{% endif %}>Now</a>
         </div>
 
-        <div class="flex items-center gap-2">
-          <button type="button" class="grid h-10 w-10 place-items-center rounded-full border border-line/10 text-muted transition hover:border-accent/50 hover:text-ink"
-                  @click="light = !light; document.documentElement.classList.toggle('light', light); try { localStorage.setItem('theme', light ? 'light' : 'dark') } catch (e) {}"
-                  :aria-label="light ? 'Switch to dark theme' : 'Switch to light theme'" aria-label="Toggle theme">
-            <span x-show="!light">{% include "partials/icon.html" with name="sun" cls="w-[18px] h-[18px]" %}</span>
-            <span x-show="light" x-cloak>{% include "partials/icon.html" with name="moon" cls="w-[18px] h-[18px]" %}</span>
-          </button>
-          <a href="{% url 'contact' %}" class="btn btn-primary hidden !py-2 !px-5 text-sm sm:inline-flex" data-magnetic>Let's talk</a>
-          <button type="button" class="grid h-10 w-10 place-items-center rounded-full border border-line/10 lg:hidden"
-                  @click="menu = !menu" :aria-expanded="menu" aria-controls="mobile-menu" aria-label="Open menu">
+        <div class="flex items-center gap-3">
+          <a href="{% url 'contact' %}" class="btn btn-primary btn-sm hidden sm:inline-flex">Let's talk</a>
+          <button type="button" class="icon-btn lg:hidden" @click="menu = !menu" :aria-expanded="menu.toString()" aria-expanded="false" aria-controls="mobile-menu" aria-label="Toggle menu">
             <span x-show="!menu">{% include "partials/icon.html" with name="menu" cls="w-5 h-5" %}</span>
             <span x-show="menu" x-cloak>{% include "partials/icon.html" with name="close" cls="w-5 h-5" %}</span>
           </button>
         </div>
       </nav>
 
-      <!-- Mobile menu -->
-      <div id="mobile-menu" x-show="menu" x-cloak x-transition.opacity.duration.200ms class="mx-auto mt-3 max-w-6xl lg:hidden">
-        <div class="card p-3 shadow-2xl">
-          <div class="grid grid-cols-2 gap-1 text-sm font-medium">
-            <a href="{% url 'home' %}" class="rounded-xl px-4 py-3 hover:bg-surface-2 {% if page == 'home' %}bg-surface-2 text-accent-2{% endif %}">Home</a>
-            <a href="{% url 'about' %}" class="rounded-xl px-4 py-3 hover:bg-surface-2 {% if page == 'about' %}bg-surface-2 text-accent-2{% endif %}">About</a>
-            <a href="{% url 'projects' %}" class="rounded-xl px-4 py-3 hover:bg-surface-2 {% if page == 'projects' %}bg-surface-2 text-accent-2{% endif %}">Projects</a>
-            <a href="{% url 'skills' %}" class="rounded-xl px-4 py-3 hover:bg-surface-2 {% if page == 'skills' %}bg-surface-2 text-accent-2{% endif %}">Skills</a>
-            <a href="{% url 'education' %}" class="rounded-xl px-4 py-3 hover:bg-surface-2 {% if page == 'education' %}bg-surface-2 text-accent-2{% endif %}">Education</a>
-            <a href="{% url 'certifications' %}" class="rounded-xl px-4 py-3 hover:bg-surface-2 {% if page == 'certifications' %}bg-surface-2 text-accent-2{% endif %}">Certifications</a>
-            <a href="{% url 'achievements' %}" class="rounded-xl px-4 py-3 hover:bg-surface-2 {% if page == 'achievements' %}bg-surface-2 text-accent-2{% endif %}">Achievements</a>
-            <a href="{% url 'now' %}" class="rounded-xl px-4 py-3 hover:bg-surface-2 {% if page == 'now' %}bg-surface-2 text-accent-2{% endif %}">Now</a>
-          </div>
-          <a href="{% url 'contact' %}" class="btn btn-primary mt-3 w-full">Let's talk</a>
+      <!-- Mobile slide-down menu -->
+      <div id="mobile-menu" x-show="menu" x-cloak
+           x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+           x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+           class="border-t border-line bg-base lg:hidden">
+        <div class="container-x pb-6 pt-2">
+          <a href="{% url 'home' %}" class="mobile-link {% if page == 'home' %}is-active{% endif %}">Home</a>
+          <a href="{% url 'about' %}" class="mobile-link {% if page == 'about' %}is-active{% endif %}">About</a>
+          <a href="{% url 'projects' %}" class="mobile-link {% if page == 'projects' or page == 'project_detail' %}is-active{% endif %}">Projects</a>
+          <a href="{% url 'skills' %}" class="mobile-link {% if page == 'skills' %}is-active{% endif %}">Skills</a>
+          <a href="{% url 'education' %}" class="mobile-link {% if page == 'education' %}is-active{% endif %}">Education</a>
+          <a href="{% url 'certifications' %}" class="mobile-link {% if page == 'certifications' %}is-active{% endif %}">Certifications</a>
+          <a href="{% url 'achievements' %}" class="mobile-link {% if page == 'achievements' %}is-active{% endif %}">Achievements</a>
+          <a href="{% url 'now' %}" class="mobile-link {% if page == 'now' %}is-active{% endif %}">Now</a>
+          <a href="{% url 'contact' %}" class="btn btn-primary mt-5 w-full">Let's talk</a>
         </div>
       </div>
     </header>
 
     <!-- ================= Messages ================= -->
     {% if messages %}
-    <div class="fixed left-1/2 top-24 z-[60] w-full max-w-md -translate-x-1/2 space-y-2 px-4" aria-live="polite">
+    <div class="fixed left-1/2 top-20 z-[60] w-full max-w-md -translate-x-1/2 space-y-2 px-4" aria-live="polite">
       {% for message in messages %}
-      <div class="toast card flex items-start gap-3 p-4 shadow-2xl {% if message.tags == 'success' %}!border-success/40{% elif message.tags == 'error' %}!border-accent-3/50{% endif %}" role="alert" data-toast>
-        <span class="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full {% if message.tags == 'success' %}bg-success/15 text-success{% elif message.tags == 'error' %}bg-accent-3/15 text-accent-3{% else %}bg-accent-2/15 text-accent-2{% endif %}">
+      <div class="toast card flex items-start gap-3 p-4" role="alert" data-toast>
+        <span class="icon-box !h-7 !w-7">
           {% if message.tags == 'error' %}{% include "partials/icon.html" with name="close" cls="w-3.5 h-3.5" %}{% else %}{% include "partials/icon.html" with name="check" cls="w-3.5 h-3.5" %}{% endif %}
         </span>
-        <p class="flex-1 text-sm font-medium">{{ message }}</p>
+        <p class="flex-1 pt-0.5 text-sm font-medium text-ink">{{ message }}</p>
         <button type="button" class="text-muted hover:text-ink" onclick="this.closest('[role=alert]').remove()" aria-label="Dismiss">
           {% include "partials/icon.html" with name="close" cls="w-4 h-4" %}
         </button>
@@ -171,42 +145,45 @@
     {% endif %}
 
     <!-- ================= Page ================= -->
-    <main id="main" class="relative z-10">
+    <main id="main" tabindex="-1" class="outline-none">
       {% block content %}{% endblock %}
     </main>
 
     <!-- ================= Footer ================= -->
-    <footer class="relative z-10 mt-24 border-t border-line/[0.08]">
-      <div class="mx-auto max-w-6xl px-4 py-14">
+    <footer class="site-footer">
+      <div class="container-x py-12">
         <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <a href="{% url 'home' %}" class="font-display text-2xl font-semibold">Om<span class="text-accent-2">.</span>Dhamal</a>
-            <p class="mt-3 max-w-sm text-sm leading-relaxed text-muted">Computer Science student building Django backends, machine learning models and AI automations - one project at a time.</p>
+            <a href="{% url 'home' %}" class="text-lg font-semibold text-ink">Om Dhamal</a>
+            <p class="measure mt-2 text-sm text-muted">Computer Engineering student building Django and FastAPI backends, machine learning models and AI agents.</p>
             <div class="mt-5 flex gap-2">
-              {% include "partials/socials.html" %}
+              {% for s in social_links %}{% if s.name == 'github' or s.name == 'linkedin' %}
+              <a href="{{ s.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ s.label }}" class="icon-btn">{% include "partials/icon.html" with name=s.name cls="w-[18px] h-[18px]" %}</a>
+              {% endif %}{% endfor %}
+              <a href="mailto:{{ contact_email }}" aria-label="Email" class="icon-btn">{% include "partials/icon.html" with name="mail" cls="w-[18px] h-[18px]" %}</a>
             </div>
           </div>
           <div>
-            <h3 class="mb-4 font-mono text-xs uppercase tracking-[0.16em] text-muted">Explore</h3>
-            <ul class="space-y-2.5 text-sm">
-              <li><a class="text-muted transition hover:text-ink" href="{% url 'projects' %}">Projects & case studies</a></li>
-              <li><a class="text-muted transition hover:text-ink" href="{% url 'now' %}">What I'm doing now</a></li>
-              <li><a class="text-muted transition hover:text-ink" href="{% url 'skills' %}">Skills</a></li>
-              <li><a class="text-muted transition hover:text-ink" href="{% url 'education' %}">Education</a></li>
+            <h2 class="label">Explore</h2>
+            <ul class="mt-4 space-y-2.5">
+              <li><a class="footer-link" href="{% url 'projects' %}">Projects & case studies</a></li>
+              <li><a class="footer-link" href="{% url 'now' %}">What I'm doing now</a></li>
+              <li><a class="footer-link" href="{% url 'skills' %}">Skills</a></li>
+              <li><a class="footer-link" href="{% url 'education' %}">Education</a></li>
             </ul>
           </div>
           <div>
-            <h3 class="mb-4 font-mono text-xs uppercase tracking-[0.16em] text-muted">Get in touch</h3>
-            <ul class="space-y-2.5 text-sm">
-              <li><a class="text-muted transition hover:text-ink" href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
-              <li class="text-muted">{{ contact_location }}</li>
-              <li><a class="inline-flex items-center gap-1.5 text-accent-2 hover:underline" href="{% url 'download_resume' %}">{% include "partials/icon.html" with name="download" cls="w-4 h-4" %} Download resume</a></li>
+            <h2 class="label">Get in touch</h2>
+            <ul class="mt-4 space-y-2.5">
+              <li><a class="footer-link" href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
+              <li class="text-sm text-muted">{{ contact_location }}</li>
+              <li><a class="footer-link inline-flex items-center gap-1.5" href="{% static 'resume.pdf' %}" download="Om_Dhamal_Resume.pdf">{% include "partials/icon.html" with name="download" cls="w-4 h-4" %} Download resume</a></li>
             </ul>
           </div>
         </div>
-        <div class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-line/[0.08] pt-6 text-xs text-muted sm:flex-row">
-          <p>&copy; {% now "Y" %} Om Dhamal. Built with Django, HTMX & GSAP.</p>
-          <a href="#main" class="inline-flex items-center gap-1 hover:text-ink">Back to top <span aria-hidden="true">&uarr;</span></a>
+        <div class="mt-10 flex flex-col justify-between gap-3 border-t border-line pt-6 text-sm text-muted sm:flex-row">
+          <p>&copy; {% now "Y" %} Om Dhamal. Built with Django, HTMX and GSAP.</p>
+          <a href="#main" class="footer-link">Back to top &uarr;</a>
         </div>
       </div>
     </footer>

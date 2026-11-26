@@ -1,5 +1,44 @@
 [
   {
+    "title": "250+ DSA Problems Solved on LeetCode",
+    "category": "competition",
+    "organization": "LeetCode",
+    "date": null,
+    "location": "Online",
+    "description": "Practise data structures and algorithms in C++ and have solved more than 250 problems so far.",
+    "result": "250+ problems",
+    "project_link": "https://leetcode.com/u/omdhamal77/",
+    "certificate_link": "",
+    "image": "",
+    "technologies": [
+      "DSA",
+      "C++",
+      "Problem Solving"
+    ],
+    "featured": true,
+    "is_active": true,
+    "display_order": 1
+  },
+  {
+    "title": "800+ Rating on Codeforces",
+    "category": "competition",
+    "organization": "Codeforces",
+    "date": null,
+    "location": "Online",
+    "description": "Reached an 800+ rating by taking part in rated contests regularly.",
+    "result": "800+ rating",
+    "project_link": "https://codeforces.com/profile/omdhamal",
+    "certificate_link": "",
+    "image": "",
+    "technologies": [
+      "Competitive Programming",
+      "DSA"
+    ],
+    "featured": false,
+    "is_active": true,
+    "display_order": 2
+  },
+  {
     "title": "Fusion 2025 National Level Hackathon",
     "category": "hackathon",
     "organization": "IIC E-Cell SKNCOE and SKN IEEE Student Branch",
@@ -10,25 +49,34 @@
     "project_link": "",
     "certificate_link": "https://drive.google.com/file/d/1hB5gg-kg4-yoTeQGEW1_0SWccTsR6uBc/view?usp=drive_link",
     "image": "",
-    "technologies": ["Problem Solving", "Innovation", "Team Collaboration"],
+    "technologies": [
+      "Problem Solving",
+      "Innovation",
+      "Team Collaboration"
+    ],
     "featured": true,
-    "display_order": 1,
+    "display_order": 3,
     "is_active": true
   },
   {
-    "title": "AI-ML Virtual Internship",
+    "title": "AI & Machine Learning Virtual Internship",
     "category": "other",
     "organization": "EduSkills in collaboration with AICTE and Google Developers",
-    "date": "2025-10-01",
+    "date": "2025-12-01",
     "location": "Virtual / Online",
-    "description": "Completed a 10-week AI-ML virtual internship under the EduSkills program.",
+    "description": "A ten-week virtual internship (Oct to Dec 2025) where I worked through the full machine learning workflow: cleaning data, building features, training models and checking how well they really perform. I completed more than five end-to-end projects along the way.",
     "result": "Successfully Completed",
     "project_link": "",
     "certificate_link": "https://drive.google.com/file/d/1cdtelRl_wF22sKuqf3FbXPUSd0PbkzUh/view?usp=drive_link",
     "image": "",
-    "technologies": ["Artificial Intelligence", "Machine Learning", "Python"],
+    "technologies": [
+      "Python",
+      "Scikit-learn",
+      "TensorFlow",
+      "Machine Learning"
+    ],
     "featured": true,
-    "display_order": 2,
+    "display_order": 4,
     "is_active": true
   },
   {
@@ -42,9 +90,13 @@
     "project_link": "",
     "certificate_link": "https://drive.google.com/file/d/1gAcUrYZIU4hgw--8f6WmgsYim1KoCBvV/view?usp=drive_link",
     "image": "",
-    "technologies": ["Artificial Intelligence", "Data Science", "Team Collaboration"],
+    "technologies": [
+      "Artificial Intelligence",
+      "Data Science",
+      "Team Collaboration"
+    ],
     "featured": true,
-    "display_order": 3,
+    "display_order": 5,
     "is_active": true
   },
   {
@@ -58,9 +110,12 @@
     "project_link": "",
     "certificate_link": "https://drive.google.com/file/d/1hoOkaCsTDhVNo9o7YK_iSDjb39KBNNcI/view?usp=drive_link",
     "image": "",
-    "technologies": ["AWS", "Cloud Computing"],
+    "technologies": [
+      "AWS",
+      "Cloud Computing"
+    ],
     "featured": false,
-    "display_order": 4,
+    "display_order": 6,
     "is_active": true
   },
   {
@@ -74,10 +129,12 @@
     "project_link": "",
     "certificate_link": "https://drive.google.com/file/d/1Iw3Z0xKgPaW53BcrT3TPr6kGtaXHvRkA/view?usp=drive_link",
     "image": "",
-    "technologies": ["Competitive Programming", "DSA"],
+    "technologies": [
+      "Competitive Programming",
+      "DSA"
+    ],
     "featured": true,
-    "display_order": 5,
+    "display_order": 7,
     "is_active": true
   }
 ]
-

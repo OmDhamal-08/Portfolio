@@ -1,20 +1,77 @@
 {
   "updated": "2026-11-25",
   "headline": "What I'm focused on right now",
-  "focus": "Strengthening backend fundamentals and building practical AI automation projects.",
+  "focus": "Going deeper into ML, agentic AI and DSA, while starting on servers, AI security and drone engineering.",
   "learning": [
-    {"name": "Machine Learning Specialization", "progress": 70, "note": "Andrew Ng's course on Coursera: neural networks and model evaluation", "resource": ""},
-    {"name": "Data Structures & Algorithms", "progress": 60, "note": "Regular practice in C++ on LeetCode and Codeforces", "resource": "https://leetcode.com/u/omdhamal77/"},
-    {"name": "Django APIs & Caching", "progress": 45, "note": "Building APIs and learning caching and testing", "resource": ""},
-    {"name": "AI Agents & Automation", "progress": 50, "note": "Voice agents and n8n workflows", "resource": ""}
-  ],
-  "building": [
-    "Food Analyzer AI: food image classification",
-    "This portfolio: adding a blog and CI"
+    {
+      "name": "Machine Learning",
+      "level": "intermediate",
+      "progress": 55,
+      "note": "Model evaluation, feature engineering and deep learning with TensorFlow",
+      "resource": ""
+    },
+    {
+      "name": "AI & LLMs",
+      "level": "intermediate",
+      "progress": 50,
+      "note": "How LLMs work, embeddings, prompting and fine-tuning basics",
+      "resource": ""
+    },
+    {
+      "name": "Agentic AI",
+      "level": "intermediate",
+      "progress": 45,
+      "note": "Agent loops, tool calling, RAG, the Claude API and MCP",
+      "resource": ""
+    },
+    {
+      "name": "AI Tools",
+      "level": "intermediate",
+      "progress": 55,
+      "note": "Claude Code, Codex, Antigravity and n8n for building faster",
+      "resource": ""
+    },
+    {
+      "name": "Data Structures & Algorithms",
+      "level": "intermediate",
+      "progress": 55,
+      "note": "250+ problems on LeetCode in C++, Codeforces contests",
+      "resource": "https://leetcode.com/u/omdhamal77/"
+    },
+    {
+      "name": "Servers & Deployment",
+      "level": "beginner",
+      "progress": 20,
+      "note": "Linux, Nginx, Docker and cloud deployment on AWS",
+      "resource": ""
+    },
+    {
+      "name": "AI Security",
+      "level": "beginner",
+      "progress": 15,
+      "note": "Prompt injection, data privacy and securing LLM apps",
+      "resource": ""
+    },
+    {
+      "name": "Drone Engineering",
+      "level": "beginner",
+      "progress": 10,
+      "note": "Drone basics, flight controllers and using ML for autonomous flight",
+      "resource": ""
+    }
   ],
   "goals": [
-    "Land a backend / ML internship",
-    "Solve 300 DSA problems",
-    "Ship one deployed AI project every month"
+    {
+      "title": "Internship",
+      "note": "Land a backend, ML or AI engineering internship and learn from a real team."
+    },
+    {
+      "title": "Full-time job",
+      "note": "Join a growth-focused company as a software or AI engineer after graduation."
+    },
+    {
+      "title": "My own startup",
+      "note": "Build an AI product that solves a real problem and grow it into a startup."
+    }
   ]
 }

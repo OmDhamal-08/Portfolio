@@ -3,57 +3,44 @@
 {% block title %}Skills | Om Dhamal{% endblock %}
 
 {% block content %}
-<section class="relative overflow-hidden pt-36 pb-12">
-  <div class="bg-grid absolute inset-0 -z-10"></div>
-  <div class="orb orb-2 -top-24 left-[20%] h-72 w-72"></div>
-  <div class="mx-auto max-w-6xl px-4">
-    <span class="eyebrow" data-reveal>Toolkit</span>
-    <h1 class="mt-4 font-display text-4xl font-bold leading-tight sm:text-6xl" data-reveal data-delay="0.05">Skills & <span class="text-gradient">technologies</span></h1>
-    <p class="mt-5 max-w-2xl text-lg text-muted" data-reveal data-delay="0.1">The tools I use, how comfortable I am with each, and where I've used them.</p>
+{% include "partials/page_header.html" with label="Skills" title="Skills & technologies" intro="The tools I use, how comfortable I am with each, and where I've used them." %}
+
+<section class="section !pt-12" x-data="{ tab: 'all' }">
+  <div class="container-x space-y-14">
+    <div class="flex flex-wrap gap-2" role="tablist" aria-label="Skill categories" data-reveal>
+      <button type="button" class="chip" :class="tab === 'all' && 'chip-active'" @click="tab = 'all'" role="tab" :aria-selected="(tab === 'all').toString()">All</button>
+      {% for key, label in categories.items %}{% if skills_by_category|get_item:key %}
+      <button type="button" class="chip" :class="tab === '{{ key }}' && 'chip-active'" @click="tab = '{{ key }}'" role="tab" :aria-selected="(tab === '{{ key }}').toString()">{{ label }}</button>
+      {% endif %}{% endfor %}
+    </div>
+
+    {% for key, label in categories.items %}
+    {% with skills=skills_by_category|get_item:key %}
+    {% if skills %}
+    <div x-show="tab === 'all' || tab === '{{ key }}'" x-transition.opacity.duration.200ms>
+      <div class="flex items-baseline gap-3 border-b border-line pb-3" data-reveal>
+        <h2 class="text-xl font-semibold">{{ label }}</h2>
+        <span class="text-sm text-muted">{{ skills|length }}</span>
+      </div>
+      <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-stagger="0.06">
+        {% for skill in skills %}
+        <div class="card card-hover flex flex-col p-5">
+          <div class="flex items-baseline justify-between gap-2">
+            <h3 class="font-semibold">{{ skill.name }}</h3>
+            <span class="text-sm text-muted">{{ skill.proficiency }}%</span>
+          </div>
+          <div class="bar mt-3" role="progressbar" aria-valuenow="{{ skill.proficiency }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ skill.name }} proficiency">
+            <span data-bar style="width: {{ skill.proficiency }}%"></span>
+          </div>
+          {% if skill.description %}<p class="mt-3 text-sm text-muted">{{ skill.description }}</p>{% endif %}
+          <a href="{% url 'projects' %}?tech={{ skill.name|urlencode }}" class="link-accent mt-auto pt-4 text-sm">Projects using {{ skill.name }} <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% endfor %}
   </div>
 </section>
-
-<div class="mx-auto max-w-6xl space-y-14 px-4" x-data="{ tab: 'all' }">
-  <!-- Category tabs -->
-  <div class="flex flex-wrap gap-2" role="tablist" data-reveal>
-    <button type="button" class="chip" :class="tab === 'all' && 'chip-active'" @click="tab = 'all'" role="tab" :aria-selected="tab === 'all'">All</button>
-    {% for key, label in categories.items %}{% if skills_by_category|get_item:key %}
-    <button type="button" class="chip" :class="tab === '{{ key }}' && 'chip-active'" @click="tab = '{{ key }}'" role="tab" :aria-selected="tab === '{{ key }}'">{{ label }}</button>
-    {% endif %}{% endfor %}
-  </div>
-
-  {% for key, label in categories.items %}
-  {% with skills=skills_by_category|get_item:key %}
-  {% if skills %}
-  <section x-show="tab === 'all' || tab === '{{ key }}'" x-transition.opacity.duration.300ms>
-    <div class="mb-6 flex items-center gap-4" data-reveal>
-      <h2 class="font-display text-2xl font-semibold">{{ label }}</h2>
-      <span class="h-px flex-1 bg-gradient-to-r from-line/15 to-transparent"></span>
-      <span class="font-mono text-xs text-muted">{{ skills|length }}</span>
-    </div>
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-stagger="0.06">
-      {% for skill in skills %}
-      <div class="card card-hover spotlight p-6">
-        <div class="flex items-center gap-4">
-          <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-line/10 bg-surface-2 text-2xl">{{ skill.icon|default:"◆" }}</span>
-          <div class="min-w-0 flex-1">
-            <div class="flex items-baseline justify-between gap-2">
-              <h3 class="truncate font-semibold">{{ skill.name }}</h3>
-              <span class="font-mono text-xs text-accent-2">{{ skill.proficiency }}%</span>
-            </div>
-            <div class="bar mt-2"><span data-bar style="width: {{ skill.proficiency }}%"></span></div>
-          </div>
-        </div>
-        {% if skill.description %}<p class="mt-4 text-sm leading-relaxed text-muted">{{ skill.description }}</p>{% endif %}
-        <a href="{% url 'projects' %}?tech={{ skill.name|urlencode }}" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-muted transition hover:text-accent-2">
-          Projects using {{ skill.name }} {% include "partials/icon.html" with name="arrow-right" cls="w-3 h-3" %}
-        </a>
-      </div>
-      {% endfor %}
-    </div>
-  </section>
-  {% endif %}
-  {% endwith %}
-  {% endfor %}
-</div>
 {% endblock %}
