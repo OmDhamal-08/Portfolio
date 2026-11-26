@@ -11,7 +11,7 @@
       <p class="mt-3 text-[17px] font-medium text-accent" data-hero-item>{{ personal_info.title }}</p>
       <p class="lead mt-4" data-hero-item>{{ personal_info.bio }}</p>
       <div class="mt-7 flex flex-wrap gap-3" data-hero-item>
-        <a href="{% url 'download_resume' %}" class="btn btn-primary">{% include "partials/icon.html" with name="download" %} Download resume</a>
+        <a href="{% static 'resume.pdf' %}" download="Om_Dhamal_Resume.pdf" class="btn btn-primary">{% include "partials/icon.html" with name="download" %} Download resume</a>
         <a href="mailto:{{ personal_info.email }}" class="btn btn-secondary">{% include "partials/icon.html" with name="mail" cls="w-4 h-4" %} Email me</a>
       </div>
     </div>

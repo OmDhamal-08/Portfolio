@@ -21,16 +21,17 @@ studies, my learning journey, and what I'm working on right now.
 - **Live project search.** Search and filter by keyword, type, status or technology; results update as you type, without reloading the page.
 - **Now page** (`/now/`). What I'm currently learning (with a Beginner / Intermediate level and progress bar) and my goals: internship, job and my own startup.
 - **Journey pages.** Timelines for education and achievements, plus a certifications page with verify links.
-- **Contact form** with validation, spam protection and email notifications.
+- **Easy contact.** A contact form that emails me directly (and sends the visitor a copy), a one-click "Copy email" button, an "Open email app" link, and social links. If sending ever fails, the visitor's text is kept and a pre-filled email link is offered instead.
+- **One-click resume.** View the PDF in the browser or download it straight away, with no server code involved.
 - **Clean light design.** White and light-gray sections with a single navy accent; flat colors, no gradients or glow effects.
 - **Subtle animations.** A staggered hero reveal, sections that fade up as you scroll, numbers that count up, progress bars that fill, a scrolling skills ticker, and small hover lifts on cards and buttons.
 - **Accessible and responsive.** Works from 360px phones to desktops, meets WCAG AA text contrast, has visible keyboard focus outlines and a skip link, and shows simple fades instead of motion for visitors who ask for reduced motion.
 
 **Under the hood**
-- File-based content: portfolio data lives in JSON files, not database tables.
+- No database: portfolio content lives in JSON files and contact messages are delivered by email.
 - Content is cached with Django's cache framework, with automatic invalidation when a file changes.
 - HTMX partial rendering: the same view returns a full page or just the results grid.
-- Content validation command and 23 automated tests.
+- Content validation command and 27 automated tests.
 - Production-ready settings: environment-based secrets, HTTPS, secure cookies, HSTS, WhiteNoise.
 
 ---
@@ -43,9 +44,10 @@ studies, my learning journey, and what I'm working on right now.
 | Frontend | Django templates, Tailwind CSS, Alpine.js |
 | Interactivity | HTMX (live search), Alpine.js (menus, tabs, form state) |
 | Animation | GSAP + ScrollTrigger, Lenis (smooth scrolling) |
-| Data | JSON content files; SQLite locally, Postgres in production |
+| Data | JSON content files (no database) |
 | Caching | Django cache (local memory, or Redis when `REDIS_URL` is set) |
-| Static files | WhiteNoise |
+| Static files | WhiteNoise (also serves the resume PDF) |
+| Email | Django email over SMTP (e.g. Gmail) |
 | Hosting | Vercel (serverless Python) |
 
 ---
@@ -83,7 +85,7 @@ Browser
   -> Django URL routing (portfolio_app/urls.py)
   -> View (portfolio_app/views.py)
        -> content_loader.py -> Django cache -> content/*.json
-       -> Database (contact messages, resume uploads, admin only)
+       -> Contact form -> email (SMTP)
   -> Template
        -> full page for normal requests
        -> partial template for HTMX requests (HX-Request header)
@@ -97,8 +99,15 @@ from version control. Keeping it in JSON files means:
 
 - Updating the site is one file edit and a `git push`; there's no admin panel or migration.
 - The content history is visible in Git.
-- The database only stores data that really needs it: **contact messages**,
-  **resume uploads**, and **admin users**.
+- There is no database to host, pay for or keep awake. Contact messages arrive
+  by email, and the resume is a static PDF.
+
+### Why no database?
+
+An earlier version stored contact messages and resume uploads in Postgres.
+On serverless hosting, uploaded files don't survive a redeploy, and a paused
+free database took the resume download down with it. Email already delivers
+every message, so the database added risk without adding value.
 
 ### How the caching works
 
@@ -130,7 +139,7 @@ Without JavaScript, the form still works as a normal GET form.
 ```text
 .
 |-- api/
-|   |-- requirements.txt
+|   |-- requirements.txt         # Same as the root file, for Vercel
 |   `-- wsgi.py                    # Vercel entry point
 |-- django-portfolio/
 |   |-- content/                   # All portfolio content (edit these)
@@ -147,7 +156,6 @@ Without JavaScript, the form still works as a normal GET form.
 |   |   |-- context_processors.py  # Social links / contact info for templates
 |   |   |-- views.py
 |   |   |-- forms.py               # Contact form + honeypot
-|   |   |-- models.py              # ContactMessage, Resume
 |   |   |-- templatetags/          # rich_text and get_item filters
 |   |   |-- templates/
 |   |   |   |-- base.html
@@ -157,7 +165,9 @@ Without JavaScript, the form still works as a normal GET form.
 |   |-- static/
 |   |   |-- css/site.css           # Color variables (white + navy) and components
 |   |   |-- js/site.js             # Animations, smooth scroll, HTMX hooks
-|   |   `-- images/
+|   |   |-- images/
+|   |   |-- certificates/          # Certificate PDFs linked from the site
+|   |   `-- resume.pdf             # Served directly by WhiteNoise
 |   `-- manage.py
 |-- requirements.txt
 `-- vercel.json
@@ -187,24 +197,22 @@ SECRET_KEY=local-dev-secret
 EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
 ```
 
-With `DEBUG=True` the app uses SQLite automatically, and emails are printed to the console.
+With the console email backend, contact-form emails are printed in the terminal instead of being sent.
 
 ### 3. Set up and run
 
 ```powershell
 cd django-portfolio
-python manage.py migrate
 python manage.py validate_content
 python manage.py runserver
 ```
 
 Open http://127.0.0.1:8000/
 
-To use the admin panel (contact messages and resume uploads):
+### Updating your resume or photo
 
-```powershell
-python manage.py createsuperuser
-```
+- **Resume:** replace `django-portfolio/static/resume.pdf` (keep the name) and push.
+- **Photo:** replace `django-portfolio/static/images/profile.jpg` (square, about 600x600) and push.
 
 ---
 
@@ -270,7 +278,7 @@ cd django-portfolio
 python manage.py test portfolio_app
 ```
 
-The 23 tests cover:
+The 27 tests cover:
 - Content loading, validation and slug lookup
 - Every page renders with the expected content
 - Case-study fields and validation of bad entries
@@ -278,12 +286,13 @@ The 23 tests cover:
 - Project search by keyword and technology
 - HTMX requests return only the partial, with the `Vary` header
 - Caching: a second load does not read the file again, and editing the file invalidates the cache
+- Resume buttons link straight to the PDF, and the old `/download-resume/` URL redirects to it
+- The contact form emails me and the visitor, and a failed send keeps the text and offers a mailto link
 
 Other useful checks:
 
 ```powershell
 python manage.py check
-python manage.py makemigrations --check --dry-run
 ```
 
 ---
@@ -300,10 +309,9 @@ Set these in **Vercel -> Project Settings -> Environment Variables**:
 |---|---|---|
 | `DEBUG` | yes | `False` in production |
 | `SECRET_KEY` | yes | A long random string (generate one with the command below) |
-| `DATABASE_URL` | yes | Postgres URL. `POSTGRES_URL` from Vercel Postgres also works |
-| `CONTACT_EMAIL` | yes | Where contact form messages are sent |
+| `CONTACT_EMAIL` | optional | Where contact form messages are sent (default `dhamalomm@gmail.com`) |
 | `DEFAULT_FROM_EMAIL` | yes | Sender address |
-| `EMAIL_HOST_USER` / `EMAIL_HOST_PASSWORD` | for email | SMTP login (e.g. a Gmail app password) |
+| `EMAIL_HOST_USER` / `EMAIL_HOST_PASSWORD` | yes, for email | SMTP login, e.g. your Gmail address and a Gmail app password |
 | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS` | optional | Defaults: `smtp.gmail.com`, `587`, `True` |
 | `CUSTOM_DOMAIN` | optional | Adds the domain to allowed hosts and CSRF trusted origins |
 | `ALLOWED_HOSTS` | optional | Extra hosts, comma-separated |
@@ -316,27 +324,20 @@ Generate a secret key:
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-Apply migrations to the production database before the first deploy:
-
-```powershell
-cd django-portfolio
-python manage.py migrate
-```
-
 ---
 
 ## Interview Notes
 
 **In one sentence:** a hybrid Django portfolio where static content is
-file-based and cached, dynamic data lives in Postgres, and HTMX adds
+file-based and cached, contact messages go by email with no database, and HTMX adds
 single-page-app-style search without a JavaScript framework.
 
 Talking points:
-1. **Choosing storage by data type.** Content goes in version-controlled JSON; user submissions go in the database.
+1. **Choosing storage by need.** Content goes in version-controlled JSON; contact messages go by email; the resume is a static file. I removed the database once it added risk (a paused free database broke the resume download) without adding value.
 2. **Cache invalidation.** The modification time in the cache key means fresh data without ever clearing the cache by hand.
 3. **Progressive enhancement.** HTMX search falls back to a normal form; animations respect reduced-motion settings.
-4. **Validation and testing.** A `validate_content` command catches bad JSON before deploying, and 23 tests cover pages, search and caching.
-5. **Production security.** Secrets come from environment variables, with HTTPS redirect, secure cookies, HSTS, a contact-form honeypot and rate limiting.
+4. **Validation and testing.** A `validate_content` command catches bad JSON before deploying, and 27 tests cover pages, search, caching, the resume links and the contact form.
+5. **Production security.** Secrets come from environment variables, with HTTPS redirect, secure cookies, HSTS, a contact-form honeypot and rate limiting. The contact form never claims a message was sent when it wasn't.
 
 ---
 

@@ -338,3 +338,6 @@ select.input {
   .card-hover:hover .card-media img, a:hover .arrow, button:hover .arrow { transform: none; }
   .nav-link::after { transition: none; }
 }
+
+/* Profile photos: fill the frame and keep the face in view */
+.profile-headshot { object-fit: cover; object-position: center top; }

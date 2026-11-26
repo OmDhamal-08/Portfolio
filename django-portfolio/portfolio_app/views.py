@@ -1,16 +1,18 @@
-from django.shortcuts import redirect, render
-import os
-from datetime import date
 import logging
-from django.core.cache import cache
-from django.core.mail import BadHeaderError, EmailMessage
-from django.http import HttpResponse
-from django.contrib import messages
+from datetime import date
+from urllib.parse import quote
+
 from django.conf import settings
+from django.contrib import messages
+from django.core.cache import cache
+from django.core.mail import EmailMessage
+from django.shortcuts import redirect, render
+from django.templatetags.static import static
 from django.utils.cache import patch_vary_headers
+
 from . import content_loader as content
+from .context_processors import CONTACT_EMAIL
 from .forms import ContactForm
-from .models import ContactMessage, Resume
 
 
 logger = logging.getLogger(__name__)
@@ -42,118 +44,67 @@ def education(request):
     }
     return render(request, 'education.html', context)
 
-def _update_contact_status(contact_message, status, error=''):
-    if contact_message is None:
-        return
+def _mailto_link(subject='', body=''):
+    """A mailto: link that opens the visitor's email app with the message filled in."""
+    return f'mailto:{CONTACT_EMAIL}?subject={quote(subject)}&body={quote(body)}'
+
+
+def _send_contact_emails(name, email, subject, message):
+    """Email the message to me (reply goes straight to the visitor) and send them a copy."""
+    EmailMessage(
+        f'Portfolio contact: {subject}',
+        f'Name: {name}\nEmail: {email}\nSubject: {subject}\n\n{message}\n\n'
+        '---\nSent from the contact form on your portfolio. Reply to this email to answer.',
+        settings.DEFAULT_FROM_EMAIL,
+        [settings.CONTACT_EMAIL],
+        reply_to=[email],
+    ).send(fail_silently=False)
+
     try:
-        contact_message.email_status = status
-        fields = ['email_status', 'updated_at']
-        if error:
-            contact_message.email_error = error
-            fields.append('email_error')
-        contact_message.save(update_fields=fields)
+        EmailMessage(
+            'Thanks for your message',
+            f'Hi {name},\n\nThanks for reaching out through my portfolio. I have your message and will '
+            f'reply soon.\n\nYour message:\n{subject}\n\n{message}\n\nBest regards,\nOm Dhamal',
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+        ).send(fail_silently=False)
     except Exception:
-        logger.exception('Could not update contact message status')
+        # The important email already reached me; a failed copy is not worth an error page.
+        logger.exception('Could not send the confirmation copy to %s', email)
 
 
 def contact(request):
+    form = ContactForm(request.POST or None)
+    send_failed = False
+
     if request.method == 'POST':
-        form = ContactForm(request.POST)
-        client_ip = get_client_ip(request)
-        rate_key = f"contact-form:{client_ip or 'unknown'}"
+        rate_key = f"contact-form:{get_client_ip(request) or 'unknown'}"
         attempts = cache.get(rate_key, 0)
 
         if attempts >= 5:
-            messages.error(request, 'Too many messages were submitted. Please try again after a few minutes.')
-        else:
+            messages.error(request, 'Too many messages in a short time. Please try again in a few minutes.')
+        elif form.is_valid():
             cache.set(rate_key, attempts + 1, 15 * 60)
-
-        if attempts < 5 and form.is_valid():
-            name = form.cleaned_data['name']
-            email = form.cleaned_data['email']
-            subject = form.cleaned_data['subject']
-            message = form.cleaned_data['message']
-            # Saving to the database is a bonus: if it is down, still send the email.
+            data = form.cleaned_data
             try:
-                contact_message = ContactMessage.objects.create(
-                    name=name,
-                    email=email,
-                    subject=subject,
-                    message=message,
-                    ip_address=client_ip,
-                    user_agent=request.META.get('HTTP_USER_AGENT', '')[:255],
-                )
+                _send_contact_emails(data['name'], data['email'], data['subject'], data['message'])
             except Exception:
-                logger.exception('Could not save contact message from %s <%s>', name, email)
-                contact_message = None
-            
-            email_subject = f"Portfolio Contact: {subject}"
-            email_message = f"""
-Name: {name}
-Email: {email}
-Subject: {subject}
-
-Message:
-{message}
-
----
-This message was sent from your portfolio contact form.
-            """
-            
-            try:
-                EmailMessage(
-                    email_subject,
-                    email_message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [settings.CONTACT_EMAIL],
-                    reply_to=[email],
-                ).send(fail_silently=False)
-                
-                confirmation_subject = "Thank you for contacting me!"
-                confirmation_message = f"""
-Hi {name},
-
-Thank you for reaching out through my portfolio website. I have received your message and will get back to you as soon as possible.
-
-Here's a copy of your message:
-Subject: {subject}
-Message: {message}
-
-Best regards,
-Om Dhamal
-                """
-                
-                EmailMessage(
-                    confirmation_subject,
-                    confirmation_message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [email],
-                ).send(fail_silently=False)
-
-                _update_contact_status(contact_message, 'sent')
-                
-                messages.success(request, 'Your message has been sent successfully! I will get back to you soon.')
+                # There is no database, so never pretend the message was saved.
+                logger.exception('Contact form email failed for %s', data['email'])
+                send_failed = True
+            else:
+                messages.success(request, 'Message sent! I will get back to you soon.')
                 return redirect('contact')
-                
-            except BadHeaderError:
-                _update_contact_status(contact_message, 'failed', 'Invalid email header.')
-                messages.error(request, 'Invalid header found. Please try again.')
-            except Exception as exc:
-                _update_contact_status(contact_message, 'failed', str(exc))
-                logger.exception('Contact form email failed for %s <%s>', name, email)
-                messages.success(request, 'Your message has been received. I will get back to you soon.')
-                return redirect('contact')
-        
-        elif attempts < 5:
+        else:
             messages.error(request, 'Please correct the errors below.')
-    
-    else:
-        form = ContactForm()
-    
-    context = {
-        'form': form,
-    }
-    return render(request, 'contact.html', context)
+
+    mailto = _mailto_link()
+    if send_failed:
+        data = form.cleaned_data
+        mailto = _mailto_link(data['subject'], f"{data['message']}\n\n- {data['name']}")
+
+    return render(request, 'contact.html', {'form': form, 'send_failed': send_failed, 'mailto': mailto})
+
 
 def certifications(request):
     cert_type = request.GET.get('type', '')
@@ -353,46 +304,6 @@ def skills(request):
     }
     return render(request, 'skills.html', context)
 
-def _uploaded_resume():
-    """The active resume uploaded through the admin, or None.
-
-    Any database problem (unreachable database, missing table, file deleted from
-    the serverless filesystem) must not break the download, so it falls back to
-    the bundled static/resume.pdf.
-    """
-    try:
-        resume = Resume.objects.filter(is_active=True).first()
-        if resume and resume.file and resume.file.storage.exists(resume.file.name):
-            return resume
-    except Exception:
-        logger.exception('Could not load the uploaded resume; using static/resume.pdf')
-    return None
-
-
-def _pdf_attachment(data, filename):
-    # Send the bytes in one normal response. Vercel's Python runtime does not
-    # handle Django's streaming FileResponse reliably, and a resume is small.
-    response = HttpResponse(data, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{filename}"'
-    response['Content-Length'] = str(len(data))
-    return response
-
-
 def download_resume(request):
-    resume = _uploaded_resume()
-    if resume:
-        filename = f"Om_Dhamal_Resume_{resume.version}.pdf" if resume.version else "Om_Dhamal_Resume.pdf"
-        try:
-            with resume.file.open('rb') as handle:
-                return _pdf_attachment(handle.read(), filename)
-        except Exception:
-            logger.exception('Could not read the uploaded resume; using static/resume.pdf')
-
-    resume_path = os.path.join(settings.BASE_DIR, 'static', 'resume.pdf')
-    if os.path.exists(resume_path):
-        with open(resume_path, 'rb') as handle:
-            return _pdf_attachment(handle.read(), 'Om_Dhamal_Resume.pdf')
-
-    response = HttpResponse('OM DHAMAL - Resume\n(The PDF resume will be available soon.)', content_type='text/plain')
-    response['Content-Disposition'] = 'attachment; filename="Om_Dhamal_Resume.txt"'
-    return response
+    """Old /download-resume/ links: send them to the PDF, which WhiteNoise serves directly."""
+    return redirect(static('resume.pdf'), permanent=True)

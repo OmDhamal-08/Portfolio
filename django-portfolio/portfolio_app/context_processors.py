@@ -7,11 +7,13 @@ SOCIAL_LINKS = [
     {'name': 'instagram', 'label': 'Instagram', 'url': 'https://www.instagram.com/dhamal_om_96/'},
 ]
 
+CONTACT_EMAIL = 'dhamalomm@gmail.com'
+
 
 def site(request):
     """Values every template needs (footer, contact page, nav)."""
     return {
         'social_links': SOCIAL_LINKS,
-        'contact_email': 'dhamalomm@gmail.com',
+        'contact_email': CONTACT_EMAIL,
         'contact_location': 'Pune, India',
     }

@@ -24,7 +24,7 @@
 
       <div class="mt-8 flex flex-wrap gap-3" data-hero-item>
         <a href="{% url 'projects' %}" class="btn btn-primary">View my work <span class="arrow" aria-hidden="true">&rarr;</span></a>
-        <a href="{% url 'download_resume' %}" class="btn btn-secondary">{% include "partials/icon.html" with name="download" %} Resume</a>
+        <a href="{% static 'resume.pdf' %}" download="Om_Dhamal_Resume.pdf" class="btn btn-secondary">{% include "partials/icon.html" with name="download" %} Resume</a>
       </div>
 
       <div class="mt-8 flex flex-wrap items-center gap-2" data-hero-item>

@@ -54,7 +54,6 @@
     </script>
 
     <link rel="stylesheet" href="{% static 'css/site.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/custom.css' %}" />
     {% block extra_head %}{% endblock %}
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
@@ -178,7 +177,7 @@
             <ul class="mt-4 space-y-2.5">
               <li><a class="footer-link" href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
               <li class="text-sm text-muted">{{ contact_location }}</li>
-              <li><a class="footer-link inline-flex items-center gap-1.5" href="{% url 'download_resume' %}">{% include "partials/icon.html" with name="download" cls="w-4 h-4" %} Download resume</a></li>
+              <li><a class="footer-link inline-flex items-center gap-1.5" href="{% static 'resume.pdf' %}" download="Om_Dhamal_Resume.pdf">{% include "partials/icon.html" with name="download" cls="w-4 h-4" %} Download resume</a></li>
             </ul>
           </div>
         </div>
