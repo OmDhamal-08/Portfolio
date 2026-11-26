@@ -168,3 +168,19 @@ class ContentCacheTests(TestCase):
             self.assertTrue(reader.called)
         finally:
             os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns))
+
+
+class ResumeDownloadTests(TestCase):
+    def test_downloads_static_pdf(self):
+        response = self.client.get(reverse('download_resume'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+
+    def test_database_error_falls_back_to_static_pdf(self):
+        from unittest import mock
+        from django.db import DatabaseError
+
+        with mock.patch('portfolio_app.views.Resume.objects.filter', side_effect=DatabaseError('no such table')):
+            response = self.client.get(reverse('download_resume'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')

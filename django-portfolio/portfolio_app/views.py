@@ -340,19 +340,33 @@ def skills(request):
     }
     return render(request, 'skills.html', context)
 
+def _uploaded_resume():
+    """The active resume uploaded through the admin, or None.
+
+    Any database problem (unreachable database, missing table, file deleted from
+    the serverless filesystem) must not break the download, so it falls back to
+    the bundled static/resume.pdf.
+    """
+    try:
+        resume = Resume.objects.filter(is_active=True).first()
+        if resume and resume.file and resume.file.storage.exists(resume.file.name):
+            return resume
+    except Exception:
+        logger.exception('Could not load the uploaded resume; using static/resume.pdf')
+    return None
+
+
 def download_resume(request):
-    active_resume = Resume.objects.filter(is_active=True).first()
-    if active_resume and active_resume.file and active_resume.file.storage.exists(active_resume.file.name):
-        filename = f"Om_Dhamal_Resume_{active_resume.version}.pdf" if active_resume.version else "Om_Dhamal_Resume.pdf"
-        return FileResponse(active_resume.file.open('rb'), as_attachment=True, filename=filename)
+    resume = _uploaded_resume()
+    if resume:
+        filename = f"Om_Dhamal_Resume_{resume.version}.pdf" if resume.version else "Om_Dhamal_Resume.pdf"
+        return FileResponse(resume.file.open('rb'), as_attachment=True, filename=filename)
 
     resume_path = os.path.join(settings.BASE_DIR, 'static', 'resume.pdf')
     if os.path.exists(resume_path):
-        return FileResponse(open(resume_path, 'rb'), as_attachment=True, filename='Om_Dhamal_Resume.pdf')
-    else:
-        resume_content = """OM DHAMAL - Resume
-        (Your PDF resume will be available soon)"""
-        
-        response = HttpResponse(resume_content, content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename="Om_Dhamal_Resume.txt"'
-        return response
+        return FileResponse(open(resume_path, 'rb'), as_attachment=True, filename='Om_Dhamal_Resume.pdf',
+                            content_type='application/pdf')
+
+    response = HttpResponse('OM DHAMAL - Resume\n(The PDF resume will be available soon.)', content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename="Om_Dhamal_Resume.txt"'
+    return response
