@@ -11,7 +11,7 @@ from django.templatetags.static import static
 from django.utils.cache import patch_vary_headers
 
 from . import content_loader as content
-from .context_processors import CONTACT_EMAIL
+from .context_processors import CONTACT_EMAIL, GMAIL_COMPOSE_URL
 from .forms import ContactForm
 
 
@@ -47,6 +47,11 @@ def education(request):
 def _mailto_link(subject='', body=''):
     """A mailto: link that opens the visitor's email app with the message filled in."""
     return f'mailto:{CONTACT_EMAIL}?subject={quote(subject)}&body={quote(body)}'
+
+
+def _gmail_link(subject='', body=''):
+    """The same message, opened in Gmail on the web."""
+    return f'{GMAIL_COMPOSE_URL}&su={quote(subject)}&body={quote(body)}'
 
 
 def _send_contact_emails(name, email, subject, message):
@@ -98,12 +103,15 @@ def contact(request):
         else:
             messages.error(request, 'Please correct the errors below.')
 
-    mailto = _mailto_link()
+    mailto, gmail = _mailto_link(), _gmail_link()
     if send_failed:
         data = form.cleaned_data
-        mailto = _mailto_link(data['subject'], f"{data['message']}\n\n- {data['name']}")
+        body = f"{data['message']}\n\n- {data['name']}"
+        mailto, gmail = _mailto_link(data['subject'], body), _gmail_link(data['subject'], body)
 
-    return render(request, 'contact.html', {'form': form, 'send_failed': send_failed, 'mailto': mailto})
+    return render(request, 'contact.html', {
+        'form': form, 'send_failed': send_failed, 'mailto': mailto, 'gmail': gmail,
+    })
 
 
 def certifications(request):
@@ -191,8 +199,8 @@ def home(request):
 
     context = {
         'name': 'Om',
-        'title': 'Computer Engineering Student | Django & FastAPI Developer | AI/ML Builder',
-        'tagline': 'Building practical web and machine learning projects while learning strong backend fundamentals.',
+        'title': 'Backend, AI & ML Engineer | Computer Engineering Student',
+        'tagline': 'I build reliable backends, AI agents and machine learning systems, from the first idea to a deployed product.',
         'featured_projects': featured_projects,
         'featured_certifications': featured_certifications,
         'featured_achievements': featured_achievements,
@@ -241,7 +249,7 @@ def about(request):
     context = {
         'personal_info': {
             'name': 'Om Dhamal',
-            'title': 'Computer Engineering Student | Django & FastAPI Developer | AI/ML Builder',
+            'title': 'Backend, AI & ML Engineer | Computer Engineering Student',
             'location': 'Pune, India',
             'email': 'dhamalomm@gmail.com',
             'bio': 'I build backends, AI agents and machine learning projects, and I like making them work reliably, not just in a demo.',

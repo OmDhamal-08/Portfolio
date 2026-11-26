@@ -136,8 +136,46 @@
     });
   }
 
+  /* ---------- Opening name reveal ----------
+     Letters slide up, a navy line draws under the name, then the white
+     screen lifts away and the hero animates in. About 1.5s, skippable
+     with a click or any key, and shown only once per browser tab. */
+  function playIntro(onDone) {
+    const root = document.documentElement;
+    const screen = document.querySelector(".intro-screen");
+    if (!root.classList.contains("intro") || !screen) { onDone(); return; }
+
+    let started = false;
+    const startPage = () => { if (!started) { started = true; onDone(); } };
+    const finish = () => {
+      startPage();
+      root.classList.remove("intro");
+      try { sessionStorage.setItem("intro-seen", "1"); } catch (e) { /* ignore */ }
+      window.removeEventListener("keydown", skip);
+    };
+    const fail = setTimeout(finish, 4000); // never trap the visitor behind the intro
+
+    if (!hasGsap) { clearTimeout(fail); finish(); return; }
+
+    // Wrap each letter so it can slide up on its own.
+    const name = screen.querySelector("[data-intro-name]");
+    name.innerHTML = name.textContent.split("").map((ch) => `<span class="intro-char">${ch}</span>`).join("");
+
+    const tl = gsap.timeline({ defaults: { ease: EASE } });
+    tl.from(name.querySelectorAll(".intro-char"), { yPercent: 110, duration: 0.55, stagger: 0.03 })
+      .to(screen.querySelector(".intro-line"), { scaleX: 1, duration: 0.5, ease: "power2.inOut" }, "-=0.3")
+      .to(screen.querySelector(".intro-role"), { opacity: 1, duration: 0.35 }, "-=0.25")
+      .to(screen, { yPercent: -100, duration: 0.65, ease: "power4.inOut" }, "+=0.15")
+      .add(startPage, "-=0.35") // hero starts animating as the curtain clears
+      .add(() => { clearTimeout(fail); finish(); });
+
+    function skip() { tl.progress(1); }
+    screen.addEventListener("click", skip, { once: true });
+    window.addEventListener("keydown", skip);
+  }
+
   function boot() {
-    initHero();
+    playIntro(initHero);
     initReveals(document);
     initCounters(document);
     initTypewriter();

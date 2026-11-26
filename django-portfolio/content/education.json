@@ -10,11 +10,12 @@
     "description": "Completed foundational schooling from LKG to 7th standard with active participation in academics and co-curricular activities.",
     "grade": "",
     "courses": [
+      "English",
+      "Marathi",
+      "Hindi",
       "Mathematics",
       "Science",
-      "English",
-      "Social Studies",
-      "Computer Basics"
+      "Social Studies"
     ],
     "achievements": [],
     "logo": "",
@@ -34,11 +35,12 @@
     "description": "Completed 8th standard before moving to a JEE-focused academic track.",
     "grade": "",
     "courses": [
+      "English",
+      "Marathi",
+      "Hindi",
       "Mathematics",
       "Science",
-      "English",
-      "Social Studies",
-      "Computer Science"
+      "Social Studies"
     ],
     "achievements": [],
     "logo": "",
@@ -55,15 +57,13 @@
     "start_date": "2018-06-01",
     "end_date": "2023-05-01",
     "currently_studying": false,
-    "description": "Completed 9th to 12th with integrated JEE and CET preparation, building a strong foundation in physics, chemistry, and mathematics.",
+    "description": "Completed 9th and 10th (SSC), then 11th and 12th (HSC) in the science stream with Physics, Chemistry and Mathematics, alongside JEE and MHT-CET preparation.",
     "grade": "SSC: 92.20% | HSC: 76.17%",
     "courses": [
       "Physics",
       "Chemistry",
       "Mathematics",
-      "English",
-      "JEE Mains Coaching",
-      "MHT-CET Preparation"
+      "English"
     ],
     "achievements": [
       "SSC: 92.20%",

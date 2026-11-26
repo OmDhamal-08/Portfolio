@@ -19,19 +19,19 @@ studies, my learning journey, and what I'm working on right now.
 **For visitors**
 - **Project case studies.** Each project explains the problem, the solution, the architecture flow, the challenges and how I fixed them, the results, and what I learned.
 - **Live project search.** Search and filter by keyword, type, status or technology; results update as you type, without reloading the page.
-- **Now page** (`/now/`). What I'm currently learning (with a Beginner / Intermediate level and progress bar) and my goals: internship, job and my own startup.
+- **Now page** (`/now/`). What I'm currently learning (four areas, each with a Beginner / Intermediate level and progress bar) and my goals: internship, full-time role, freelance work and my own startup.
 - **Journey pages.** Timelines for education and achievements, plus a certifications page with verify links.
-- **Easy contact.** A contact form that emails me directly (and sends the visitor a copy), a one-click "Copy email" button, an "Open email app" link, and social links. If sending ever fails, the visitor's text is kept and a pre-filled email link is offered instead.
+- **Easy contact.** A contact form that emails me directly (and sends the visitor a copy), a one-click "Copy email" button, a "Write in Gmail" link (plus a mailto link for other email apps), and social links. If sending ever fails, the visitor's text is kept and pre-filled Gmail and mailto links are offered instead.
 - **One-click resume.** View the PDF in the browser or download it straight away, with no server code involved.
 - **Clean light design.** White and light-gray sections with a single navy accent; flat colors, no gradients or glow effects.
-- **Subtle animations.** A staggered hero reveal, sections that fade up as you scroll, numbers that count up, progress bars that fill, a scrolling skills ticker, and small hover lifts on cards and buttons.
+- **Subtle animations.** A short opening name reveal (once per visit, skippable, off for reduced motion), a staggered hero reveal, sections that fade up as you scroll, numbers that count up, progress bars that fill, a scrolling skills ticker, and small hover lifts on cards and buttons.
 - **Accessible and responsive.** Works from 360px phones to desktops, meets WCAG AA text contrast, has visible keyboard focus outlines and a skip link, and shows simple fades instead of motion for visitors who ask for reduced motion.
 
 **Under the hood**
 - No database: portfolio content lives in JSON files and contact messages are delivered by email.
 - Content is cached with Django's cache framework, with automatic invalidation when a file changes.
 - HTMX partial rendering: the same view returns a full page or just the results grid.
-- Content validation command and 27 automated tests.
+- Content validation command and 28 automated tests.
 - Production-ready settings: environment-based secrets, HTTPS, secure cookies, HSTS, WhiteNoise.
 
 ---
@@ -67,7 +67,7 @@ other colors can be used by accident.
 | `--text-muted` | `#5B6472` | Paragraphs, labels, dates |
 | `--accent` | `#1E3A8A` | Navy: buttons, links, active nav, bars, timeline dots |
 | `--accent-soft` | `#E8EDF8` | Tech tag and badge backgrounds |
-| `--success` | `#16A34A` | Only the "Open to internships" dot |
+| `--success` | `#16A34A` | Only the "Open to work" dot |
 
 Rules: flat colors only (no gradients or glows), navy used sparingly, and all
 text meets WCAG AA contrast. `--text-light` (`#8A92A0`) is kept for non-text
@@ -278,7 +278,7 @@ cd django-portfolio
 python manage.py test portfolio_app
 ```
 
-The 27 tests cover:
+The 28 tests cover:
 - Content loading, validation and slug lookup
 - Every page renders with the expected content
 - Case-study fields and validation of bad entries
@@ -336,7 +336,7 @@ Talking points:
 1. **Choosing storage by need.** Content goes in version-controlled JSON; contact messages go by email; the resume is a static file. I removed the database once it added risk (a paused free database broke the resume download) without adding value.
 2. **Cache invalidation.** The modification time in the cache key means fresh data without ever clearing the cache by hand.
 3. **Progressive enhancement.** HTMX search falls back to a normal form; animations respect reduced-motion settings.
-4. **Validation and testing.** A `validate_content` command catches bad JSON before deploying, and 27 tests cover pages, search, caching, the resume links and the contact form.
+4. **Validation and testing.** A `validate_content` command catches bad JSON before deploying, and 28 tests cover pages, search, caching, the resume links and the contact form.
 5. **Production security.** Secrets come from environment variables, with HTTPS redirect, secure cookies, HSTS, a contact-form honeypot and rate limiting. The contact form never claims a message was sent when it wasn't.
 
 ---

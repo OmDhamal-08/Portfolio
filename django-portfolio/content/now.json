@@ -1,77 +1,49 @@
 {
   "updated": "2026-11-25",
   "headline": "What I'm focused on right now",
-  "focus": "Going deeper into ML, agentic AI and DSA, while starting on servers, AI security and drone engineering.",
+  "focus": "Going deeper into machine learning and agentic AI, while starting on servers and drone engineering.",
   "learning": [
     {
       "name": "Machine Learning",
       "level": "intermediate",
       "progress": 55,
-      "note": "Model evaluation, feature engineering and deep learning with TensorFlow",
+      "note": "Model evaluation, feature engineering and deep learning with TensorFlow and Keras.",
       "resource": ""
     },
     {
-      "name": "AI & LLMs",
-      "level": "intermediate",
-      "progress": 50,
-      "note": "How LLMs work, embeddings, prompting and fine-tuning basics",
-      "resource": ""
-    },
-    {
-      "name": "Agentic AI",
+      "name": "Agentic AI & AI Tools",
       "level": "intermediate",
       "progress": 45,
-      "note": "Agent loops, tool calling, RAG, the Claude API and MCP",
+      "note": "LLMs, RAG, agents with tool calling, the Claude API and MCP, AI coding tools, and securing AI apps against prompt injection and data leaks.",
       "resource": ""
-    },
-    {
-      "name": "AI Tools",
-      "level": "intermediate",
-      "progress": 55,
-      "note": "Claude Code, Codex, Antigravity and n8n for building faster",
-      "resource": ""
-    },
-    {
-      "name": "Data Structures & Algorithms",
-      "level": "intermediate",
-      "progress": 55,
-      "note": "250+ problems on LeetCode in C++, Codeforces contests",
-      "resource": "https://leetcode.com/u/omdhamal77/"
     },
     {
       "name": "Servers & Deployment",
       "level": "beginner",
       "progress": 20,
-      "note": "Linux, Nginx, Docker and cloud deployment on AWS",
-      "resource": ""
-    },
-    {
-      "name": "AI Security",
-      "level": "beginner",
-      "progress": 15,
-      "note": "Prompt injection, data privacy and securing LLM apps",
+      "note": "Linux, Nginx, Docker and deploying apps on AWS.",
       "resource": ""
     },
     {
       "name": "Drone Engineering",
       "level": "beginner",
       "progress": 10,
-      "note": "Drone basics, flight controllers and using ML for autonomous flight",
+      "note": "Flight controllers, sensors and using ML for autonomous flight.",
       "resource": ""
     }
   ],
   "goals": [
     {
       "title": "Internship",
-      "note": "Land a backend, ML or AI engineering internship and learn from a real team."
+      "note": "Join a strong engineering team as a backend, ML or AI intern and learn how real products are built."
     },
     {
-      "title": "Full-time job",
-      "note": "Join a growth-focused company as a software or AI engineer after graduation."
+      "title": "Full-time role",
+      "note": "Work as a software or AI engineer after graduation, owning features from idea to production."
     },
     {
-      "title": "My own startup",
-      "note": "Build an AI product that solves a real problem and grow it into a startup."
+      "title": "Freelance & my own startup",
+      "note": "Build useful products for clients now, and grow one AI product into my own startup."
     }
   ]
 }

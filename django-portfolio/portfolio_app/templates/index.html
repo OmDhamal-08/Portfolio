@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Om Dhamal | Django Developer & ML Learner{% endblock %}
+{% block title %}Om Dhamal | Backend, AI & ML Engineer{% endblock %}
 
 {% block content %}
 <!-- ================= Hero (white) ================= -->
@@ -8,7 +8,7 @@
   <div class="container-x grid items-center gap-12 lg:grid-cols-[1.35fr_1fr] lg:gap-16">
     <div>
       <a href="{% url 'now' %}" class="badge transition-colors hover:border-faint hover:text-ink" data-hero-item>
-        <span class="dot dot-success"></span> Open to internships
+        <span class="dot dot-success"></span> Open to internships, jobs & freelance work
       </a>
 
       <h1 class="h-hero mt-6">
@@ -18,7 +18,7 @@
       </h1>
 
       <p class="mt-5 text-[17px] font-medium text-ink" data-hero-item>
-        <span data-typewriter='["Django backend developer", "Machine learning learner", "AI automation builder", "Computer Engineering student"]'>Django backend developer</span>
+        <span data-typewriter='["Backend developer", "AI & LLM engineer", "Machine learning engineer", "Freelance developer"]'>Backend developer</span>
       </p>
       <p class="lead mt-3" data-hero-item>{{ tagline }}</p>
 
@@ -148,8 +148,8 @@
 <!-- ================= Contact CTA (navy) ================= -->
 <section class="cta-band section">
   <div class="container-x" data-reveal>
-    <h2 class="h-section !mt-0 max-w-2xl">Have an internship or a project in mind? Let's build it together.</h2>
-    <p class="measure mt-4 text-[17px]">I'm looking for internships and real projects where I can learn fast and ship useful software.</p>
+    <h2 class="h-section !mt-0 max-w-2xl">Have a role or a project in mind? Let's build it together.</h2>
+    <p class="measure mt-4 text-[17px]">I'm open to internships, full-time roles and freelance work where I can ship useful, reliable software.</p>
     <div class="mt-8 flex flex-wrap gap-3">
       <a href="{% url 'contact' %}" class="btn btn-invert">Get in touch <span class="arrow" aria-hidden="true">&rarr;</span></a>
       <a href="mailto:{{ contact_email }}" class="btn border-on-accent text-on-accent hover:bg-accent-hover">{{ contact_email }}</a>
