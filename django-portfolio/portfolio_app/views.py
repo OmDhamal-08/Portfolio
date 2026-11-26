@@ -1,5 +1,4 @@
 from django.shortcuts import redirect, render
-from django.http import FileResponse
 import os
 from datetime import date
 import logging
@@ -356,16 +355,29 @@ def _uploaded_resume():
     return None
 
 
+def _pdf_attachment(data, filename):
+    # Send the bytes in one normal response. Vercel's Python runtime does not
+    # handle Django's streaming FileResponse reliably, and a resume is small.
+    response = HttpResponse(data, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    response['Content-Length'] = str(len(data))
+    return response
+
+
 def download_resume(request):
     resume = _uploaded_resume()
     if resume:
         filename = f"Om_Dhamal_Resume_{resume.version}.pdf" if resume.version else "Om_Dhamal_Resume.pdf"
-        return FileResponse(resume.file.open('rb'), as_attachment=True, filename=filename)
+        try:
+            with resume.file.open('rb') as handle:
+                return _pdf_attachment(handle.read(), filename)
+        except Exception:
+            logger.exception('Could not read the uploaded resume; using static/resume.pdf')
 
     resume_path = os.path.join(settings.BASE_DIR, 'static', 'resume.pdf')
     if os.path.exists(resume_path):
-        return FileResponse(open(resume_path, 'rb'), as_attachment=True, filename='Om_Dhamal_Resume.pdf',
-                            content_type='application/pdf')
+        with open(resume_path, 'rb') as handle:
+            return _pdf_attachment(handle.read(), 'Om_Dhamal_Resume.pdf')
 
     response = HttpResponse('OM DHAMAL - Resume\n(The PDF resume will be available soon.)', content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename="Om_Dhamal_Resume.txt"'
