@@ -208,3 +208,8 @@ class ContactFormTests(TestCase):
         self.assertContains(response, "couldn't be sent")
         self.assertContains(response, 'This is a test message from the contact form.')
         self.assertContains(response, 'mailto:dhamalomm@gmail.com?subject=Hello%20there')
+
+    def test_contact_page_offers_gmail_compose_and_mailto(self):
+        response = self.client.get(reverse('contact'))
+        self.assertContains(response, 'https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=dhamalomm@gmail.com')
+        self.assertContains(response, 'mailto:dhamalomm@gmail.com')

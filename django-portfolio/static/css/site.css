@@ -341,3 +341,39 @@ select.input {
 
 /* Profile photos: fill the frame and keep the face in view */
 .profile-headshot { object-fit: cover; object-position: center top; }
+
+/* =========================================================
+   Opening name reveal: shown once per tab (class "intro" on <html>,
+   set in base.html). Flat white, navy line, no gradients or glow.
+   ========================================================= */
+.intro-screen { display: none; }
+html.intro .intro-screen {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg); cursor: pointer;
+  /* Failsafe: hide itself after 4s even if the script never runs. */
+  animation: intro-failsafe 0s linear 4s forwards;
+}
+@keyframes intro-failsafe { to { visibility: hidden; pointer-events: none; } }
+.intro-screen { overflow: hidden; }
+/* Hand-sketched code doodles: pencil handwriting, far fainter than the name */
+.intro-sketch { position: absolute; inset: 0; pointer-events: none; filter: url(#pencil); }
+.intro-sketch span {
+  position: absolute; left: 0; top: 0;  /* position, tilt, size and faintness are set at random in site.js */
+  font-family: "Caveat", "Segoe Print", cursive; font-weight: 500;
+  line-height: 1; white-space: nowrap; color: var(--text);
+}
+.intro-inner { position: relative; display: flex; flex-direction: column; align-items: center; padding: 0 24px; text-align: center; }
+.intro-name {
+  overflow: hidden;              /* letters slide up from behind this edge */
+  padding-bottom: 0.08em;
+  font-size: clamp(2.5rem, 9vw, 5.5rem);
+  font-weight: 700; letter-spacing: -0.03em; line-height: 1.05;
+  color: var(--text);
+}
+.intro-name .intro-char { display: inline-block; white-space: pre; }
+.intro-line {
+  display: block; width: min(220px, 50vw); height: 2px; margin-top: 18px;
+  background: var(--accent); transform: scaleX(0); transform-origin: left center;
+}
+.intro-role { margin-top: 16px; font-size: 14px; font-weight: 500; letter-spacing: 0.02em; color: var(--text-muted); opacity: 0; }

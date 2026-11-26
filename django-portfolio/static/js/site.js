@@ -136,8 +136,117 @@
     });
   }
 
+  /* ---------- Sketch doodles for the opening screen ----------
+     A new random set on every visit: random snippets, positions, tilts
+     (some sideways or upside down), sizes and faintness. They never
+     touch the name or each other. */
+  const SKETCH_WORDS = [
+    // Machine learning
+    "model.fit(X, y)", "y = wx + b", "loss.backward()", "gradient descent", "softmax(z)", "σ(x)", "ReLU",
+    "argmax", "epochs = 50", "accuracy: 0.94", "train_test_split", "overfitting?", "f1_score", "XGBoost",
+    "RandomForest", "TensorFlow", "Keras", "LSTM", "CNN", "np.array", "pd.DataFrame", "∑ (y - ŷ)²", "∂L/∂w",
+    "backprop", "features → labels", "precision / recall",
+    // AI and LLMs
+    "LLM", "RAG", "embeddings", "attention(Q, K, V)", "transformer", "tokens", "temperature = 0.7",
+    "prompt", "agent.run()", "tool_call", "MCP", "Claude API", "vector DB", "cosine_sim", "fine-tune",
+    "context window", "chain of thought", "retrieve → generate", "AI agents", "top_k = 5",
+    // Python
+    "python", "def main():", "import numpy as np", "for i in range(n):", "lambda x: x ** 2", "print(\"hello\")",
+    // C++
+    "C++", "#include <iostream>", "std::vector<int>", "int main()", "return 0;", "cout << ans;",
+    // Development
+    "{ }", "</>", "git push", "O(n log n)", "Django", "FastAPI", "SELECT * FROM", "docker run", "200 OK", "=>",
+  ];
+
+  const rand = (min, max) => min + Math.random() * (max - min);
+
+  function sketchAngle() {
+    const roll = Math.random();
+    if (roll < 0.55) return rand(-25, 25);                                  // slight tilt
+    if (roll < 0.75) return (Math.random() < 0.5 ? -90 : 90) + rand(-15, 15); // sideways
+    if (roll < 0.9) return 180 + rand(-20, 20);                             // upside down
+    return rand(-180, 180);                                                 // anything
+  }
+
+  function scatterSketches(screen) {
+    const layer = screen.querySelector(".intro-sketch");
+    const inner = screen.querySelector(".intro-inner");
+    if (!layer || !inner) return;
+
+    const W = screen.clientWidth, H = screen.clientHeight;
+    const small = W < 640;
+    const target = Math.max(10, Math.min(28, Math.round((W * H) / 36000)));
+    const pad = 28, gap = 10, edge = 8;
+    const nameBox = inner.getBoundingClientRect();
+    const blocked = [{ left: nameBox.left - pad, right: nameBox.right + pad, top: nameBox.top - pad, bottom: nameBox.bottom + pad }];
+    const overlaps = (a, b) => !(a.right + gap < b.left || a.left - gap > b.right || a.bottom + gap < b.top || a.top - gap > b.bottom);
+
+    const words = SKETCH_WORDS.slice().sort(() => Math.random() - 0.5);
+    let placed = 0;
+    for (const word of words) {
+      if (placed >= target) break;
+      const span = document.createElement("span");
+      span.textContent = word;
+      span.style.fontSize = `${Math.round(small ? rand(14, 22) : rand(16, 31))}px`;
+      span.style.opacity = rand(0.09, 0.2).toFixed(2);
+      layer.appendChild(span);
+
+      const rotation = sketchAngle();
+      let ok = false;
+      for (let attempt = 0; attempt < 25 && !ok; attempt++) {
+        gsap.set(span, { x: rand(0, W), y: rand(0, H), xPercent: -50, yPercent: -50, rotation });
+        const box = span.getBoundingClientRect();
+        const inside = box.left > edge && box.top > edge && box.right < W - edge && box.bottom < H - edge;
+        ok = inside && !blocked.some((other) => overlaps(box, other));
+        if (ok) blocked.push(box);
+      }
+      if (ok) placed++; else span.remove();
+    }
+  }
+
+  /* ---------- Opening name reveal ----------
+     Letters slide up, a navy line draws under the name, it holds briefly, then the white
+     screen lifts away and the hero animates in. About 2s, skippable
+     with a click or any key, and shown only once per browser tab. */
+  function playIntro(onDone) {
+    const root = document.documentElement;
+    const screen = document.querySelector(".intro-screen");
+    if (!root.classList.contains("intro") || !screen) { onDone(); return; }
+
+    let started = false;
+    const startPage = () => { if (!started) { started = true; onDone(); } };
+    const finish = () => {
+      startPage();
+      root.classList.remove("intro");
+      try { sessionStorage.setItem("intro-seen", "1"); } catch (e) { /* ignore */ }
+      window.removeEventListener("keydown", skip);
+    };
+    const fail = setTimeout(finish, 4000); // never trap the visitor behind the intro
+
+    if (!hasGsap) { clearTimeout(fail); finish(); return; }
+
+    // Wrap each letter so it can slide up on its own.
+    const name = screen.querySelector("[data-intro-name]");
+    name.innerHTML = name.textContent.split("").map((ch) => `<span class="intro-char">${ch}</span>`).join("");
+    scatterSketches(screen);
+
+    const tl = gsap.timeline({ defaults: { ease: EASE } });
+    tl.from(name.querySelectorAll(".intro-char"), { yPercent: 110, duration: 0.55, stagger: 0.03 }, 0.1)
+      .to(screen.querySelector(".intro-line"), { scaleX: 1, duration: 0.5, ease: "power2.inOut" }, "-=0.3")
+      .to(screen.querySelector(".intro-role"), { opacity: 1, duration: 0.35 }, "-=0.25")
+      .to(screen, { yPercent: -100, duration: 0.65, ease: "power4.inOut" }, "+=0.65") // name stays on screen a moment
+      .add(startPage, "-=0.35") // hero starts animating as the curtain clears
+      .add(() => { clearTimeout(fail); finish(); });
+    // Doodles fade in alongside the name (added last so they don't push the sequence back)
+    tl.from(screen.querySelectorAll(".intro-sketch span"), { opacity: 0, scale: 0.9, duration: 0.5, stagger: { amount: 0.7, from: "random" } }, 0);
+
+    function skip() { tl.progress(1); }
+    screen.addEventListener("click", skip, { once: true });
+    window.addEventListener("keydown", skip);
+  }
+
   function boot() {
-    initHero();
+    playIntro(initHero);
     initReveals(document);
     initCounters(document);
     initTypewriter();
