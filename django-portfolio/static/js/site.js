@@ -137,8 +137,8 @@
   }
 
   /* ---------- Opening name reveal ----------
-     Letters slide up, a navy line draws under the name, then the white
-     screen lifts away and the hero animates in. About 1.5s, skippable
+     Letters slide up, a navy line draws under the name, it holds briefly, then the white
+     screen lifts away and the hero animates in. About 2s, skippable
      with a click or any key, and shown only once per browser tab. */
   function playIntro(onDone) {
     const root = document.documentElement;
@@ -165,7 +165,7 @@
     tl.from(name.querySelectorAll(".intro-char"), { yPercent: 110, duration: 0.55, stagger: 0.03 })
       .to(screen.querySelector(".intro-line"), { scaleX: 1, duration: 0.5, ease: "power2.inOut" }, "-=0.3")
       .to(screen.querySelector(".intro-role"), { opacity: 1, duration: 0.35 }, "-=0.25")
-      .to(screen, { yPercent: -100, duration: 0.65, ease: "power4.inOut" }, "+=0.15")
+      .to(screen, { yPercent: -100, duration: 0.65, ease: "power4.inOut" }, "+=0.65") // name stays on screen a moment
       .add(startPage, "-=0.35") // hero starts animating as the curtain clears
       .add(() => { clearTimeout(fail); finish(); });
 
