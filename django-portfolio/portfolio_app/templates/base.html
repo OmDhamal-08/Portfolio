@@ -19,18 +19,11 @@
     <meta property="og:image:alt" content="Om Dhamal, Backend, AI and ML Engineer" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="{{ site_url }}{% static 'images/og-card.png' %}" />
-    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#FFFFFF" />
     <link rel="icon" href="{% static 'images/profile.svg' %}" type="image/svg+xml" />
 
     <script>
       document.documentElement.classList.replace("no-js", "js");
-      // Theme before first paint: the visitor's saved choice, else their system setting.
-      (function () {
-        var theme = "light";
-        try { theme = localStorage.getItem("theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); } catch (e) {}
-        document.documentElement.dataset.theme = theme;
-      })();
       // Opening name reveal: once per browser tab, never for reduced-motion visitors.
       // Decided here, before the page paints, so the content never flashes first.
       (function () {
@@ -145,10 +138,6 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-label="Switch to dark theme">
-            <span class="icon-moon">{% include "partials/icon.html" with name="moon" cls="w-[18px] h-[18px]" %}</span>
-            <span class="icon-sun">{% include "partials/icon.html" with name="sun" cls="w-[18px] h-[18px]" %}</span>
-          </button>
           <a href="{% url 'contact' %}" class="btn btn-primary btn-sm hidden sm:inline-flex">Let's talk</a>
           <button type="button" class="icon-btn lg:hidden" @click="menu = !menu" :aria-expanded="menu.toString()" aria-expanded="false" aria-controls="mobile-menu" aria-label="Toggle menu">
             <span x-show="!menu">{% include "partials/icon.html" with name="menu" cls="w-5 h-5" %}</span>

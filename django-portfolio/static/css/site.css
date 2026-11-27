@@ -26,28 +26,6 @@
   color-scheme: light;
 }
 
-/* Dark theme: deep navy-charcoal with a light-blue accent (navy text would be
-   unreadable on a dark background). Chosen by the toggle or the system setting. */
-:root[data-theme="dark"] {
-  --bg: #0B1120;
-  --surface: #111A2E;
-  --surface-hover: #16213A;
-  --border: #1F2A44;
-  --text: #E5E9F0;
-  --text-muted: #9AA4B5;
-  --text-light: #6B7588;
-  --accent: #8FB0FF;
-  --accent-hover: #ADC5FF;
-  --accent-soft: #18264A;
-  --on-accent: #0B1120;
-  --success: #22C55E;
-  --band: #13224A;
-  --on-band: #E5E9F0;
-  --band-muted: #AEBBD6;
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
-  color-scheme: dark;
-}
-
 [x-cloak] { display: none !important; }
 
 /* =========================================================
@@ -404,11 +382,6 @@ html.intro .intro-screen {
   background: var(--accent); transform: scaleX(0); transform-origin: left center;
 }
 .intro-role { margin-top: 16px; font-size: 14px; font-weight: 500; letter-spacing: 0.02em; color: var(--text-muted); opacity: 0; }
-
-/* Theme toggle: show the icon for the theme you would switch to */
-.theme-toggle .icon-sun { display: none; }
-:root[data-theme="dark"] .theme-toggle .icon-sun { display: inline; }
-:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 
 /* =========================================================
    Page transitions (View Transitions API, pure CSS).

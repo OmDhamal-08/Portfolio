@@ -245,35 +245,7 @@
     window.addEventListener("keydown", skip);
   }
 
-  /* ---------- Light / dark theme toggle ----------
-     The theme is applied before paint by a tiny script in base.html;
-     this only handles the button and keeps the label in sync. */
-  function initThemeToggle() {
-    const root = document.documentElement;
-    const buttons = document.querySelectorAll("[data-theme-toggle]");
-    const sync = () => buttons.forEach((btn) => {
-      const dark = root.dataset.theme === "dark";
-      btn.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
-      btn.setAttribute("title", dark ? "Light theme" : "Dark theme");
-    });
-    buttons.forEach((btn) => btn.addEventListener("click", () => {
-      root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
-      try { localStorage.setItem("theme", root.dataset.theme); } catch (e) { /* ignore */ }
-      sync();
-    }));
-    // Follow the system setting live, until the visitor picks a theme themselves.
-    try {
-      matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
-        if (localStorage.getItem("theme")) return;
-        root.dataset.theme = event.matches ? "dark" : "light";
-        sync();
-      });
-    } catch (e) { /* older browsers */ }
-    sync();
-  }
-
   function boot() {
-    initThemeToggle();
     playIntro(initHero);
     initReveals(document);
     initCounters(document);

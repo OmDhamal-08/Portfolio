@@ -26,7 +26,6 @@ studies, my learning journey, and what I'm working on right now.
 - **Clean light design.** White and light-gray sections with a single navy accent; flat colors, no gradients or glow effects.
 - **Subtle animations.** A short opening name reveal (once per visit, skippable, off for reduced motion), a staggered hero reveal, sections that fade up as you scroll, numbers that count up, progress bars that fill, a scrolling skills ticker, and small hover lifts on cards and buttons.
 - **Accessible and responsive.** Works from 360px phones to desktops, meets WCAG AA text contrast, has visible keyboard focus outlines and a skip link, and shows simple fades instead of motion for visitors who ask for reduced motion.
-- **Light and dark themes.** Follows the visitor's system setting, with a toggle in the nav that remembers their choice.
 - **Smooth page transitions.** Pages cross-fade while the nav stays put (View Transitions API; other browsers navigate normally).
 - **Experience section** on the home and About pages, from `content/experience.json`.
 - **Live coding stats.** LeetCode solved count, GitHub contributions and repos, and Codeforces rating, loaded after the page renders and cached for a day.
@@ -80,11 +79,6 @@ text meets WCAG AA contrast. `--text-light` (`#8A92A0`) is kept for non-text
 details because it is too light for readable text.
 
 Fonts: **Inter** for everything, **JetBrains Mono** for tech tags.
-
-The dark theme redefines the same variables under `:root[data-theme="dark"]`
-(deep navy-charcoal background, light-blue accent), so components need no
-dark-specific styles. A tiny script in `<head>` applies the theme before the
-first paint, so there is no flash of the wrong theme.
 
 ---
 
