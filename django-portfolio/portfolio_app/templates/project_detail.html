@@ -3,6 +3,7 @@
 {% block title %}{{ project.title }} - Case Study | Om Dhamal{% endblock %}
 {% block meta_description %}{{ project.short_description }}{% endblock %}
 {% block og_title %}{{ project.title }} - Case Study{% endblock %}
+{% block og_description %}{{ project.short_description }}{% endblock %}
 
 {% block content %}
 <!-- ============ Header ============ -->
@@ -12,7 +13,7 @@
     <div class="mt-6 flex flex-wrap items-center gap-2" data-hero-item>
       <span class="badge badge-accent">{{ project.get_project_type_display }}</span>
       <span class="badge"><span class="dot {% if project.status != 'completed' %}dot-muted{% endif %}"></span>{{ project.get_status_display }}</span>
-      <span class="badge">{% include "partials/icon.html" with name="calendar" cls="w-3.5 h-3.5" %} {{ project.get_project_duration }}</span>
+      {% if project.get_project_duration %}<span class="badge">{% include "partials/icon.html" with name="calendar" cls="w-3.5 h-3.5" %} {{ project.get_project_duration }}</span>{% endif %}
     </div>
     <h1 class="h-page mt-5 max-w-3xl" data-hero-item>{{ project.title }}</h1>
     <p class="lead mt-4" data-hero-item>{{ project.short_description }}</p>
@@ -145,7 +146,7 @@
         <dl class="mt-4 space-y-4 text-sm">
           {% if project.role %}<div><dt class="text-muted">My role</dt><dd class="mt-0.5 font-medium">{{ project.role }}</dd></div>{% endif %}
           <div><dt class="text-muted">Type</dt><dd class="mt-0.5 font-medium">{{ project.get_project_type_display }}</dd></div>
-          <div><dt class="text-muted">Timeline</dt><dd class="mt-0.5 font-medium">{{ project.get_project_duration }}</dd></div>
+          {% if project.get_project_duration %}<div><dt class="text-muted">Timeline</dt><dd class="mt-0.5 font-medium">{{ project.get_project_duration }}</dd></div>{% endif %}
           <div><dt class="text-muted">Status</dt><dd class="mt-0.5 font-medium">{{ project.get_status_display }}</dd></div>
         </dl>
       </div>

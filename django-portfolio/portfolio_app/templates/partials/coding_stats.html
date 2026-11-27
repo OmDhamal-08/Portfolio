@@ -1,0 +1,25 @@
+{% comment %}Live coding stats, loaded by HTMX after the home page renders (see views.coding_stats).{% endcomment %}
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <a href="https://leetcode.com/u/omdhamal77/" target="_blank" rel="noopener noreferrer" class="card card-hover p-5">
+    <p class="flex items-center gap-2 text-sm text-muted">{% include "partials/icon.html" with name="leetcode" cls="w-4 h-4" %} LeetCode</p>
+    <p class="stat-number mt-3 !text-3xl">{{ stats.leetcode.solved }}</p>
+    <p class="mt-1 text-sm text-muted">problems solved</p>
+    <p class="mt-3 font-mono text-xs text-muted">{{ stats.leetcode.easy }} easy &middot; {{ stats.leetcode.medium }} medium &middot; {{ stats.leetcode.hard }} hard</p>
+  </a>
+  <a href="https://github.com/OmDhamal-08" target="_blank" rel="noopener noreferrer" class="card card-hover p-5">
+    <p class="flex items-center gap-2 text-sm text-muted">{% include "partials/icon.html" with name="github" cls="w-4 h-4" %} GitHub</p>
+    <p class="stat-number mt-3 !text-3xl">{{ stats.github.contributions }}</p>
+    <p class="mt-1 text-sm text-muted">contributions in the last year</p>
+  </a>
+  <a href="https://github.com/OmDhamal-08?tab=repositories" target="_blank" rel="noopener noreferrer" class="card card-hover p-5">
+    <p class="flex items-center gap-2 text-sm text-muted">{% include "partials/icon.html" with name="code" cls="w-4 h-4" %} Repositories</p>
+    <p class="stat-number mt-3 !text-3xl">{{ stats.github.repos }}</p>
+    <p class="mt-1 text-sm text-muted">public projects on GitHub</p>
+  </a>
+  <a href="https://codeforces.com/profile/omdhamal" target="_blank" rel="noopener noreferrer" class="card card-hover p-5">
+    <p class="flex items-center gap-2 text-sm text-muted">{% include "partials/icon.html" with name="codeforces" cls="w-4 h-4" %} Codeforces</p>
+    <p class="stat-number mt-3 !text-3xl">{{ stats.codeforces.rating }}</p>
+    <p class="mt-1 text-sm text-muted">current rating</p>
+    <p class="mt-3 font-mono text-xs text-muted">max {{ stats.codeforces.max_rating }}</p>
+  </a>
+</div>

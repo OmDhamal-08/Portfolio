@@ -1,0 +1,19 @@
+[
+  {
+    "role": "AI & Machine Learning Virtual Intern",
+    "company": "EduSkills",
+    "employment_type": "internship",
+    "location": "Remote",
+    "start_date": "2025-10-01",
+    "end_date": "2025-12-31",
+    "summary": "Ten weeks of hands-on machine learning, from cleaning raw data to training, tuning and evaluating models.",
+    "highlights": [
+      "Completed 5+ end-to-end ML projects: preprocessing, feature engineering, training and evaluation",
+      "Worked with supervised and unsupervised learning and neural networks",
+      "Built and evaluated models with Scikit-learn and TensorFlow"
+    ],
+    "technologies": ["Python", "Scikit-learn", "TensorFlow", "Pandas", "NumPy"],
+    "certificate_link": "https://drive.google.com/file/d/1cdtelRl_wF22sKuqf3FbXPUSd0PbkzUh/view?usp=drive_link",
+    "is_active": true
+  }
+]

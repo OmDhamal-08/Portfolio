@@ -21,8 +21,11 @@ ASSET_VERSION = os.environ.get('VERCEL_GIT_COMMIT_SHA', 'dev')[:8]
 
 
 def site(request):
-    """Values every template needs (footer, contact page, nav)."""
+    """Values every template needs (footer, contact page, nav, link previews)."""
+    site_url = f'{request.scheme}://{request.get_host()}'
     return {
+        'site_url': site_url,                       # e.g. https://portfolio-five-nu-11.vercel.app
+        'page_url': site_url + request.path,        # canonical URL of this page
         'social_links': SOCIAL_LINKS,
         'contact_email': CONTACT_EMAIL,
         'gmail_compose_url': GMAIL_COMPOSE_URL,

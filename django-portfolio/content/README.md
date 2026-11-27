@@ -58,3 +58,11 @@ and `progress` 0-100) and `goals` (strings or `{"title", "note"}`) whenever your
 Parsed JSON is stored in Django's cache. The cache key includes each file's
 modification time, so edits appear immediately without clearing the cache.
 Set `CONTENT_CACHE_TIMEOUT` (seconds) to change how long entries live.
+
+## Experience
+
+`experience.json` powers the Experience section on the home and About pages.
+Each entry: `role`, `company`, `employment_type` (`internship`, `full_time`,
+`part_time`, `freelance` or `contract`), `location`, `start_date`, `end_date`
+(leave `null` for a current role, shown as "Present"), `summary`, `highlights`,
+`technologies` and an optional `certificate_link`.

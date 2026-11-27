@@ -42,6 +42,7 @@ if ENV_ALLOWED_HOSTS:
 INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'portfolio_app',
 ]
 

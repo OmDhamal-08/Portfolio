@@ -26,12 +26,17 @@ studies, my learning journey, and what I'm working on right now.
 - **Clean light design.** White and light-gray sections with a single navy accent; flat colors, no gradients or glow effects.
 - **Subtle animations.** A short opening name reveal (once per visit, skippable, off for reduced motion), a staggered hero reveal, sections that fade up as you scroll, numbers that count up, progress bars that fill, a scrolling skills ticker, and small hover lifts on cards and buttons.
 - **Accessible and responsive.** Works from 360px phones to desktops, meets WCAG AA text contrast, has visible keyboard focus outlines and a skip link, and shows simple fades instead of motion for visitors who ask for reduced motion.
+- **Light and dark themes.** Follows the visitor's system setting, with a toggle in the nav that remembers their choice.
+- **Smooth page transitions.** Pages cross-fade while the nav stays put (View Transitions API; other browsers navigate normally).
+- **Experience section** on the home and About pages, from `content/experience.json`.
+- **Live coding stats.** LeetCode solved count, GitHub contributions and repos, and Codeforces rating, loaded after the page renders and cached for a day.
+- **Shareable and searchable.** A 1200x630 link-preview image, canonical URLs, `sitemap.xml`, `robots.txt` and schema.org Person data for Google.
 
 **Under the hood**
 - No database: portfolio content lives in JSON files and contact messages are delivered by email.
 - Content is cached with Django's cache framework, with automatic invalidation when a file changes.
 - HTMX partial rendering: the same view returns a full page or just the results grid.
-- Content validation command and 28 automated tests.
+- Content validation command and 38 automated tests.
 - Production-ready settings: environment-based secrets, HTTPS, secure cookies, HSTS, WhiteNoise.
 
 ---
@@ -49,6 +54,7 @@ studies, my learning journey, and what I'm working on right now.
 | Static files | WhiteNoise (also serves the resume PDF) |
 | Email | Django email over SMTP (e.g. Gmail) |
 | Hosting | Vercel (serverless Python) |
+| External data | LeetCode GraphQL, GitHub REST, Codeforces API (cached daily) |
 
 ---
 
@@ -74,6 +80,11 @@ text meets WCAG AA contrast. `--text-light` (`#8A92A0`) is kept for non-text
 details because it is too light for readable text.
 
 Fonts: **Inter** for everything, **JetBrains Mono** for tech tags.
+
+The dark theme redefines the same variables under `:root[data-theme="dark"]`
+(deep navy-charcoal background, light-blue accent), so components need no
+dark-specific styles. A tiny script in `<head>` applies the theme before the
+first paint, so there is no flash of the wrong theme.
 
 ---
 
@@ -145,6 +156,7 @@ Without JavaScript, the form still works as a normal GET form.
 |   |-- content/                   # All portfolio content (edit these)
 |   |   |-- projects.json          # Projects + case-study fields
 |   |   |-- now.json               # "Now / Currently learning" section
+|   |   |-- experience.json        # Jobs, internships and freelance work
 |   |   |-- skills.json
 |   |   |-- certifications.json
 |   |   |-- achievements.json
@@ -153,6 +165,8 @@ Without JavaScript, the form still works as a normal GET form.
 |   |-- core/                      # Django settings and URLs
 |   |-- portfolio_app/
 |   |   |-- content_loader.py      # Reads, validates and caches JSON content
+|   |   |-- coding_stats.py        # LeetCode / GitHub / Codeforces numbers, cached daily
+|   |   |-- sitemaps.py            # sitemap.xml for pages and projects
 |   |   |-- context_processors.py  # Social links / contact info for templates
 |   |   |-- views.py
 |   |   |-- forms.py               # Contact form + honeypot
@@ -166,6 +180,7 @@ Without JavaScript, the form still works as a normal GET form.
 |   |   |-- css/site.css           # Color variables (white + navy) and components
 |   |   |-- js/site.js             # Animations, smooth scroll, HTMX hooks
 |   |   |-- images/
+|   |   |   `-- og-card.png        # 1200x630 link-preview image
 |   |   |-- certificates/          # Certificate PDFs linked from the site
 |   |   `-- resume.pdf             # Served directly by WhiteNoise
 |   `-- manage.py
@@ -278,7 +293,7 @@ cd django-portfolio
 python manage.py test portfolio_app
 ```
 
-The 28 tests cover:
+The 38 tests cover:
 - Content loading, validation and slug lookup
 - Every page renders with the expected content
 - Case-study fields and validation of bad entries
@@ -288,6 +303,8 @@ The 28 tests cover:
 - Caching: a second load does not read the file again, and editing the file invalidates the cache
 - Resume buttons link straight to the PDF, and the old `/download-resume/` URL redirects to it
 - The contact form emails me and the visitor, and a failed send keeps the text and offers a mailto link
+- Experience loading and display, live coding stats (cached, with fallback when a service is down)
+- Link-preview tags, sitemap.xml, robots.txt and the structured data
 
 Other useful checks:
 
@@ -336,7 +353,7 @@ Talking points:
 1. **Choosing storage by need.** Content goes in version-controlled JSON; contact messages go by email; the resume is a static file. I removed the database once it added risk (a paused free database broke the resume download) without adding value.
 2. **Cache invalidation.** The modification time in the cache key means fresh data without ever clearing the cache by hand.
 3. **Progressive enhancement.** HTMX search falls back to a normal form; animations respect reduced-motion settings.
-4. **Validation and testing.** A `validate_content` command catches bad JSON before deploying, and 28 tests cover pages, search, caching, the resume links and the contact form.
+4. **Validation and testing.** A `validate_content` command catches bad JSON before deploying, and 38 tests cover pages, search, caching, the resume links and the contact form.
 5. **Production security.** Secrets come from environment variables, with HTTPS redirect, secure cookies, HSTS, a contact-form honeypot and rate limiting. The contact form never claims a message was sent when it wasn't.
 
 ---

@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import date
 from urllib.parse import quote
@@ -6,12 +7,16 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
 from django.core.mail import EmailMessage
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.templatetags.static import static
 from django.utils.cache import patch_vary_headers
 
+from . import coding_stats as coding
 from . import content_loader as content
-from .context_processors import CONTACT_EMAIL, GMAIL_COMPOSE_URL
+from .context_processors import CONTACT_EMAIL, GMAIL_COMPOSE_URL, SOCIAL_LINKS
 from .forms import ContactForm
 
 
@@ -202,6 +207,7 @@ def home(request):
         'title': 'Backend, AI & ML Engineer | Computer Engineering Student',
         'tagline': 'I build reliable backends, AI agents and machine learning systems, from the first idea to a deployed product.',
         'featured_projects': featured_projects,
+        'experience': content.load_experience(),
         'featured_certifications': featured_certifications,
         'featured_achievements': featured_achievements,
         'featured_education': featured_education,
@@ -215,6 +221,7 @@ def home(request):
             {'number': len(education_items), 'label': 'Education'},
         ]
     }
+    context['structured_data'] = _person_structured_data(request)
     return render(request, 'index.html', context)
 
 def _journey_timeline(education_items, certifications, achievements):
@@ -276,14 +283,7 @@ def about(request):
                 'icon': '🏫'
             },
         ],
-        'experience': [
-            {
-                'position': 'AI & Machine Learning Virtual Intern',
-                'company': 'EduSkills',
-                'year': 'Oct 2025 - Dec 2025',
-                'description': 'Ten weeks of hands-on machine learning: from cleaning data to training and evaluating models. I finished more than five complete ML projects with Scikit-learn and TensorFlow.'
-            },
-        ],
+        'experience': content.load_experience(),
         'skills_preview': skills_preview,
         'skills_categories': [
             {
@@ -315,3 +315,45 @@ def skills(request):
 def download_resume(request):
     """Old /download-resume/ links: send them to the PDF, which WhiteNoise serves directly."""
     return redirect(static('resume.pdf'), permanent=True)
+
+
+def coding_stats(request):
+    """Live LeetCode / GitHub / Codeforces numbers, loaded by HTMX on the home page.
+
+    The CDN (Vercel) may also cache this response for a day, so the external
+    APIs are called at most a few times per day.
+    """
+    response = render(request, 'partials/coding_stats.html', {'stats': coding.get_coding_stats()})
+    response['Cache-Control'] = 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400'
+    return response
+
+
+def _person_structured_data(request):
+    """schema.org Person + WebSite (JSON-LD), so search engines know who the site is about."""
+    site = request.build_absolute_uri('/')
+    data = [
+        {
+            '@context': 'https://schema.org',
+            '@type': 'Person',
+            'name': 'Om Dhamal',
+            'url': site,
+            'image': request.build_absolute_uri(static('images/profile.jpg')),
+            'jobTitle': 'Backend, AI & ML Engineer',
+            'description': 'Computer Engineering student building Django and FastAPI backends, AI agents and machine learning systems.',
+            'email': f'mailto:{CONTACT_EMAIL}',
+            'address': {'@type': 'PostalAddress', 'addressLocality': 'Pune', 'addressCountry': 'IN'},
+            'alumniOf': {'@type': 'CollegeOrUniversity', 'name': "JSPM's Rajarshi Shahu College of Engineering, Pune"},
+            'knowsAbout': ['Python', 'Django', 'FastAPI', 'Machine Learning', 'Large Language Models',
+                           'Retrieval-Augmented Generation', 'AI Agents', 'C++', 'SQL'],
+            'sameAs': [link['url'] for link in SOCIAL_LINKS],
+        },
+        {'@context': 'https://schema.org', '@type': 'WebSite', 'name': 'Om Dhamal', 'url': site},
+    ]
+    # Escape "<" so the JSON can never close the <script> tag early.
+    return mark_safe(json.dumps(data, ensure_ascii=False).replace('<', '\\u003c'))
+
+
+def robots_txt(request):
+    """Allow everything and point crawlers at the sitemap."""
+    lines = ['User-agent: *', 'Allow: /', '', f"Sitemap: {request.build_absolute_uri(reverse('sitemap'))}"]
+    return HttpResponse('\n'.join(lines) + '\n', content_type='text/plain')

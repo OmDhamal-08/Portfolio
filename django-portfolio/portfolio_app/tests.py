@@ -213,3 +213,97 @@ class ContactFormTests(TestCase):
         response = self.client.get(reverse('contact'))
         self.assertContains(response, 'https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=dhamalomm@gmail.com')
         self.assertContains(response, 'mailto:dhamalomm@gmail.com')
+
+
+class SeoAndPreviewTests(TestCase):
+    def test_pages_have_link_preview_tags(self):
+        response = self.client.get(reverse('home'))
+        self.assertContains(response, '<meta property="og:image" content="http://testserver/static/images/og-card.png" />')
+        self.assertContains(response, 'name="twitter:card" content="summary_large_image"')
+        self.assertContains(response, '<link rel="canonical" href="http://testserver/" />')
+
+    def test_project_preview_uses_project_summary(self):
+        response = self.client.get(reverse('project_detail', args=['shopmind-ai']))
+        self.assertContains(response, 'property="og:title" content="ShopMind AI - Agentic Commerce Assistant - Case Study"')
+
+
+class ExperienceTests(TestCase):
+    def test_experience_loads_newest_first(self):
+        items = content.load_experience()
+        self.assertTrue(items)
+        self.assertEqual(items[0].company, 'EduSkills')
+        self.assertEqual(items[0].employment_type_label, 'Internship')
+
+    def test_home_and_about_show_experience(self):
+        for name in ('home', 'about'):
+            response = self.client.get(reverse(name))
+            self.assertContains(response, 'AI &amp; Machine Learning Virtual Intern')
+            self.assertContains(response, 'Oct 2025')
+
+
+class CodingStatsTests(TestCase):
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+
+    def test_stats_partial_renders_live_numbers_and_caches_them(self):
+        from unittest import mock
+        from . import coding_stats
+
+        with mock.patch.object(coding_stats, 'FETCHERS', {
+            'leetcode': lambda: {'solved': 300, 'easy': 200, 'medium': 95, 'hard': 5},
+            'github': lambda: {'contributions': 250, 'repos': 24},
+            'codeforces': lambda: {'rating': 900, 'max_rating': 910},
+        }):
+            response = self.client.get(reverse('coding_stats'))
+        self.assertContains(response, '300')
+        self.assertContains(response, '250')
+        self.assertContains(response, 'max 910')
+        self.assertIn('s-maxage=86400', response['Cache-Control'])
+        # Second request is served from the cache, without calling the APIs
+        with mock.patch.object(coding_stats, 'FETCHERS', {}):
+            self.assertContains(self.client.get(reverse('coding_stats')), '300')
+
+    def test_failed_service_falls_back_to_known_numbers(self):
+        from unittest import mock
+        from . import coding_stats
+
+        def broken():
+            raise OSError('LeetCode is down')
+
+        with mock.patch.object(coding_stats, 'FETCHERS', {
+            'leetcode': broken,
+            'github': lambda: {'contributions': 250, 'repos': 24},
+            'codeforces': lambda: {'rating': 900, 'max_rating': 910},
+        }):
+            stats = coding_stats.get_coding_stats()
+        self.assertEqual(stats['leetcode'], coding_stats.FALLBACK['leetcode'])
+        self.assertEqual(stats['github']['contributions'], 250)
+
+    def test_home_page_loads_stats_lazily(self):
+        response = self.client.get(reverse('home'))
+        self.assertContains(response, 'hx-get="/coding-stats/"')
+
+
+class SitemapRobotsAndStructuredDataTests(TestCase):
+    def test_sitemap_lists_pages_and_projects(self):
+        response = self.client.get('/sitemap.xml')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<loc>http://testserver/</loc>')
+        self.assertContains(response, '<loc>http://testserver/projects/shopmind-ai/</loc>')
+
+    def test_robots_points_to_sitemap(self):
+        response = self.client.get('/robots.txt')
+        self.assertEqual(response['Content-Type'], 'text/plain')
+        self.assertContains(response, 'Sitemap: http://testserver/sitemap.xml')
+
+    def test_home_has_person_structured_data(self):
+        import json as _json
+        import re
+
+        html = self.client.get(reverse('home')).content.decode()
+        block = re.search(r'<script type="application/ld\+json">(.*?)</script>', html, re.S).group(1)
+        data = _json.loads(block)
+        self.assertEqual(data[0]['@type'], 'Person')
+        self.assertEqual(data[0]['name'], 'Om Dhamal')
+        self.assertIn('https://github.com/OmDhamal-08', data[0]['sameAs'])

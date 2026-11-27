@@ -2,6 +2,10 @@
 {% load static %}
 {% block title %}Om Dhamal | Backend, AI & ML Engineer{% endblock %}
 
+{% block extra_head %}
+<script type="application/ld+json">{{ structured_data }}</script>
+{% endblock %}
+
 {% block content %}
 <!-- ================= Hero (white) ================= -->
 <section class="section !pt-16 md:!pt-24">
@@ -53,6 +57,19 @@
       </div>
       {% endfor %}
     </div>
+
+    <!-- Live coding stats: fetched after the page loads, cached for a day -->
+    <div class="mt-12" data-reveal>
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 class="text-xl font-semibold">Coding activity</h2>
+        <p class="text-sm text-muted">Live from LeetCode, GitHub and Codeforces &middot; updated daily</p>
+      </div>
+      <div class="mt-5" hx-get="{% url 'coding_stats' %}" hx-trigger="load" hx-swap="innerHTML">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Loading coding stats">
+          {% for _ in "1234" %}<div class="card h-[132px] animate-pulse !bg-surface"></div>{% endfor %}
+        </div>
+      </div>
+    </div>
   </div>
 
   {% if top_skills %}
@@ -66,9 +83,43 @@
   {% endif %}
 </section>
 
-<!-- ================= Now (white) ================= -->
-{% if now %}
+<!-- ================= Experience (white) ================= -->
+{% if experience %}
 <section class="section">
+  <div class="container-x grid gap-12 lg:grid-cols-[1fr_1.4fr]">
+    <div data-reveal>
+      <span class="label">Experience</span>
+      <h2 class="h-section">Where I've worked</h2>
+      <p class="lead mt-3">Real-world work so far. I'm open to internships, full-time roles and freelance projects.</p>
+      <a href="{% url 'contact' %}" class="link-accent mt-6">Work with me <span class="arrow" aria-hidden="true">&rarr;</span></a>
+    </div>
+    <ol class="space-y-5" data-stagger="0.1">
+      {% for exp in experience %}
+      <li class="card p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <p class="timeline-date">{{ exp.start_date|date:"M Y" }} &ndash; {% if exp.current %}Present{% else %}{{ exp.end_date|date:"M Y" }}{% endif %}{% if exp.location %} &middot; {{ exp.location }}{% endif %}</p>
+          <span class="badge badge-accent !py-1 !text-xs">{{ exp.employment_type_label }}</span>
+        </div>
+        <h3 class="mt-2 text-lg font-semibold leading-snug">{{ exp.role }}</h3>
+        <p class="mt-0.5 text-sm font-medium text-accent">{{ exp.company }}</p>
+        {% if exp.summary %}<p class="mt-3 text-[15px] text-muted">{{ exp.summary }}</p>{% endif %}
+        {% if exp.highlights %}
+        <ul class="mt-4 space-y-2">{% for item in exp.highlights %}<li class="flex gap-2.5 text-sm text-muted"><span class="mt-0.5 shrink-0 text-accent">{% include "partials/icon.html" with name="check" %}</span>{{ item }}</li>{% endfor %}</ul>
+        {% endif %}
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+          {% if exp.technologies %}<div class="flex flex-wrap gap-1.5">{% for tech in exp.technologies %}<span class="tag">{{ tech }}</span>{% endfor %}</div>{% endif %}
+          {% if exp.certificate_link %}<a href="{{ exp.certificate_link }}" target="_blank" rel="noopener noreferrer" class="link-accent shrink-0 text-sm">Certificate <span class="arrow" aria-hidden="true">&rarr;</span></a>{% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+{% endif %}
+
+<!-- ================= Now (gray) ================= -->
+{% if now %}
+<section class="section section-alt">
   <div class="container-x">
     <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
       <div>
@@ -98,9 +149,9 @@
 </section>
 {% endif %}
 
-<!-- ================= Featured projects (gray) ================= -->
+<!-- ================= Featured projects (white) ================= -->
 {% if featured_projects %}
-<section class="section section-alt">
+<section class="section">
   <div class="container-x">
     <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
       <div>
@@ -117,9 +168,9 @@
 </section>
 {% endif %}
 
-<!-- ================= Learning in public timeline (white) ================= -->
+<!-- ================= Learning in public timeline (gray) ================= -->
 {% if journey %}
-<section class="section">
+<section class="section section-alt">
   <div class="container-x grid gap-12 lg:grid-cols-[1fr_1.4fr]">
     <div data-reveal>
       <span class="label">Journey</span>
@@ -135,7 +186,7 @@
       {% for entry in journey %}
       <li class="timeline-item">
         <span class="timeline-dot" aria-hidden="true"></span>
-        <p class="timeline-date">{{ entry.date_label }} &middot; {{ entry.kind }}</p>
+        <p class="timeline-date">{% if entry.date_label %}{{ entry.date_label }} &middot; {% endif %}{{ entry.kind }}</p>
         <h3 class="mt-1 font-semibold leading-snug"><a href="{% url entry.url %}" class="hover:text-accent">{{ entry.title }}</a></h3>
         {% if entry.subtitle %}<p class="mt-0.5 text-sm text-muted">{{ entry.subtitle }}</p>{% endif %}
       </li>
@@ -152,7 +203,7 @@
     <p class="measure mt-4 text-[17px]">I'm open to internships, full-time roles and freelance work where I can ship useful, reliable software.</p>
     <div class="mt-8 flex flex-wrap gap-3">
       <a href="{% url 'contact' %}" class="btn btn-invert">Get in touch <span class="arrow" aria-hidden="true">&rarr;</span></a>
-      <a href="mailto:{{ contact_email }}" class="btn border-on-accent text-on-accent hover:bg-accent-hover">{{ contact_email }}</a>
+      <a href="{{ gmail_compose_url }}" target="_blank" rel="noopener" class="btn btn-on-band">{{ contact_email }}</a>
     </div>
   </div>
 </section>

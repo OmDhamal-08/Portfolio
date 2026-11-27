@@ -62,6 +62,14 @@ SKILL_CATEGORY_CHOICES = [
     ('cloud', 'Cloud & DevOps'),
 ]
 
+EMPLOYMENT_TYPE_CHOICES = [
+    ('internship', 'Internship'),
+    ('full_time', 'Full-time'),
+    ('part_time', 'Part-time'),
+    ('freelance', 'Freelance'),
+    ('contract', 'Contract'),
+]
+
 NOW_LEVEL_CHOICES = [
     ('beginner', 'Beginner'),
     ('intermediate', 'Intermediate'),
@@ -131,7 +139,7 @@ class ProjectContent(ContentItem):
             return f"{self.start_date.strftime('%b %Y')} - {self.end_date.strftime('%b %Y')}"
         if self.start_date:
             return f"Started {self.start_date.strftime('%b %Y')}"
-        return 'Duration not specified'
+        return ''
 
 
 class CertificationContent(ContentItem):
@@ -426,6 +434,36 @@ def load_skills():
     return sorted(skills, key=lambda item: (item.display_order, item.name))
 
 
+def load_experience():
+    """Work experience, newest first. Returns [] if experience.json is absent."""
+    if not (_content_root() / 'experience.json').exists():
+        return []
+    items = []
+    for raw in _read_json('experience.json'):
+        employment_type = raw.get('employment_type', 'internship')
+        if employment_type not in dict(EMPLOYMENT_TYPE_CHOICES):
+            raise ContentValidationError(f'experience.json: unknown employment_type "{employment_type}"')
+        start, end = _date(raw.get('start_date')), _date(raw.get('end_date'))
+        if start and end and end < start:
+            raise ContentValidationError(f'experience.json: "{raw.get("role")}" ends before it starts')
+        items.append(ContentItem(
+            role=_required(raw, 'role', 'experience.json'),
+            company=_required(raw, 'company', 'experience.json'),
+            employment_type=employment_type,
+            employment_type_label=_choice_label(EMPLOYMENT_TYPE_CHOICES, employment_type),
+            location=raw.get('location', ''),
+            start_date=start,
+            end_date=end,
+            current=end is None,
+            summary=raw.get('summary', ''),
+            highlights=_list_value(raw.get('highlights', [])),
+            technologies=_list_value(raw.get('technologies', [])),
+            certificate_link=raw.get('certificate_link') or '',
+            is_active=raw.get('is_active', True),
+        ))
+    return sorted(_active(items), key=lambda item: -_ordinal(item.start_date))
+
+
 def load_now():
     """The "Now / Currently Learning" section. Returns None if the file is absent."""
     if not (_content_root() / 'now.json').exists():
@@ -473,6 +511,7 @@ def validate_content():
         ('education', load_education),
         ('skills', load_skills),
         ('now', load_now),
+        ('experience', load_experience),
     ]
     errors = []
     for label, loader in loaders:

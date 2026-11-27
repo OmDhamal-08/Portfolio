@@ -14,13 +14,38 @@
   --accent-hover: #172E6E;  /* darker navy for hover */
   --accent-soft: #E8EDF8;   /* light navy for tag/badge backgrounds */
   --on-accent: #FFFFFF;     /* text on navy */
-  --success: #16A34A;       /* "Open to internships" dot only */
+  --success: #16A34A;       /* "Open to work" dot only */
+  --band: #1E3A8A;          /* call-to-action band background */
+  --on-band: #FFFFFF;       /* text on the band */
+  --band-muted: #E8EDF8;    /* secondary text on the band */
 
   --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.06);
   --radius-sm: 8px;
   --radius: 12px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   color-scheme: light;
+}
+
+/* Dark theme: deep navy-charcoal with a light-blue accent (navy text would be
+   unreadable on a dark background). Chosen by the toggle or the system setting. */
+:root[data-theme="dark"] {
+  --bg: #0B1120;
+  --surface: #111A2E;
+  --surface-hover: #16213A;
+  --border: #1F2A44;
+  --text: #E5E9F0;
+  --text-muted: #9AA4B5;
+  --text-light: #6B7588;
+  --accent: #8FB0FF;
+  --accent-hover: #ADC5FF;
+  --accent-soft: #18264A;
+  --on-accent: #0B1120;
+  --success: #22C55E;
+  --band: #13224A;
+  --on-band: #E5E9F0;
+  --band-muted: #AEBBD6;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
 }
 
 [x-cloak] { display: none !important; }
@@ -293,9 +318,11 @@ select.input {
 .timeline-date { font-size: 13px; color: var(--text-muted); } /* --text-light fails AA contrast for text */
 
 /* Full-width navy call-to-action */
-.cta-band { background: var(--accent); color: var(--on-accent); }
-.cta-band h2 { color: var(--on-accent); }
-.cta-band p { color: var(--accent-soft); }
+.cta-band { background: var(--band); color: var(--on-band); }
+.cta-band h2 { color: var(--on-band); }
+.cta-band p { color: var(--band-muted); }
+.btn-on-band { color: var(--on-band); border-color: var(--band-muted); }
+.btn-on-band:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--on-band); }
 
 /* Rich text from the |rich_text filter */
 .prose-rich { max-width: 70ch; }
@@ -377,3 +404,23 @@ html.intro .intro-screen {
   background: var(--accent); transform: scaleX(0); transform-origin: left center;
 }
 .intro-role { margin-top: 16px; font-size: 14px; font-weight: 500; letter-spacing: 0.02em; color: var(--text-muted); opacity: 0; }
+
+/* Theme toggle: show the icon for the theme you would switch to */
+.theme-toggle .icon-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: inline; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+/* =========================================================
+   Page transitions (View Transitions API, pure CSS).
+   Pages cross-fade and the nav stays put. Browsers without
+   support simply navigate normally.
+   ========================================================= */
+@view-transition { navigation: auto; }
+.site-nav { view-transition-name: site-nav; }
+::view-transition-old(root) { animation: page-out 0.18s ease both; }
+::view-transition-new(root) { animation: page-in 0.32s var(--ease) both; }
+@keyframes page-out { to { opacity: 0; } }
+@keyframes page-in { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}

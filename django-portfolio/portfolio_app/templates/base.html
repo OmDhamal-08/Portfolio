@@ -5,14 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Om Dhamal | Backend, AI & ML Engineer{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}Om Dhamal - Computer Engineering student building Django and FastAPI backends, machine learning projects and AI agents.{% endblock %}" />
-    <meta property="og:title" content="{% block og_title %}Om Dhamal | Portfolio{% endblock %}" />
-    <meta property="og:description" content="Projects, case studies and the learning journey of Om Dhamal." />
+    <link rel="canonical" href="{{ page_url }}" />
+
+    <!-- Link previews (LinkedIn, WhatsApp, X, Slack...) -->
+    <meta property="og:site_name" content="Om Dhamal" />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#FFFFFF" />
+    <meta property="og:url" content="{{ page_url }}" />
+    <meta property="og:title" content="{% block og_title %}Om Dhamal | Backend, AI & ML Engineer{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}Projects, case studies and skills of Om Dhamal: Django and FastAPI backends, AI agents and machine learning.{% endblock %}" />
+    <meta property="og:image" content="{{ site_url }}{% static 'images/og-card.png' %}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Om Dhamal, Backend, AI and ML Engineer" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="{{ site_url }}{% static 'images/og-card.png' %}" />
+    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="{% static 'images/profile.svg' %}" type="image/svg+xml" />
 
     <script>
       document.documentElement.classList.replace("no-js", "js");
+      // Theme before first paint: the visitor's saved choice, else their system setting.
+      (function () {
+        var theme = "light";
+        try { theme = localStorage.getItem("theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); } catch (e) {}
+        document.documentElement.dataset.theme = theme;
+      })();
       // Opening name reveal: once per browser tab, never for reduced-motion visitors.
       // Decided here, before the page paints, so the content never flashes first.
       (function () {
@@ -127,6 +145,10 @@
         </div>
 
         <div class="flex items-center gap-3">
+          <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-label="Switch to dark theme">
+            <span class="icon-moon">{% include "partials/icon.html" with name="moon" cls="w-[18px] h-[18px]" %}</span>
+            <span class="icon-sun">{% include "partials/icon.html" with name="sun" cls="w-[18px] h-[18px]" %}</span>
+          </button>
           <a href="{% url 'contact' %}" class="btn btn-primary btn-sm hidden sm:inline-flex">Let's talk</a>
           <button type="button" class="icon-btn lg:hidden" @click="menu = !menu" :aria-expanded="menu.toString()" aria-expanded="false" aria-controls="mobile-menu" aria-label="Toggle menu">
             <span x-show="!menu">{% include "partials/icon.html" with name="menu" cls="w-5 h-5" %}</span>
